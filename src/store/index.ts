@@ -1,13 +1,16 @@
 import { create } from 'zustand'
+import { THEMES_PRIME_REACT } from '@/utils/constant';
 
-const useBearStore = create((set) => ({
-  bears: 0,
-  increasePopulation: () => set((state : any) => ({ bears: state.bears + 1 })),
-  removeAllBears: () => set({ bears: 0 }),
-}))
+const useThemeStore = create(set => ({
+  theme: 'primereact/resources/themes/lara-light-indigo/theme.css',
+  randomTheme: () => set(() => ({
+    theme: Math.floor(Math.random() * THEMES_PRIME_REACT.length)
+  })),
+}));
 
 const useStore = create((set) => ({
-    ...useBearStore
+  ...useThemeStore
 }));
+
 
 export default useStore;

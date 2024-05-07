@@ -2,5 +2,11 @@
   text-align: center;
   min-height: 100%;
   display: flex;
+  position: relative;
 }
 
+.float-button {
+  position: absolute !important;
+  bottom: 0;
+  right: 88px;
+}
