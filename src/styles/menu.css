@@ -1,0 +1,10 @@
+.p-slidemenu-wrapper {
+    height: 99vh!important;
+}
+
+.p-menuitem .isActive {
+    outline: 0 none;
+    outline-offset: 0;
+    box-shadow: inset 0 0 0 0.15rem #C7D2FE;
+    background-color: #C7D2FE;
+}
