@@ -1,0 +1,17 @@
+.header {
+    text-align: center;
+    padding-left: 1em;
+    padding-right: 1em;
+    width: 100%;
+    border-bottom: 1px solid white;
+    display: flex;
+    justify-content: right;
+    align-items: center;
+  }
+
+  .wrapper-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }

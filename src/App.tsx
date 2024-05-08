@@ -3,29 +3,34 @@ import './App.css';
 import "primereact/resources/primereact.min.css";
 import '@/styles/prime.css';
 import { Route, Routes } from 'react-router-dom';
+import { useEffect } from 'react';
+import THEMES_PRIME_REACT from '@/utils/constant';
 import Dashboard from './components/Dashboard';
 import MenuLeft from '@/components/MenuLeft';
 import FloatButton from '@/components/FloatButton';
 import useThemeStore from '@/store/theme.store';
-import { useEffect } from 'react';
-import THEMES_PRIME_REACT from '@/utils/constant';
+import Header from '@/components/Header';
+import Product from '@/components/Product';
 
 function App() {
   const isLight = useThemeStore((state: any) => state.isLight);
   useEffect(() => {
-    console.log('change')
-    console.log({isLight})
-    isLight ? THEMES_PRIME_REACT.sohoLight() : THEMES_PRIME_REACT.sohoDark();
+    isLight ? THEMES_PRIME_REACT.laraLightIndigo() : THEMES_PRIME_REACT.laraDarkIndigo();
   }, [isLight]);
- 
+
   return (
     <div className="App">
-      <FloatButton />
-      <MenuLeft />
-      <Routes >
-        <Route path='/' element={<Dashboard />} />
-        {/* <Route path='/products' element={<Product />} /> */}
-      </Routes>
+      <div className='header'>
+        <Header />
+      </div>
+      <div className='body'>
+        <MenuLeft />
+        <FloatButton />
+        <Routes >
+          <Route path='/' element={<Dashboard />} />
+          <Route path='/products' element={<Product />} />
+        </Routes>
+      </div>
     </div>
   );
 }
