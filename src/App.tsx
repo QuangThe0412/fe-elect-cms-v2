@@ -1,6 +1,5 @@
 
 import './App.css';
-// import "primereact/resources/themes/md-dark-deeppurple/theme.css";
 import "primereact/resources/primereact.min.css";
 import '@/styles/prime.css';
 import { Route, Routes } from 'react-router-dom';
@@ -12,30 +11,12 @@ import { useEffect } from 'react';
 
 function App() {
   const theme = useThemeStore((state: any) => state.theme);
+  console.log({theme})
   useEffect(() => {
-    import(theme).then((themeModule) => {
-      console.log(themeModule)
-    });
+    console.log('change')
+    theme();
   }, [theme]);
-  // useEffect(() => {
-  //   const importThemeDark = () => {
-  //     require("primereact/resources/themes/md-dark-deeppurple/theme.css")
-  //   };
-
-  //   const importThemeLight = () => {
-  //     require("primereact/resources/themes/md-dark-deeppurple/theme.css")
-  //   };
-
-  //   const rand = Math.round(Math.random() * 10) > 5;
-
-  //   if(rand) {
-  //     importThemeDark();
-  //   }else {
-  //     importThemeLight();
-  //   }
-
-  // }, []);
-
+ 
   return (
     <div className="App">
       <FloatButton />

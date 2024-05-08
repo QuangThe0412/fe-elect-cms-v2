@@ -29,7 +29,7 @@ export default function FloatButton() {
             label: 'Random Theme',
             icon: 'pi pi-sync',
             command: () => {
-                randomTheme()
+                randomTheme();
             }
         }
     ];
