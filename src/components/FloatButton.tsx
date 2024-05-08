@@ -1,14 +1,14 @@
 
-import React, { useState,useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { SpeedDial } from 'primereact/speeddial';
 import { Toast } from 'primereact/toast';
 import { MenuItem } from 'primereact/menuitem';
 import { useNavigate } from 'react-router-dom';
-import useThemeStore from '@/store/index';
+import useThemeStore from '@/store/theme.store';
 
 export default function FloatButton() {
+    const randomTheme = useThemeStore((state: any) => state.randomTheme);
     const navigate = useNavigate();
-    const {randomTheme} = useThemeStore;
     const toast = useRef<Toast>(null);
     const items: MenuItem[] = [
         {
@@ -29,7 +29,7 @@ export default function FloatButton() {
             label: 'Random Theme',
             icon: 'pi pi-sync',
             command: () => {
-                randomTheme();
+                randomTheme()
             }
         }
     ];
