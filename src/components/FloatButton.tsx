@@ -7,7 +7,9 @@ import { useNavigate } from 'react-router-dom';
 import useThemeStore from '@/store/theme.store';
 
 export default function FloatButton() {
-    const randomTheme = useThemeStore((state: any) => state.randomTheme);
+    const { changeTheme, isLight } = useThemeStore((state: any) => (
+        { changeTheme: state.changeTheme, isLight: state.isLight }
+    ));
     const navigate = useNavigate();
     const toast = useRef<Toast>(null);
     const items: MenuItem[] = [
@@ -26,10 +28,10 @@ export default function FloatButton() {
             }
         },
         {
-            label: 'Random Theme',
+            label: 'Change Theme',
             icon: 'pi pi-sync',
             command: () => {
-                randomTheme();
+                changeTheme(isLight);
             }
         }
     ];

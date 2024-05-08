@@ -8,14 +8,15 @@ import MenuLeft from '@/components/MenuLeft';
 import FloatButton from '@/components/FloatButton';
 import useThemeStore from '@/store/theme.store';
 import { useEffect } from 'react';
+import THEMES_PRIME_REACT from '@/utils/constant';
 
 function App() {
-  const theme = useThemeStore((state: any) => state.theme);
-  console.log({theme})
+  const isLight = useThemeStore((state: any) => state.isLight);
   useEffect(() => {
     console.log('change')
-    theme();
-  }, [theme]);
+    console.log({isLight})
+    isLight ? THEMES_PRIME_REACT.sohoLight() : THEMES_PRIME_REACT.sohoDark();
+  }, [isLight]);
  
   return (
     <div className="App">
