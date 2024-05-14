@@ -1,8 +1,8 @@
 import axios from 'axios';
+import { apiUrl } from '@/utils/constant';
 
 export const getProducts = () => {
-    // Gửi yêu cầu lấy danh sách sản phẩm từ máy chủ
-    return axios.get('/api/products');
+    return axios.get(apiUrl + '/mon');
 }
 
 export const getProduct = (id: string) => {
