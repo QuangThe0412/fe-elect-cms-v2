@@ -1,4 +1,4 @@
-const THEMES_PRIME_REACT = {
+export const THEMES_PRIME_REACT = {
   lightBlue: () => require('primereact/resources/themes/bootstrap4-light-blue/theme.css'),
   lightPurple: () => require('primereact/resources/themes/bootstrap4-light-purple/theme.css'),
   darkBlue: () => require('primereact/resources/themes/bootstrap4-dark-blue/theme.css'),
@@ -40,5 +40,3 @@ const THEMES_PRIME_REACT = {
   aryaOrange: () => require('primereact/resources/themes/arya-orange/theme.css'),
   aryaPurple: () => require('primereact/resources/themes/arya-purple/theme.css'),
 };
-
-export default THEMES_PRIME_REACT;
