@@ -1,3 +1,5 @@
-const exportModels = {};
+import { Product } from './product';
 
-export {};
+export type {
+    Product
+};

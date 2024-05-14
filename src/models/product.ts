@@ -1,0 +1,16 @@
+export interface Product {
+    IDLoaiMon: number | null,
+    IDMon: number | null,
+    DVTMon: string | null,
+    Deleted: number | null,
+    DonGiaBanLe: number | null,
+    DonGiaBanSi: number | null,
+    DonGiaVon: number | null,
+    GhiChu: string | null,
+    Image: string | null,
+    NgaySua: string | null,
+    NgayTao: string | null,
+    SoLuongTonKho: number | null,
+    TenMon: string | null,
+    ThoiGianBH: number | null,
+};

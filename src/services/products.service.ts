@@ -1,26 +1,25 @@
 import axios from 'axios';
 import { apiUrl } from '@/utils/constant';
+import { Product } from '@/models';
 
-export const getProducts = () => {
-    return axios.get(apiUrl + '/mon');
-}
+export class ProductService {
+    getProducts() {
+        return axios.get(apiUrl + '/mon');
+    }
 
-export const getProduct = (id: string) => {
-    // Gửi yêu cầu lấy thông tin chi tiết của một sản phẩm từ máy chủ
-    return axios.get(`/api/products/${id}`);
-}
+    getProduct(id: string) {
+        return axios.get(`${apiUrl}/mon/${id}`);
+    }
 
-export const createProduct = (product: any) => {
-    // Gửi yêu cầu tạo một sản phẩm mới đến máy chủ
-    return axios.post('/api/products', product);
-}
+    createProduct(product: Product) {
+        return axios.post(`${apiUrl}/mon`, product);
+    }
 
-export const updateProduct = (id: string, updatedProduct: any) => {
-    // Gửi yêu cầu cập nhật thông tin của một sản phẩm đến máy chủ
-    return axios.put(`/api/products/${id}`, updatedProduct);
-}
+    updateProduct(id: string, updatedProduct: Product) {
+        return axios.put(`${apiUrl}/mon/${id}`, updatedProduct);
+    }
 
-export const deleteProduct = (id: string) => {
-    // Gửi yêu cầu xóa một sản phẩm đến máy chủ
-    return axios.delete(`/api/products/${id}`);
+    deleteProduct(id: string) {
+        return axios.delete(`${apiUrl}/mon/${id}`);
+    }
 }
