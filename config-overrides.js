@@ -2,7 +2,8 @@ const { alias } = require('react-app-rewire-alias');
 
 module.exports = function override(config) {
   alias({
-    '@/styles': 'src/styles',
+    '@/styles': 'src/assets/styles',
+    '@/images': 'src/assets/images',
     '@/components': 'src/components',
     '@/services': 'src/services',
     '@/utils': 'src/utils',

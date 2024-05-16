@@ -1,0 +1,36 @@
+.App {
+  text-align: center;
+  height: 99vh;
+  position: relative;
+}
+
+.float-button {
+  position: absolute !important;
+  bottom: 23vh;
+  right: 88px;
+}
+
+
+.body {
+  display: flex;
+  height: 100%;
+}
+
+.float-right{
+  float: right;
+}
+
+.header-app {
+  height: 10vh;
+}
+
+.body-app {
+  height: 89.5vh;
+  width: 100%;
+  display: flex;
+}
+
+.bg-warning {
+  color: var(--primary-color-text) !important;
+  background-color: var(--red-100) !important;
+}

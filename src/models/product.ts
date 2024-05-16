@@ -2,7 +2,7 @@ export interface Product {
     IDMon: number | 0 | string | '',
     IDLoaiMon: number | 0| string | '',
     DVTMon: string | '',
-    Deleted: number | 0,
+    Deleted: boolean,
     DonGiaBanLe: number | 0,
     DonGiaBanSi: number | 0,
     DonGiaVon: number | 0,
