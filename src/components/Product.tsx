@@ -11,6 +11,8 @@ import { classNames } from 'primereact/utils';
 import { Toast } from 'primereact/toast';
 import { ContextMenu } from 'primereact/contextmenu';
 import { FilterMatchMode, FilterOperator } from 'primereact/api';
+import { Toolbar } from 'primereact/toolbar';
+import { Button } from 'primereact/button';
 
 export default function Products() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -19,14 +21,13 @@ export default function Products() {
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
   const [filters, setFilters] = useState<DataTableFilterMeta>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    IdMon: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-    'country.name': { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-    representative: { value: null, matchMode: FilterMatchMode.IN },
-    date: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
-    balance: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
-    status: { operator: FilterOperator.OR, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
-    activity: { value: null, matchMode: FilterMatchMode.BETWEEN }
-});
+    IDMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    TenMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    IDLoaiMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    DVTMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    GhiChu: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  });
+
   const toast = useRef<Toast>(null);
   const cm = useRef<ContextMenu>(null);
   const menuModel = [
@@ -59,7 +60,7 @@ export default function Products() {
 
     // _products = _products.filter((p) => p.IDMon !== product.IDMon);
 
-    toast.current?.show({ severity: 'error', summary: 'Product Deleted', detail: !product.Deleted? 'Tắt' : 'Bật'});
+    toast.current?.show({ severity: 'error', summary: 'Product Deleted', detail: !product.Deleted ? 'Tắt' : 'Bật' });
     // setProducts(_products);
   };
 
@@ -91,35 +92,37 @@ export default function Products() {
   };
 
   const rowClassName = (data: Product) => (!data.Deleted ? '' : 'bg-warning');
-  
+
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     let _filters = { ...filters };
-
-    _filters['global'].value = value;
-
+    _filters['global'] = { value: value, matchMode: FilterMatchMode.CONTAINS };
     setFilters(_filters);
     setGlobalFilterValue(value);
-};
+  };
 
-const renderHeader = () => {
-  return (
+  const renderHeader = () => {
+    return (
       <div className="flex flex-wrap gap-2 justify-content-between align-items-center">
-          {/* <h4 className="m-0">Customers</h4> */}
-          <span className="p-input-icon-left">
-              <i className="pi pi-search" />
-              <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Tìm kiếm" />
-          </span>
+        <span className="p-input-icon-left">
+          <i className="pi pi-search" />
+          <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Tìm kiếm" />
+        </span>
+        <Button label="Nhập" icon="pi pi-file-import" className="p-button-help"
+          onClick={() => {
+            toast.current?.show({ severity: 'info', summary: 'Product Selected',detail: 'Nhập' });
+          }}
+        />
       </div>
-  );
-};
+    );
+  };
+
   return (
     <div className="card" style={{ width: "99%" }}>
       <Toast ref={toast} />
-
       <ContextMenu model={menuModel} ref={cm} onHide={() => setSelectedProduct(null)} />
       <DataTable value={products}
-      header={renderHeader()}
+        header={renderHeader()}
         rowClassName={rowClassName}
         onContextMenu={(e) => cm.current?.show(e.originalEvent)}
         contextMenuSelection={selectedProduct ? selectedProduct : undefined}
@@ -127,19 +130,21 @@ const renderHeader = () => {
         paginator rows={25} rowsPerPageOptions={[5, 10, 25, 50]}
         stripedRows sortMode="multiple" removableSort
         tableStyle={{ width: '100%' }}
-        loading={loading} scrollable scrollHeight="83vh"
+        loading={loading} scrollable scrollHeight="75.5vh"
         selectionMode="single" selection={selectedProduct}
         onSelectionChange={(e: any) => setSelectedProduct(e.value)} dataKey="IDMon"
         resizableColumns showGridlines columnResizeMode="expand"
+        filters={filters}
+        globalFilterFields={["TenMon", "DVTMon", "GhiChu"]} emptyMessage="No product found."
       >
-        <Column field="IDMon" header="Id" ></Column>
-        <Column field="IDLoaiMon" header="Loại" ></Column>
+        <Column field="IDMon" filter header="Id" ></Column>
+        <Column field="IDLoaiMon" filter header="Loại" ></Column>
         <Column field="TenMon" header="Tên" style={{ width: '15%' }}></Column>
         <Column field="Image" header="Hình ảnh" body={bodyImage} style={{ width: '10%' }}></Column>
-        <Column field="DVTMon" header="ĐVT" ></Column>
-        <Column field="DonGiaVon" header="Giá vốn" body={bodyDonGiaVon} sortable ></Column>
-        <Column field="DonGiaBanLe" header="Giá lẻ" body={bodyDonGiaLe} sortable ></Column>
-        <Column field="DonGiaBanSi" header="Giá sỉ" body={bodyDonGiaBanSi} sortable ></Column>
+        <Column field="DVTMon" filter header="ĐVT" ></Column>
+        <Column field="DonGiaVon" filter header="Giá vốn" body={bodyDonGiaVon} sortable ></Column>
+        <Column field="DonGiaBanLe" filter header="Giá lẻ" body={bodyDonGiaLe} sortable ></Column>
+        <Column field="DonGiaBanSi" filter header="Giá sỉ" body={bodyDonGiaBanSi} sortable ></Column>
         <Column field="SoLuongTonKho" header="Tồn kho" body={bodyTonKho} sortable ></Column>
         <Column field="ThoiGianBH" header="Bảo hành" sortable ></Column>
         <Column field="GhiChu" header="Ghi chú" ></Column>
