@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
+import '@/styles/product.css';
 import { DataTable, DataTableFilterMeta } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { ProductService } from '@/services/products.service';
@@ -11,8 +12,8 @@ import { classNames } from 'primereact/utils';
 import { Toast } from 'primereact/toast';
 import { ContextMenu } from 'primereact/contextmenu';
 import { FilterMatchMode, FilterOperator } from 'primereact/api';
-import { Toolbar } from 'primereact/toolbar';
 import { Button } from 'primereact/button';
+import ProductDialog from './ProductDialog';
 
 export default function Products() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -40,6 +41,8 @@ export default function Products() {
     }
   ];
 
+  const [dialogVisible, setDialogVisible] = useState<boolean>(false);
+
   useEffect(() => {
     ProductService.getProducts().then(data => {
       setProducts(data.data)
@@ -48,11 +51,12 @@ export default function Products() {
   }, []);
 
   const addProduct = (product: Product) => {
-    toast.current?.show({ severity: 'info', summary: 'Product Selected', detail: product.TenMon });
+    setSelectedProduct(null);
+    setDialogVisible(true);
   };
 
   const editProduct = (product: Product) => {
-    toast.current?.show({ severity: 'info', summary: 'Product Selected', detail: product.TenMon });
+    setDialogVisible(true);
   };
 
   const removeProduct = (product: Product) => {
@@ -110,7 +114,7 @@ export default function Products() {
         </span>
         <Button label="Nhập" icon="pi pi-file-import" className="p-button-help"
           onClick={() => {
-            toast.current?.show({ severity: 'info', summary: 'Product Selected',detail: 'Nhập' });
+            toast.current?.show({ severity: 'info', summary: 'Product Selected', detail: 'Nhập' });
           }}
         />
       </div>
@@ -120,19 +124,19 @@ export default function Products() {
   return (
     <div className="card" style={{ width: "99%" }}>
       <Toast ref={toast} />
-      <ContextMenu model={menuModel} ref={cm} onHide={() => setSelectedProduct(null)} />
+      <ContextMenu model={menuModel} ref={cm} />
       <DataTable value={products}
         header={renderHeader()}
         rowClassName={rowClassName}
         onContextMenu={(e) => cm.current?.show(e.originalEvent)}
         contextMenuSelection={selectedProduct ? selectedProduct : undefined}
-        onContextMenuSelectionChange={(e: any) => setSelectedProduct(e.value)}
+        onContextMenuSelectionChange={(e: any) => {setSelectedProduct(e.value)}}
         paginator rows={25} rowsPerPageOptions={[5, 10, 25, 50]}
         stripedRows sortMode="multiple" removableSort
         tableStyle={{ width: '100%' }}
         loading={loading} scrollable scrollHeight="75.5vh"
         selectionMode="single" selection={selectedProduct}
-        onSelectionChange={(e: any) => setSelectedProduct(e.value)} dataKey="IDMon"
+        onSelectionChange={(e: any) => {setSelectedProduct(e.value)}} dataKey="IDMon"
         resizableColumns showGridlines columnResizeMode="expand"
         filters={filters}
         globalFilterFields={["TenMon", "DVTMon", "GhiChu"]} emptyMessage="No product found."
@@ -149,6 +153,8 @@ export default function Products() {
         <Column field="ThoiGianBH" header="Bảo hành" sortable ></Column>
         <Column field="GhiChu" header="Ghi chú" ></Column>
       </DataTable>
+      <ProductDialog product={selectedProduct as Product} visible={dialogVisible}
+       onClose={() => setDialogVisible(false)}/>
     </div>
   );
 }

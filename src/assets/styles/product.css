@@ -3,3 +3,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.product-Image{
+  width: 300px;
+}
