@@ -52,7 +52,7 @@ const ProductDialog = (props: PropType) => {
 
             console.log(_product);
 
-            if (!_product.TenMon?.trim()
+            if (!_product.TenMon?.trim() //----------workd here
                 || !_product.IDLoaiMon || !_product.DVTMon
                 || _product.DonGiaBanLe === undefined || _product.DonGiaBanLe === null || _product.DonGiaBanLe < 0
                 || _product.DonGiaBanSi === undefined || _product.DonGiaBanSi === null || _product.DonGiaBanSi < 0
