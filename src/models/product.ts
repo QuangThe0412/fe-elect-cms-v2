@@ -12,5 +12,5 @@ export interface Product {
     NgayTao: Date | null,
     SoLuongTonKho: number | 0,
     TenMon: string | '',
-    ThoiGianBH: Date | null,
+    ThoiGianBH:  | null,
 };

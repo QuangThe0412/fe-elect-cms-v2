@@ -7,25 +7,68 @@ import { Product } from '@/models';
 import erroImage from '../assets/images/error.jpg';
 import { Button } from 'primereact/button';
 import { RadioButton } from 'primereact/radiobutton';
-import { InputNumber } from 'primereact/inputnumber';
+import { InputNumber, InputNumberChangeEvent } from 'primereact/inputnumber';
+import { Toast } from 'primereact/toast';
 
 type PropType = {
-    product: Product,
+    typeTitle: string,
+    selectedProduct: Product,
     visible: boolean,
     onClose?: () => void,
 }
 
-const ProductDialog = (props: PropType) => {
-    const { product, visible, onClose } = props;
-    const [submitted, setSubmitted] = useState(false);
+const defaultProduct = {
+    TenMon: '',
+    IDMon: '',
+    IDLoaiMon: '',
+    DVTMon: '',
+    DonGiaBanLe: 0,
+    DonGiaBanSi: 0,
+    DonGiaVon: 0,
+    SoLuongTonKho: 0,
+    ThoiGianBH: '',
+};
 
+const ProductDialog = (props: PropType) => {
+    let { typeTitle, selectedProduct, visible, onClose } = props;
+    const [product, setProduct] = useState<Product>({ ...selectedProduct || defaultProduct });
+
+    const [submitted, setSubmitted] = useState(false);
+    const toast = useRef<Toast>(null);
+
+    useEffect(() => {
+        setProduct({ ...selectedProduct });
+    }, [selectedProduct]);
 
     const hideDialog = () => {
         onClose?.();
     };
 
     const saveProduct = () => {
-        console.log('save product');
+        setSubmitted(true);
+
+        if (product.TenMon?.trim()) {
+            let _product = { ...product };
+
+            console.log(_product);
+
+            if (!_product.TenMon?.trim()
+                || !_product.IDLoaiMon || !_product.DVTMon
+                || _product.DonGiaBanLe === undefined || _product.DonGiaBanLe === null || _product.DonGiaBanLe < 0
+                || _product.DonGiaBanSi === undefined || _product.DonGiaBanSi === null || _product.DonGiaBanSi < 0
+                || _product.DonGiaVon === undefined || _product.DonGiaVon === null || _product.DonGiaVon < 0
+                || !_product.NgaySua || !_product.NgayTao
+                || _product.SoLuongTonKho === undefined || _product.SoLuongTonKho === null || _product.SoLuongTonKho < 0
+                || !_product.ThoiGianBH) {
+                toast.current?.show({ severity: 'success', summary: 'Successful', detail: 'Product Updated', life: 3000 });
+            } else {
+                // _product.id = createId();
+                // _product.image = 'product-placeholder.svg';
+                toast.current?.show({ severity: 'success', summary: 'Successful', detail: 'Product Created', life: 3000 });
+            }
+
+            hideDialog();
+        }
     };
 
     const productDialogFooter = (
@@ -35,17 +78,39 @@ const ProductDialog = (props: PropType) => {
         </React.Fragment>
     );
 
+    const onInputChange = (e: React.ChangeEvent<HTMLInputElement>, name: string) => {
+        const val = (e.target && e.target.value) || '';
+        let _product = { ...product };
+
+        // @ts-ignore
+        _product[`${name}`] = val;
+
+        setProduct(prevProduct => ({ ...prevProduct, [name]: val }));
+    };
+
+    const onInputNumberChange = (e: InputNumberChangeEvent, name: string) => {
+        const val = e.value || 0;
+        let _product = { ...product };
+
+        // @ts-ignore
+        _product[`${name}`] = val;
+
+        setProduct(prevProduct => ({ ...prevProduct, [name]: val }));
+    };
+
     return (
         <>
+            <Toast ref={toast} />
+
             <Dialog visible={visible} style={{ width: '32rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }}
-                header={product == null ? 'Thêm' : 'Sửa'} modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
-                <img src={product?.Image ? `https://primefaces.org/cdn/primereact/Images/product/${product.Image}` : erroImage}
+                header={typeTitle} modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
+                <img src={product?.Image ? `https://primefaces.org/cdn/primereact/Images/product/${product?.Image}` : erroImage}
                     alt={product?.Image} className="product-Image block m-auto pb-3" />
                 <div className="field">
-                    <label htmlFor="name" className="font-bold">
+                    <label htmlFor="TenMon" className="font-bold">
                         Tên món
                     </label>
-                    <InputText id="name" value={product?.TenMon} onChange={(e) => { console.log('change name') }} required
+                    <InputText id="TenMon" value={product?.TenMon} onChange={(e) => onInputChange(e, 'TenMon')} required
                         autoFocus className={classNames({ 'p-invalid': submitted && !product?.TenMon })} />
                     {submitted && !product?.TenMon && <small className="p-error">Tên món không được bỏ trống.</small>}
                 </div>
@@ -72,46 +137,71 @@ const ProductDialog = (props: PropType) => {
                 </div> */}
                 <div className="formgrid grid">
                     <div className="field col">
-                        <label htmlFor="price" className="font-bold">
-                            Giá bán sỉ
+                        <label htmlFor="ThoiGianBH" className="font-bold">
+                            Bảo hành (tháng)
                         </label>
-                        <InputNumber id="price" value={product.DonGiaBanSi}
-                            onValueChange={(e) => (console.log('change price'))}
-                            mode="currency" currency="VND" locale="vn-VN" />
+                        <InputNumber id="ThoiGianBH" value={product?.ThoiGianBH} onChange={(e: any) => onInputNumberChange(e, 'ThoiGianBH')} required
+                            autoFocus className={classNames({ 'p-invalid': submitted && !product?.ThoiGianBH })} />
+                        {submitted && !product?.ThoiGianBH && <small className="p-error">Thời gian bảo hành không được bỏ trống.</small>}
                     </div>
                     <div className="field col">
-                        <label htmlFor="price" className="font-bold">
-                            Giá bán lẻ
+                        <label htmlFor="DVTMon" className="font-bold">
+                            Đơn vị tính
                         </label>
-                        <InputNumber id="price" value={product.DonGiaBanLe}
-                            onValueChange={(e) => (console.log('change price'))}
-                            mode="currency" currency="VND" locale="vn-VN" />
+                        <InputText id="DVTMon" value={product?.DVTMon} onChange={(e) => onInputChange(e, 'DVTMon')} required
+                            autoFocus className={classNames({ 'p-invalid': submitted && !product?.DVTMon })} />
+                        {submitted && !product?.DVTMon && <small className="p-error">Đơn vị tính không được bỏ trống.</small>}
                     </div>
                 </div>
                 <div className="formgrid grid">
                     <div className="field col">
-                        <label htmlFor="price" className="font-bold">
-                            Giá vốn
+                        <label htmlFor="DonGiaBanSi" className="font-bold">
+                            Giá bán sỉ
                         </label>
-                        <InputNumber id="price" value={product.DonGiaVon}
-                            onValueChange={(e) => (console.log('change price'))}
-                            mode="currency" currency="VND" locale="vn-VN" />
+                        <InputNumber id="DonGiaBanSi" value={product?.DonGiaBanSi}
+                            onChange={(e: any) => onInputNumberChange(e, 'DonGiaBanSi')}
+                            mode="currency" currency="VND" locale="vn-VN" required
+                            autoFocus className={classNames({ 'p-invalid': submitted && !product?.DonGiaBanSi })} />
+                        {submitted && !product?.DonGiaBanSi && <small className="p-error">Giá bán sỉ không được bỏ trống.</small>}
                     </div>
                     <div className="field col">
-                        <label htmlFor="quantity" className="font-bold">
-                            Số lượng tồn kho
+                        <label htmlFor="DonGiaBanLe" className="font-bold">
+                            Giá bán lẻ
                         </label>
-                        <InputNumber id="quantity" value={product.SoLuongTonKho}
-                            onValueChange={(e) => (console.log('change SoLuongTonKho'))} />
+                        <InputNumber id="DonGiaBanLe" value={product?.DonGiaBanLe}
+                            onChange={(e: any) => onInputNumberChange(e, 'DonGiaBanLe')}
+                            mode="currency" currency="VND" locale="vn-VN" required
+                            autoFocus className={classNames({ 'p-invalid': submitted && !product?.DonGiaBanLe })} />
+                        {submitted && !product?.DonGiaBanLe && <small className="p-error">Giá bán lẻ không được bỏ trống.</small>}
                     </div>
                 </div>
-
+                <div className="formgrid grid">
+                    <div className="field col">
+                        <label htmlFor="DonGiaVon" className="font-bold">
+                            Giá vốn
+                        </label>
+                        <InputNumber id="DonGiaVon" value={product?.DonGiaVon}
+                            onChange={(e: any) => onInputNumberChange(e, 'DonGiaVon')}
+                            mode="currency" currency="VND" locale="vn-VN" required
+                            autoFocus className={classNames({ 'p-invalid': submitted && !product?.DonGiaVon })} />
+                        {submitted && !product?.DonGiaVon && <small className="p-error">Giá vốn không được bỏ trống.</small>}
+                    </div>
+                    <div className="field col">
+                        <label htmlFor="SoLuongTonKho" className="font-bold">
+                            Số lượng tồn kho
+                        </label>
+                        <InputNumber id="SoLuongTonKho" value={product?.SoLuongTonKho}
+                            onChange={(e: any) => onInputNumberChange(e, 'SoLuongTonKho')} required
+                            autoFocus className={classNames({ 'p-invalid': submitted && !product?.SoLuongTonKho })} />
+                        {submitted && !product?.SoLuongTonKho && <small className="p-error">Số lượng tồn kho không được bỏ trống.</small>}
+                    </div>
+                </div>
                 <div className="field">
-                    <label htmlFor="note" className="font-bold">
+                    <label htmlFor="GhiChu" className="font-bold">
                         Ghi chú
                     </label>
-                    <InputTextarea id="note" value={product?.GhiChu ?? ""} onChange={(e) => { console.log('change note') }}
-                        required rows={3} cols={20} />
+                    <InputTextarea id="GhiChu" value={product?.GhiChu ?? ""}
+                        required rows={2} cols={20} />
                 </div>
             </Dialog>
         </>

@@ -28,7 +28,7 @@ export default function Products() {
     DVTMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
     GhiChu: { value: null, matchMode: FilterMatchMode.CONTAINS },
   });
-
+  
   const toast = useRef<Toast>(null);
   const cm = useRef<ContextMenu>(null);
   const menuModel = [
@@ -41,6 +41,7 @@ export default function Products() {
     }
   ];
 
+  const [typeTitle, setTypeTitle] = useState<string>('Thêm món mới');
   const [dialogVisible, setDialogVisible] = useState<boolean>(false);
 
   useEffect(() => {
@@ -53,10 +54,13 @@ export default function Products() {
   const addProduct = (product: Product) => {
     setSelectedProduct(null);
     setDialogVisible(true);
+    setTypeTitle('Thêm món mới');
   };
 
   const editProduct = (product: Product) => {
+    setSelectedProduct(product);
     setDialogVisible(true);
+    setTypeTitle('Sửa món');
   };
 
   const removeProduct = (product: Product) => {
@@ -112,7 +116,7 @@ export default function Products() {
           <i className="pi pi-search" />
           <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Tìm kiếm" />
         </span>
-        <Button label="Nhập" icon="pi pi-file-import" className="p-button-help"
+        <Button label="Nhập Excel" icon="pi pi-file-import" className="p-button-help"
           onClick={() => {
             toast.current?.show({ severity: 'info', summary: 'Product Selected', detail: 'Nhập' });
           }}
@@ -153,8 +157,9 @@ export default function Products() {
         <Column field="ThoiGianBH" header="Bảo hành" sortable ></Column>
         <Column field="GhiChu" header="Ghi chú" ></Column>
       </DataTable>
-      <ProductDialog product={selectedProduct as Product} visible={dialogVisible}
-       onClose={() => setDialogVisible(false)}/>
+      <ProductDialog typeTitle={typeTitle}  visible={dialogVisible} onClose={() => setDialogVisible(false)}
+        selectedProduct={selectedProduct as Product}
+      />
     </div>
   );
 }
