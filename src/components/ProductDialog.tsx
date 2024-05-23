@@ -11,65 +11,40 @@ import { InputNumber, InputNumberChangeEvent } from 'primereact/inputnumber';
 import { Toast } from 'primereact/toast';
 
 type PropType = {
-    typeTitle: string,
     selectedProduct: Product,
     visible: boolean,
-    onClose?: () => void,
 }
 
-const defaultProduct = {
+let emptyProduct : Product = {
     TenMon: '',
-    IDMon: '',
-    IDLoaiMon: '',
+    IDMon: 0,
+    IDLoaiMon: 0,
     DVTMon: '',
     DonGiaBanLe: 0,
     DonGiaBanSi: 0,
     DonGiaVon: 0,
     SoLuongTonKho: 0,
-    ThoiGianBH: '',
+    ThoiGianBH: 0,
+    Deleted: false,
+    GhiChu: '',
+    Image: '',
+    NgaySua: null,
+    NgayTao: null
 };
 
 const ProductDialog = (props: PropType) => {
-    let { typeTitle, selectedProduct, visible, onClose } = props;
-    const [product, setProduct] = useState<Product>({ ...selectedProduct || defaultProduct });
+    let { selectedProduct, visible} = props;
+    const [product, setProduct] = useState<Product>({ ...selectedProduct ?? emptyProduct});
 
-    const [submitted, setSubmitted] = useState(false);
     const toast = useRef<Toast>(null);
 
     useEffect(() => {
-        setProduct({ ...selectedProduct });
+        setProduct({ ...selectedProduct ?? emptyProduct });
     }, [selectedProduct]);
 
     const hideDialog = () => {
-        onClose?.();
-    };
-
-    const saveProduct = () => {
-        setSubmitted(true);
-
-        if (product.TenMon?.trim()) {
-            let _product = { ...product };
-
-            console.log(_product);
-
-            if (!_product.TenMon?.trim() //----------workd here
-                || !_product.IDLoaiMon || !_product.DVTMon
-                || _product.DonGiaBanLe === undefined || _product.DonGiaBanLe === null || _product.DonGiaBanLe < 0
-                || _product.DonGiaBanSi === undefined || _product.DonGiaBanSi === null || _product.DonGiaBanSi < 0
-                || _product.DonGiaVon === undefined || _product.DonGiaVon === null || _product.DonGiaVon < 0
-                || !_product.NgaySua || !_product.NgayTao
-                || _product.SoLuongTonKho === undefined || _product.SoLuongTonKho === null || _product.SoLuongTonKho < 0
-                || !_product.ThoiGianBH) {
-                toast.current?.show({ severity: 'success', summary: 'Successful', detail: 'Product Updated', life: 3000 });
-            } else {
-                // _product.id = createId();
-                // _product.image = 'product-placeholder.svg';
-                toast.current?.show({ severity: 'success', summary: 'Successful', detail: 'Product Created', life: 3000 });
-            }
-
-            hideDialog();
-        }
-    };
+        // onClose?.();
+    };  
 
     const productDialogFooter = (
         <React.Fragment>
@@ -80,20 +55,21 @@ const ProductDialog = (props: PropType) => {
 
     const onInputChange = (e: React.ChangeEvent<HTMLInputElement>, name: string) => {
         const val = (e.target && e.target.value) || '';
-        let _product = { ...product };
+        let _product = { ...selectedProduct };
 
         // @ts-ignore
         _product[`${name}`] = val;
-
+        selectedProduct = { ..._product };
         setProduct(prevProduct => ({ ...prevProduct, [name]: val }));
     };
 
     const onInputNumberChange = (e: InputNumberChangeEvent, name: string) => {
         const val = e.value || 0;
-        let _product = { ...product };
+        let _product = { ...selectedProduct };
 
         // @ts-ignore
         _product[`${name}`] = val;
+        selectedProduct = { ..._product };
 
         setProduct(prevProduct => ({ ...prevProduct, [name]: val }));
     };
@@ -118,19 +94,19 @@ const ProductDialog = (props: PropType) => {
                     <label className="mb-3 font-bold">Category</label>
                     <div className="formgrid grid">
                         <div className="field-radiobutton col-6">
-                            <RadioButton inputId="category1" name="category" value="Accessories" onChange={onCategoryChange} checked={product.category === 'Accessories'} />
+                            <RadioButton inputId="category1" name="category" value="Accessories" onChange={onCategoryChange} checked={selectedProduct.category === 'Accessories'} />
                             <label htmlFor="category1">Accessories</label>
                         </div>
                         <div className="field-radiobutton col-6">
-                            <RadioButton inputId="category2" name="category" value="Clothing" onChange={onCategoryChange} checked={product.category === 'Clothing'} />
+                            <RadioButton inputId="category2" name="category" value="Clothing" onChange={onCategoryChange} checked={selectedProduct.category === 'Clothing'} />
                             <label htmlFor="category2">Clothing</label>
                         </div>
                         <div className="field-radiobutton col-6">
-                            <RadioButton inputId="category3" name="category" value="Electronics" onChange={onCategoryChange} checked={product.category === 'Electronics'} />
+                            <RadioButton inputId="category3" name="category" value="Electronics" onChange={onCategoryChange} checked={selectedProduct.category === 'Electronics'} />
                             <label htmlFor="category3">Electronics</label>
                         </div>
                         <div className="field-radiobutton col-6">
-                            <RadioButton inputId="category4" name="category" value="Fitness" onChange={onCategoryChange} checked={product.category === 'Fitness'} />
+                            <RadioButton inputId="category4" name="category" value="Fitness" onChange={onCategoryChange} checked={selectedProduct.category === 'Fitness'} />
                             <label htmlFor="category4">Fitness</label>
                         </div>
                     </div>

@@ -1,6 +1,6 @@
 export interface Product {
-    IDMon: number | 0 | string | '',
-    IDLoaiMon: number | 0| string | '',
+    IDMon: number | 0 ,
+    IDLoaiMon: number | 0,
     DVTMon: string | '',
     Deleted: boolean,
     DonGiaBanLe: number | 0,
@@ -12,5 +12,5 @@ export interface Product {
     NgayTao: Date | null,
     SoLuongTonKho: number | 0,
     TenMon: string | '',
-    ThoiGianBH:  | null,
+    ThoiGianBH: number | 0,
 };

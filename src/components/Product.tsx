@@ -28,7 +28,7 @@ export default function Products() {
     DVTMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
     GhiChu: { value: null, matchMode: FilterMatchMode.CONTAINS },
   });
-  
+
   const toast = useRef<Toast>(null);
   const cm = useRef<ContextMenu>(null);
   const menuModel = [
@@ -41,8 +41,8 @@ export default function Products() {
     }
   ];
 
-  const [typeTitle, setTypeTitle] = useState<string>('Thêm món mới');
   const [dialogVisible, setDialogVisible] = useState<boolean>(false);
+  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     ProductService.getProducts().then(data => {
@@ -54,13 +54,11 @@ export default function Products() {
   const addProduct = (product: Product) => {
     setSelectedProduct(null);
     setDialogVisible(true);
-    setTypeTitle('Thêm món mới');
   };
 
   const editProduct = (product: Product) => {
     setSelectedProduct(product);
     setDialogVisible(true);
-    setTypeTitle('Sửa món');
   };
 
   const removeProduct = (product: Product) => {
@@ -125,6 +123,32 @@ export default function Products() {
     );
   };
 
+  const refreshProducts = () => {
+
+  }
+
+  const saveProduct = () => {
+    console.log(selectedProduct);
+    setSubmitted(true);
+
+    if (selectedProduct?.TenMon?.trim() && selectedProduct?.DVTMon?.trim()
+      && selectedProduct?.DonGiaBanSi > 0 && selectedProduct?.DonGiaVon > 0
+      && selectedProduct?.DonGiaBanLe > 0 && selectedProduct?.SoLuongTonKho >= 0) {
+      let _product = { ...selectedProduct };
+
+      console.log(_product);
+
+      if (_product.IDMon) {
+        toast.current?.show({ severity: 'success', summary: 'Successful', detail: 'Product Updated', life: 3000 });
+      } else {
+        // _selectedProduct.id = createId();
+        // _selectedProduct.image = 'product-placeholder.svg';
+        toast.current?.show({ severity: 'error', summary: 'error', detail: 'Product Created', life: 3000 });
+      }
+
+    }
+  };
+
   return (
     <div className="card" style={{ width: "99%" }}>
       <Toast ref={toast} />
@@ -134,13 +158,13 @@ export default function Products() {
         rowClassName={rowClassName}
         onContextMenu={(e) => cm.current?.show(e.originalEvent)}
         contextMenuSelection={selectedProduct ? selectedProduct : undefined}
-        onContextMenuSelectionChange={(e: any) => {setSelectedProduct(e.value)}}
+        onContextMenuSelectionChange={(e: any) => { setSelectedProduct(e.value) }}
         paginator rows={25} rowsPerPageOptions={[5, 10, 25, 50]}
         stripedRows sortMode="multiple" removableSort
         tableStyle={{ width: '100%' }}
         loading={loading} scrollable scrollHeight="75.5vh"
         selectionMode="single" selection={selectedProduct}
-        onSelectionChange={(e: any) => {setSelectedProduct(e.value)}} dataKey="IDMon"
+        onSelectionChange={(e: any) => { setSelectedProduct(e.value) }} dataKey="IDMon"
         resizableColumns showGridlines columnResizeMode="expand"
         filters={filters}
         globalFilterFields={["TenMon", "DVTMon", "GhiChu"]} emptyMessage="No product found."
@@ -157,7 +181,8 @@ export default function Products() {
         <Column field="ThoiGianBH" header="Bảo hành" sortable ></Column>
         <Column field="GhiChu" header="Ghi chú" ></Column>
       </DataTable>
-      <ProductDialog typeTitle={typeTitle}  visible={dialogVisible} onClose={() => setDialogVisible(false)}
+      <ProductDialog
+        visible={dialogVisible}
         selectedProduct={selectedProduct as Product}
       />
     </div>
