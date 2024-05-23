@@ -14,10 +14,29 @@ import { ContextMenu } from 'primereact/contextmenu';
 import { FilterMatchMode, FilterOperator } from 'primereact/api';
 import { Button } from 'primereact/button';
 import ProductDialog from './ProductDialog';
+import { InputNumberChangeEvent } from 'primereact/inputnumber';
+import { HandleApi } from '@/services/handleApi';
+
+let emptyProduct: Product = {
+  TenMon: '',
+  IDMon: 0,
+  IDLoaiMon: 1,
+  DVTMon: '',
+  DonGiaBanLe: 0,
+  DonGiaBanSi: 0,
+  DonGiaVon: 0,
+  SoLuongTonKho: 0,
+  ThoiGianBH: 0,
+  Deleted: false,
+  GhiChu: '',
+  Image: '',
+  NgaySua: null,
+  NgayTao: null
+};
 
 export default function Products() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product>(emptyProduct);
   const [loading, setLoading] = useState<boolean>(true);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
   const [filters, setFilters] = useState<DataTableFilterMeta>({
@@ -45,14 +64,18 @@ export default function Products() {
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
-    ProductService.getProducts().then(data => {
-      setProducts(data.data)
-      setLoading(false);
-    });
+    getProducts();
   }, []);
 
+  const getProducts = () => {
+    HandleApi(ProductService.getProducts(),null).then(data => {
+      setProducts(data)
+      setLoading(false);
+    });
+  }
+
   const addProduct = (product: Product) => {
-    setSelectedProduct(null);
+    setSelectedProduct(emptyProduct);
     setDialogVisible(true);
   };
 
@@ -123,12 +146,7 @@ export default function Products() {
     );
   };
 
-  const refreshProducts = () => {
-
-  }
-
   const saveProduct = () => {
-    console.log(selectedProduct);
     setSubmitted(true);
 
     if (selectedProduct?.TenMon?.trim() && selectedProduct?.DVTMon?.trim()
@@ -139,15 +157,38 @@ export default function Products() {
       console.log(_product);
 
       if (_product.IDMon) {
+        HandleApi(ProductService.updateProduct(_product.IDMon.toString(), _product),toast);
+        
+
         toast.current?.show({ severity: 'success', summary: 'Successful', detail: 'Product Updated', life: 3000 });
       } else {
-        // _selectedProduct.id = createId();
-        // _selectedProduct.image = 'product-placeholder.svg';
+        HandleApi(ProductService.createProduct(_product),toast);
+
         toast.current?.show({ severity: 'error', summary: 'error', detail: 'Product Created', life: 3000 });
       }
-
+      
+      getProducts();
+      setDialogVisible(false);
     }
   };
+
+  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>, name: string) => {
+    const val = (e.target && e.target.value) || '';
+    let _product = { ...selectedProduct };
+
+    // @ts-ignore
+    _product[`${name}`] = val;
+    setSelectedProduct(_product as Product);
+};
+
+const onInputNumberChange = (e: InputNumberChangeEvent, name: string) => {
+    const val = e.value || 0;
+    let _product = { ...selectedProduct };
+
+    // @ts-ignore
+    _product[`${name}`] = val;
+    setSelectedProduct(_product as Product);
+};
 
   return (
     <div className="card" style={{ width: "99%" }}>
@@ -182,7 +223,12 @@ export default function Products() {
         <Column field="GhiChu" header="Ghi chú" ></Column>
       </DataTable>
       <ProductDialog
+        submitted={submitted}
         visible={dialogVisible}
+        onClose = {() => setDialogVisible(false)}
+        onSaved={saveProduct}
+        onInputChange={onInputChange}
+        onInputNumberChange={onInputNumberChange}
         selectedProduct={selectedProduct as Product}
       />
     </div>
