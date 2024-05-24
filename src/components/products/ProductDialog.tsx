@@ -10,17 +10,21 @@ import { RadioButton } from 'primereact/radiobutton';
 import { InputNumber } from 'primereact/inputnumber';
 import { Toast } from 'primereact/toast';
 import { RadioButtonChangeEvent } from 'primereact/radiobutton';
+import { FileUpload } from 'primereact/fileupload';
+import { linkImageGG, handleImageError } from '@/utils/common';
 
 type PropType = {
     categories: Category[],
     selectedProduct: Product,
     visible: boolean,
     submitted: boolean,
+    objectURL: string,
     onClose?: () => void,
     onSaved?: () => void,
     onInputChange: (e: any, name: string) => void,
     onInputNumberChange: (e: any, name: string) => void,
     onCategoryChange: (e: any, name: string) => void
+    handleSelectFile: (e: any) => void
 }
 
 const ProductDialog = (props: PropType) => {
@@ -28,12 +32,14 @@ const ProductDialog = (props: PropType) => {
         selectedProduct,
         visible,
         submitted,
+        objectURL,
+        categories,
         onClose,
         onSaved,
         onInputChange,
         onInputNumberChange,
         onCategoryChange,
-        categories
+        handleSelectFile
     } = props;
     const toast = useRef<Toast>(null);
 
@@ -54,8 +60,20 @@ const ProductDialog = (props: PropType) => {
 
             <Dialog visible={visible} style={{ width: '32rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }}
                 header={selectedProduct?.IDMon ? 'Chỉnh sữa ' : 'Thêm mới'} modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
-                <img src={selectedProduct?.Image ? `https://primefaces.org/cdn/primereact/Images/product/${selectedProduct?.Image}` : erroImage}
-                    alt={selectedProduct?.Image} className="product-Image block m-auto pb-3" />
+                <FileUpload name="file" accept="image/*" mode='basic'
+                    onSelect={handleSelectFile}
+                    emptyTemplate={
+                        selectedProduct?.Image && <img style={{ maxWidth: 200 }}
+                            src={`${linkImageGG}${selectedProduct?.Image}`}
+                            onError={handleImageError} alt={selectedProduct?.Image}
+                            className="product-image block m-auto pb-3" />
+                    } />
+
+                {objectURL && <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <img onError={handleImageError} style={{ maxWidth: 200, maxHeight: 200 }}
+                        src={objectURL} />
+                </div>}
+
                 <div className="field">
                     <label htmlFor="TenMon" className="font-bold">
                         Tên món

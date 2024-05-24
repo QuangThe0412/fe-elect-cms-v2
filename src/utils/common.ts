@@ -28,4 +28,4 @@ export const handleImageError = (event: any) => {
     event.target.src = erroImage;
 };
 
-export const linkImageGG = () => 'https://drive.google.com/uc?export=view&id=';
+export const linkImageGG = 'https://drive.google.com/uc?export=view&id=';

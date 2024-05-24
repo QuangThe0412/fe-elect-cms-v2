@@ -18,6 +18,9 @@ import ProductDialog from './ProductDialog';
 import { InputNumberChangeEvent } from 'primereact/inputnumber';
 import { HandleApi } from '@/services/handleApi';
 import { RadioButtonChangeEvent } from 'primereact/radiobutton';
+import { Image } from 'primereact/image';
+import { FileUploadState } from '@/models';
+import { linkImageGG } from '@/utils/common';
 
 let emptyProduct: Product = {
   TenMon: '',
@@ -41,6 +44,7 @@ let emptyCategory: Category = {
   TenLoai: '',
   Deleted: false,
 };
+
 export default function Products() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -70,6 +74,15 @@ export default function Products() {
 
   const [dialogVisible, setDialogVisible] = useState<boolean>(false);
   const [submitted, setSubmitted] = useState(false);
+  const [objectURL, setObjectURL] = useState<string>('');
+
+  const emptyImage: FileUploadState = {
+    files: [new File([], "")],
+  }
+
+  const [fileImage, setFileImage] = useState<FileUploadState>({
+    files: [],
+  });
 
   useEffect(() => {
     getProducts();
@@ -93,6 +106,7 @@ export default function Products() {
   const addProduct = (product: Product) => {
     setSelectedProduct(emptyProduct);
     setDialogVisible(true);
+    setObjectURL(linkImageGG + product.Image);
   };
 
   const editProduct = (product: Product) => {
@@ -129,8 +143,10 @@ export default function Products() {
   };
 
   const bodyImage = (rowData: Product) => {
-    return <img src={rowData.Image ?? erroImage} onError={handleImageError}
-      alt={rowData.TenMon} style={{ width: '50%' }} />;
+    return (
+      <Image src={rowData.Image ?? erroImage} onError={handleImageError}
+        alt={rowData.TenMon} width="100" preview />
+    )
   };
 
   const rowClassName = (data: Product) => (!data.Deleted ? '' : 'bg-warning');
@@ -166,6 +182,10 @@ export default function Products() {
       && selectedProduct?.DonGiaBanSi > 0 && selectedProduct?.DonGiaVon > 0
       && selectedProduct?.DonGiaBanLe > 0 && selectedProduct?.SoLuongTonKho >= 0) {
       let _product = { ...selectedProduct };
+
+        
+
+      //_product.Image = fileImage.files[0].name;
 
       if (_product.IDMon) {
         HandleApi(ProductService.updateProduct(_product.IDMon.toString(), _product), toast).then(() => {
@@ -219,6 +239,21 @@ export default function Products() {
     );
   };
 
+  const handleSelectFile = async (event: any) => {
+    const file = event.files[0];
+    const reader = new FileReader();
+    let blob = await fetch(file.objectURL).then((r) => r.blob());
+
+    reader.readAsDataURL(blob);
+
+    reader.onloadend = function () {
+      setFileImage({
+        files: [new File([blob], file.name, { type: file.type })],
+      });
+      setObjectURL(file.objectURL);
+    };
+  };
+
   return (
     <div className="card" style={{ width: "99%" }}>
       <Toast ref={toast} />
@@ -254,13 +289,18 @@ export default function Products() {
       <ProductDialog
         submitted={submitted}
         visible={dialogVisible}
-        onClose={() => setDialogVisible(false)}
+        onClose={() => {
+          setDialogVisible(false)
+          setObjectURL('');
+        }}
         onSaved={saveProduct}
         onInputChange={onInputChange}
         onInputNumberChange={onInputNumberChange}
         selectedProduct={selectedProduct as Product}
         categories={categories as Category[]}
         onCategoryChange={onCategoryChange}
+        handleSelectFile={handleSelectFile}
+        objectURL={objectURL}
       />
     </div>
   );
