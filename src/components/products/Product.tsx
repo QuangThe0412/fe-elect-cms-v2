@@ -145,7 +145,7 @@ export default function Products() {
 
   const bodyImage = (rowData: Product) => {
     return (
-      <Image src={rowData.Image ?? erroImage} onError={handleImageError}
+      <Image src={linkImageGG + rowData.Image ?? erroImage} onError={handleImageError}
         alt={rowData.TenMon} width="100" preview />
     )
   };

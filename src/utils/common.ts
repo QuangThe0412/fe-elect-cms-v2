@@ -50,4 +50,5 @@ export const convertFormData = async (data: any, file?: any) => {
     return formData;
   };
 
-export const linkImageGG = 'https://drive.google.com/uc?export=view&id=';
+// export const linkImageGG = 'https://drive.google.com/uc?export=view&id=';
+export const linkImageGG = 'https://lh3.google.com/u/0/d/';
