@@ -7,7 +7,7 @@ import { ProductService } from '@/services/products.service';
 import { InputText } from 'primereact/inputtext';
 import { Product } from '@/models';
 import { formatCurrency, handleImageError } from '@/utils/common';
-import erroImage from '../assets/images/error.jpg';
+import erroImage from '@/images/error.jpg';
 import { classNames } from 'primereact/utils';
 import { Toast } from 'primereact/toast';
 import { ContextMenu } from 'primereact/contextmenu';

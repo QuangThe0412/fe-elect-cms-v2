@@ -4,7 +4,7 @@ import { InputTextarea } from 'primereact/inputtextarea';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { Product } from '@/models';
-import erroImage from '../assets/images/error.jpg';
+import erroImage from '@/images/error.jpg';
 import { Button } from 'primereact/button';
 import { RadioButton } from 'primereact/radiobutton';
 import { InputNumber, InputNumberChangeEvent } from 'primereact/inputnumber';
