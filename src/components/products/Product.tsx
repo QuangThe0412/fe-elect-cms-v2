@@ -4,8 +4,9 @@ import '@/styles/product.css';
 import { DataTable, DataTableFilterMeta } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { ProductService } from '@/services/products.service';
+import { CategoryService } from '@/services/category.service';
 import { InputText } from 'primereact/inputtext';
-import { Product } from '@/models';
+import { Product, Category } from '@/models';
 import { formatCurrency, handleImageError } from '@/utils/common';
 import erroImage from '@/images/error.jpg';
 import { classNames } from 'primereact/utils';
@@ -16,11 +17,12 @@ import { Button } from 'primereact/button';
 import ProductDialog from './ProductDialog';
 import { InputNumberChangeEvent } from 'primereact/inputnumber';
 import { HandleApi } from '@/services/handleApi';
+import { RadioButtonChangeEvent } from 'primereact/radiobutton';
 
 let emptyProduct: Product = {
   TenMon: '',
   IDMon: 0,
-  IDLoaiMon: 1,
+  IDLoaiMon: 0,
   DVTMon: '',
   DonGiaBanLe: 0,
   DonGiaBanSi: 0,
@@ -33,9 +35,15 @@ let emptyProduct: Product = {
   NgaySua: null,
   NgayTao: null
 };
-
+let emptyCategory: Category = {
+  IDLoaiMon: 0,
+  IDNhomMon: 0,
+  TenLoai: '',
+  Deleted: false,
+};
 export default function Products() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product>(emptyProduct);
   const [loading, setLoading] = useState<boolean>(true);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
@@ -65,11 +73,19 @@ export default function Products() {
 
   useEffect(() => {
     getProducts();
+    getCategory();
   }, []);
 
   const getProducts = () => {
     HandleApi(ProductService.getProducts(), null).then(data => {
       setProducts(data)
+      setLoading(false);
+    });
+  }
+
+  const getCategory = () => {
+    HandleApi(CategoryService.getCategories(), null).then(data => {
+      setCategories(data)
       setLoading(false);
     });
   }
@@ -167,7 +183,7 @@ export default function Products() {
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>, name: string) => {
     const val = (e.target && e.target.value) || '';
-    let _product = { ...selectedProduct };
+    let _product: Product = { ...selectedProduct };
 
     // @ts-ignore
     _product[`${name}`] = val;
@@ -176,11 +192,31 @@ export default function Products() {
 
   const onInputNumberChange = (e: InputNumberChangeEvent, name: string) => {
     const val = e.value || 0;
-    let _product = { ...selectedProduct };
+    let _product: Product = { ...selectedProduct };
 
     // @ts-ignore
     _product[`${name}`] = val;
     setSelectedProduct(_product as Product);
+  };
+
+  const onCategoryChange = (e: RadioButtonChangeEvent, name: string) => {
+    const val = e.value || 0;
+    let _product: Product = { ...selectedProduct };
+
+    _product.IDLoaiMon = val;
+    setSelectedProduct(_product as Product);
+  };
+
+  const bodyLoaiMon = (rowData: Product) => {
+    return (
+      <>
+        {categories.map((category: Category) => {
+          if (category.IDLoaiMon === rowData.IDLoaiMon) {
+            return category.TenLoai;
+          }
+        })}
+      </>
+    );
   };
 
   return (
@@ -204,7 +240,7 @@ export default function Products() {
         globalFilterFields={["TenMon", "DVTMon", "GhiChu"]} emptyMessage="No product found."
       >
         <Column field="IDMon" filter header="Id" ></Column>
-        <Column field="IDLoaiMon" filter header="Loại" ></Column>
+        <Column field="IDLoaiMon" filter header="Loại" body={bodyLoaiMon} ></Column>
         <Column field="TenMon" header="Tên" style={{ width: '15%' }}></Column>
         <Column field="Image" header="Hình ảnh" body={bodyImage} style={{ width: '10%' }}></Column>
         <Column field="DVTMon" filter header="ĐVT" ></Column>
@@ -223,6 +259,8 @@ export default function Products() {
         onInputChange={onInputChange}
         onInputNumberChange={onInputNumberChange}
         selectedProduct={selectedProduct as Product}
+        categories={categories as Category[]}
+        onCategoryChange={onCategoryChange}
       />
     </div>
   );

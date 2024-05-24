@@ -1,6 +1,6 @@
 export interface Category {
-    IDLoaiMon: number | 0 | string | '';
-    IDNhomMon: number | 0 | string | '';
+    IDLoaiMon: number | 0;
+    IDNhomMon: number | 0;
     TenLoai: string | null;
-    Deleted: number | null;
+    Deleted: boolean | null;
 }

@@ -3,14 +3,16 @@ import { classNames } from 'primereact/utils';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
-import { Product } from '@/models';
+import { Category, Product } from '@/models';
 import erroImage from '@/images/error.jpg';
 import { Button } from 'primereact/button';
 import { RadioButton } from 'primereact/radiobutton';
-import { InputNumber, InputNumberChangeEvent } from 'primereact/inputnumber';
+import { InputNumber } from 'primereact/inputnumber';
 import { Toast } from 'primereact/toast';
+import { RadioButtonChangeEvent } from 'primereact/radiobutton';
 
 type PropType = {
+    categories: Category[],
     selectedProduct: Product,
     visible: boolean,
     submitted: boolean,
@@ -18,10 +20,21 @@ type PropType = {
     onSaved?: () => void,
     onInputChange: (e: any, name: string) => void,
     onInputNumberChange: (e: any, name: string) => void,
+    onCategoryChange: (e: any, name: string) => void
 }
 
 const ProductDialog = (props: PropType) => {
-    let { selectedProduct, visible, submitted, onClose, onSaved, onInputChange, onInputNumberChange } = props;
+    let {
+        selectedProduct,
+        visible,
+        submitted,
+        onClose,
+        onSaved,
+        onInputChange,
+        onInputNumberChange,
+        onCategoryChange,
+        categories
+    } = props;
     const toast = useRef<Toast>(null);
 
     const hideDialog = () => {
@@ -51,27 +64,21 @@ const ProductDialog = (props: PropType) => {
                         autoFocus className={classNames({ 'p-invalid': submitted && !selectedProduct?.TenMon })} />
                     {submitted && !selectedProduct?.TenMon && <small className="p-error">Tên món không được bỏ trống.</small>}
                 </div>
-                {/* <div className="field">
-                    <label className="mb-3 font-bold">Category</label>
+                <div className="field">
+                    <label className="mb-3 font-bold">Loại món</label>
                     <div className="formgrid grid">
-                        <div className="field-radiobutton col-6">
-                            <RadioButton inputId="category1" name="category" value="Accessories" onChange={onCategoryChange} checked={selectedProduct.category === 'Accessories'} />
-                            <label htmlFor="category1">Accessories</label>
-                        </div>
-                        <div className="field-radiobutton col-6">
-                            <RadioButton inputId="category2" name="category" value="Clothing" onChange={onCategoryChange} checked={selectedProduct.category === 'Clothing'} />
-                            <label htmlFor="category2">Clothing</label>
-                        </div>
-                        <div className="field-radiobutton col-6">
-                            <RadioButton inputId="category3" name="category" value="Electronics" onChange={onCategoryChange} checked={selectedProduct.category === 'Electronics'} />
-                            <label htmlFor="category3">Electronics</label>
-                        </div>
-                        <div className="field-radiobutton col-6">
-                            <RadioButton inputId="category4" name="category" value="Fitness" onChange={onCategoryChange} checked={selectedProduct.category === 'Fitness'} />
-                            <label htmlFor="category4">Fitness</label>
-                        </div>
+                        {
+                            categories.map((category: Category) => (
+                                <div key={category.IDLoaiMon} className="field-radiobutton col-6">
+                                    <RadioButton inputId={category.IDLoaiMon.toString()} name="category" value={category.IDLoaiMon}
+                                        onChange={(e: any) => onCategoryChange(e, 'IDLoaiMon')}
+                                        checked={selectedProduct.IDLoaiMon === category.IDLoaiMon} />
+                                    <label htmlFor={category.IDLoaiMon.toString()}>{category.TenLoai}</label>
+                                </div>
+                            ))
+                        }
                     </div>
-                </div> */}
+                </div>
                 <div className="formgrid grid">
                     <div className="field col">
                         <label htmlFor="ThoiGianBH" className="font-bold">

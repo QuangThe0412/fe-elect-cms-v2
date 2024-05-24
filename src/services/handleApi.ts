@@ -12,8 +12,6 @@ export const HandleApi = async (request: Promise<any>, toast: React.RefObject<To
         const result  = await request;
         const responseApi = result?.data as ResponseApi;
         // handle the response here
-        console.log(responseApi);
-        console.log(responseApi?.mess);
         toast?.current?.show({ severity: 'success', summary: 'Thành công', detail: responseApi?.mess, life: 3000 });
         return responseApi?.data;
     } catch (error) {
