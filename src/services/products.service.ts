@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { apiUrl } from '@/utils/constant';
-import { Product } from '@/models';
+import { Product,Product2 } from '@/models';
 
 export const ProductService = {
     getProducts() {
@@ -11,11 +11,11 @@ export const ProductService = {
         return axios.get(`${apiUrl}/mon/${id}`);
     },
 
-    createProduct(product: Product) {
+    createProduct(product: FormData) {
         return axios.post(`${apiUrl}/mon`, product);
     },
 
-    updateProduct(id: string, updatedProduct: Product) {
+    updateProduct(id: string, updatedProduct: FormData) {
         return axios.put(`${apiUrl}/mon/${id}`, updatedProduct);
     },
 

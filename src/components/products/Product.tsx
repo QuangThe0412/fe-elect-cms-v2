@@ -6,7 +6,7 @@ import { Column } from 'primereact/column';
 import { ProductService } from '@/services/products.service';
 import { CategoryService } from '@/services/category.service';
 import { InputText } from 'primereact/inputtext';
-import { Product, Category } from '@/models';
+import { Product, Product2, Category } from '@/models';
 import { formatCurrency, handleImageError } from '@/utils/common';
 import erroImage from '@/images/error.jpg';
 import { classNames } from 'primereact/utils';
@@ -21,6 +21,7 @@ import { RadioButtonChangeEvent } from 'primereact/radiobutton';
 import { Image } from 'primereact/image';
 import { FileUploadState } from '@/models';
 import { linkImageGG } from '@/utils/common';
+import { convertFormData } from '@/utils/common';
 
 let emptyProduct: Product = {
   TenMon: '',
@@ -175,28 +176,29 @@ export default function Products() {
     );
   };
 
-  const saveProduct = () => {
+  const saveProduct = async () => {
     setSubmitted(true);
 
     if (selectedProduct?.TenMon?.trim() && selectedProduct?.DVTMon?.trim()
       && selectedProduct?.DonGiaBanSi > 0 && selectedProduct?.DonGiaVon > 0
       && selectedProduct?.DonGiaBanLe > 0 && selectedProduct?.SoLuongTonKho >= 0) {
-      let _product = { ...selectedProduct };
+      let _product: Product2 = { ...selectedProduct as Product2 };
 
-        
-
-      //_product.Image = fileImage.files[0].name;
+      const formData = await convertFormData(_product, fileImage);
 
       if (_product.IDMon) {
-        HandleApi(ProductService.updateProduct(_product.IDMon.toString(), _product), toast).then(() => {
-          getProducts();
-        });
+        HandleApi(ProductService.updateProduct(_product.IDMon.toString(), formData), toast)
+          .then(() => {
+            getProducts();
+          });
       } else {
-        HandleApi(ProductService.createProduct(_product), toast).then(() => {
+        HandleApi(ProductService.createProduct(formData), toast).then(() => {
           getProducts();
         });
       }
 
+      setFileImage(emptyImage);
+      setObjectURL('');
       setDialogVisible(false);
     }
   };

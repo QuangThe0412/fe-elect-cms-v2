@@ -1,4 +1,4 @@
-import { Product } from './product';
+import { Product,Product2 } from './product';
 import { Category } from './category';
 
 interface FileUploadState {
@@ -7,6 +7,7 @@ interface FileUploadState {
 
 export type {
     Product,
+    Product2,
     Category,
     FileUploadState
 };

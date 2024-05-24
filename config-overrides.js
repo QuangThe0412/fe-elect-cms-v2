@@ -6,6 +6,7 @@ module.exports = function override(config) {
     '@/images': 'src/assets/images',
     '@/components': 'src/components',
     '@/services': 'src/services',
+    '@/models': 'src/models',
     '@/utils': 'src/utils',
     '@/store': 'src/store',
     '@/assets': 'src/assets',

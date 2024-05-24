@@ -28,4 +28,26 @@ export const handleImageError = (event: any) => {
     event.target.src = erroImage;
 };
 
+export const convertFormData = async (data: any, file?: any) => {
+    const formData = new FormData();
+    const date = new Date();
+  
+    for (const key of Object.keys(data)) {
+      let value = data[key];
+      const capitalizedKey = key.charAt(0).toUpperCase() + key.slice(1);
+  
+      if (value instanceof Date) {
+        formData.append(capitalizedKey, date.toISOString());
+      } else {
+        formData.append(capitalizedKey, String(value) || '');
+      }
+    }
+  
+    if (file) {
+      formData.append('file', file.files[0]);
+    }
+  
+    return formData;
+  };
+
 export const linkImageGG = 'https://drive.google.com/uc?export=view&id=';

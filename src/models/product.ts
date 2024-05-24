@@ -1,3 +1,4 @@
+import { FileUploadState } from '@/models';
 export interface Product {
     IDMon: number | 0 ,
     IDLoaiMon: number | 0,
@@ -14,3 +15,7 @@ export interface Product {
     TenMon: string | '',
     ThoiGianBH: number | 0,
 };
+
+export interface Product2 extends Product {
+    file: File;
+}

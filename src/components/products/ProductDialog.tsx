@@ -1,15 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, {  useRef } from 'react';
 import { classNames } from 'primereact/utils';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { Category, Product } from '@/models';
-import erroImage from '@/images/error.jpg';
 import { Button } from 'primereact/button';
 import { RadioButton } from 'primereact/radiobutton';
 import { InputNumber } from 'primereact/inputnumber';
 import { Toast } from 'primereact/toast';
-import { RadioButtonChangeEvent } from 'primereact/radiobutton';
 import { FileUpload } from 'primereact/fileupload';
 import { linkImageGG, handleImageError } from '@/utils/common';
 
