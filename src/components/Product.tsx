@@ -56,7 +56,7 @@ export default function Products() {
     {
       label: !selectedProduct?.Deleted ? 'Tắt' : 'Bật',
       icon: 'pi pi-fw pi-power-off',
-      command: () => removeProduct(selectedProduct as Product)
+      command: () => toggleActiveProduct(selectedProduct as Product)
     }
   ];
 
@@ -68,7 +68,7 @@ export default function Products() {
   }, []);
 
   const getProducts = () => {
-    HandleApi(ProductService.getProducts(),null).then(data => {
+    HandleApi(ProductService.getProducts(), null).then(data => {
       setProducts(data)
       setLoading(false);
     });
@@ -84,13 +84,10 @@ export default function Products() {
     setDialogVisible(true);
   };
 
-  const removeProduct = (product: Product) => {
-    // let _products = [...products];
-
-    // _products = _products.filter((p) => p.IDMon !== product.IDMon);
-
-    toast.current?.show({ severity: 'error', summary: 'Product Deleted', detail: !product.Deleted ? 'Tắt' : 'Bật' });
-    // setProducts(_products);
+  const toggleActiveProduct = (product: Product) => {
+    HandleApi(ProductService.toggleActiveProduct(product.IDMon.toString()), toast).then(() => {
+      getProducts();
+    });
   };
 
   const bodyDonGiaVon = (rowData: Product) => {
@@ -154,20 +151,16 @@ export default function Products() {
       && selectedProduct?.DonGiaBanLe > 0 && selectedProduct?.SoLuongTonKho >= 0) {
       let _product = { ...selectedProduct };
 
-      console.log(_product);
-
       if (_product.IDMon) {
-        HandleApi(ProductService.updateProduct(_product.IDMon.toString(), _product),toast);
-        
-
-        toast.current?.show({ severity: 'success', summary: 'Successful', detail: 'Product Updated', life: 3000 });
+        HandleApi(ProductService.updateProduct(_product.IDMon.toString(), _product), toast).then(() => {
+          getProducts();
+        });
       } else {
-        HandleApi(ProductService.createProduct(_product),toast);
-
-        toast.current?.show({ severity: 'error', summary: 'error', detail: 'Product Created', life: 3000 });
+        HandleApi(ProductService.createProduct(_product), toast).then(() => {
+          getProducts();
+        });
       }
-      
-      getProducts();
+
       setDialogVisible(false);
     }
   };
@@ -179,16 +172,16 @@ export default function Products() {
     // @ts-ignore
     _product[`${name}`] = val;
     setSelectedProduct(_product as Product);
-};
+  };
 
-const onInputNumberChange = (e: InputNumberChangeEvent, name: string) => {
+  const onInputNumberChange = (e: InputNumberChangeEvent, name: string) => {
     const val = e.value || 0;
     let _product = { ...selectedProduct };
 
     // @ts-ignore
     _product[`${name}`] = val;
     setSelectedProduct(_product as Product);
-};
+  };
 
   return (
     <div className="card" style={{ width: "99%" }}>
@@ -225,7 +218,7 @@ const onInputNumberChange = (e: InputNumberChangeEvent, name: string) => {
       <ProductDialog
         submitted={submitted}
         visible={dialogVisible}
-        onClose = {() => setDialogVisible(false)}
+        onClose={() => setDialogVisible(false)}
         onSaved={saveProduct}
         onInputChange={onInputChange}
         onInputNumberChange={onInputNumberChange}

@@ -1,13 +1,21 @@
 import React from 'react';
 import { Toast } from 'primereact/toast';
 
+type ResponseApi = {
+    mess: string,
+    data: any,
+    code: string,
+}
+
 export const HandleApi = async (request: Promise<any>, toast: React.RefObject<Toast> | null) => {
     try {
-        const response = await request;
+        const result  = await request;
+        const responseApi = result?.data as ResponseApi;
         // handle the response here
-        console.log(response);
-        toast?.current?.show({ severity: 'success', summary: 'Thành công', detail: response?.data?.code, life: 3000 });
-        return response?.data;
+        console.log(responseApi);
+        console.log(responseApi?.mess);
+        toast?.current?.show({ severity: 'success', summary: 'Thành công', detail: responseApi?.mess, life: 3000 });
+        return responseApi?.data;
     } catch (error) {
         // handle the error here
         console.error(error);

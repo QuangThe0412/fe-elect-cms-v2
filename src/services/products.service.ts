@@ -19,7 +19,7 @@ export const ProductService = {
         return axios.put(`${apiUrl}/mon/${id}`, updatedProduct);
     },
 
-    deleteProduct(id: string) {
+    toggleActiveProduct(id: string) {
         return axios.delete(`${apiUrl}/mon/${id}`);
     },
 }
