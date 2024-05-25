@@ -10,6 +10,7 @@ import FloatButton from '@/components/FloatButton';
 import useThemeStore from '@/store/theme.store';
 import Header from '@/components/Header';
 import Product from '@/components/products/Product';
+import Categories from '@/components/category/Category';
 import 'primeicons/primeicons.css';
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
         <Routes >
           <Route path='/' element={<Dashboard />} />
           <Route path='/products' element={<Product />} />
+          <Route path='/categories' element={<Categories />} />
         </Routes>
       </div>
     </div>

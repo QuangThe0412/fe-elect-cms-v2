@@ -30,6 +30,14 @@ export default function DockMenu() {
             },
         },
         {
+            label: 'categoryImage',
+            icon: () => <img alt="Test" src={categoryImage} width="100%" />,
+            command: () => {
+                setActiveItem('/categories');
+                navigate('/categories');
+            },
+        },
+        {
             label: 'Product',
             icon: () => <img alt="Product" src={productImage} width="100%" />,
             command: () => {
@@ -48,14 +56,6 @@ export default function DockMenu() {
         {
             label: 'customerImage',
             icon: () => <img alt="Test" src={customerImage} width="100%" />,
-            command: () => {
-                setActiveItem('/test');
-                navigate('/test');
-            },
-        },
-        {
-            label: 'categoryImage',
-            icon: () => <img alt="Test" src={categoryImage} width="100%" />,
             command: () => {
                 setActiveItem('/test');
                 navigate('/test');

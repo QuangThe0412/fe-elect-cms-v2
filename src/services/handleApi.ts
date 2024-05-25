@@ -1,49 +1,49 @@
 import React from 'react';
 import { Toast } from 'primereact/toast';
-type ResponseApi = {
-    mess: string,
-    data: any,
-    code: string,
-    status: number
-}
 
 export const HandleApi = async (request: Promise<any>, toast: React.RefObject<Toast> | null) => {
     try {
-        const result = await request;
-        const responseApi = result?.data as ResponseApi;
-        return HandleResponse(responseApi, toast);
-    } catch (error) {
+        return HandleResponse(await request, toast);
+    } catch (error: any) {
         console.error(error);
-        return HandleResponse(error, toast);
+        return HandleResponse(error?.response, toast);
     }
 }
 
-const HandleResponse = (response: ResponseApi | any, toast: React.RefObject<Toast> | null) => {
-    toast?.current?.show({ severity: 'success', summary: 'Thành công', detail: response?.mess, life: 3000 });
+const HandleResponse = (response: Response | any, toast: React.RefObject<Toast> | null) => {
+    let data = response?.data?.data;
     let status = response?.status;
-    let code = response?.code;
+    let code = response?.data?.code;
+    let mess = response?.data?.mess;
+    let summaryTitle = 'Thất bại';
+    let severityType: "success" | "info" | "warn" | "error";
     switch (status) {
         case 200: // success
-            return response?.data;
         case 201: // created
-            return response?.data;
-        case 204: // no content
-            return response?.data;
-        case 400: // bad request
-            return response?.data;
-        case 401: // unauthorized
-            if (code === 'UNAUTHORIZED_ACCESS_TO_GOOGLE_DRIVE') {
-                console.log(response?.data)
-                // window.location.href = response?.data;
-            }
+            severityType = 'success';
+            summaryTitle = 'Thành công';
             break;
-        case 403: // forbidden -- Client không có quyền truy cập vào tài nguyên cụ thể
-            return response?.data;
+        case 204: // no content
+            severityType = 'info';
+            break;
+        case 400: // bad request
+        case 401: // unauthorized
+        case 403: // forbidden
         case 404: // not found
-            return response?.data;
+            severityType = 'error';
+            break;
         case 500: // internal server error
-            return response?.data;
+            severityType = 'error';
+            break;
         default:
-            return response?.data;
+            severityType = 'info';
+            break;
+    };
+    toast?.current?.show({ severity: severityType, summary: summaryTitle, detail: mess, life: 3000 });
+    return {
+        data: data,
+        status: status,
+        code: code,
+        mess: mess
     };
 }

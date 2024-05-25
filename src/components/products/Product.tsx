@@ -7,12 +7,12 @@ import { ProductService } from '@/services/products.service';
 import { CategoryService } from '@/services/category.service';
 import { InputText } from 'primereact/inputtext';
 import { Product, Product2, Category } from '@/models';
-import { formatCurrency, handleImageError } from '@/utils/common';
+import { formatCurrency, handleImageError, trimString } from '@/utils/common';
 import erroImage from '@/images/error.jpg';
 import { classNames } from 'primereact/utils';
 import { Toast } from 'primereact/toast';
 import { ContextMenu } from 'primereact/contextmenu';
-import { FilterMatchMode, FilterOperator } from 'primereact/api';
+import { FilterMatchMode } from 'primereact/api';
 import { Button } from 'primereact/button';
 import ProductDialog from './ProductDialog';
 import { InputNumberChangeEvent } from 'primereact/inputnumber';
@@ -38,12 +38,6 @@ let emptyProduct: Product = {
   Image: '',
   NgaySua: null,
   NgayTao: null
-};
-let emptyCategory: Category = {
-  IDLoaiMon: 0,
-  IDNhomMon: 0,
-  TenLoai: '',
-  Deleted: false,
 };
 
 export default function Products() {
@@ -92,16 +86,20 @@ export default function Products() {
 
   const getProducts = () => {
     setLoading(true);
-    HandleApi(ProductService.getProducts(), null).then(data => {
-      setProducts(data)
-      setLoading(false);
+    HandleApi(ProductService.getProducts(), null).then((result) => {
+      if (result.status === 200) {
+        setProducts(result.data);
+      }
+      setLoading(false)
     });
   }
 
   const getCategory = () => {
-    HandleApi(CategoryService.getCategories(), null).then(data => {
-      setCategories(data)
-      setLoading(false);
+    HandleApi(CategoryService.getCategories(), null).then((result) => {
+      if (result.status === 200) {
+        setCategories(result.data);
+      }
+      setLoading(false)
     });
   }
 
@@ -168,6 +166,8 @@ export default function Products() {
         <span className="p-input-icon-left">
           <i className="pi pi-search" />
           <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Tìm kiếm" />
+          <Button label="Thêm" icon="pi pi-plus" className="p-button-success ml-3"
+            onClick={() => addProduct(selectedProduct as Product)} />
         </span>
         <Button label="Nhập Excel" icon="pi pi-file-import" className="p-button-help"
           onClick={() => {
@@ -186,6 +186,8 @@ export default function Products() {
       && selectedProduct?.DonGiaBanSi > 0 && selectedProduct?.DonGiaVon > 0
       && selectedProduct?.DonGiaBanLe > 0 && selectedProduct?.SoLuongTonKho >= 0) {
       let _product: Product2 = { ...selectedProduct as Product2 };
+      //remove white space
+      trimString(_product);
 
       const formData = await convertFormData(_product, fileImage);
 
