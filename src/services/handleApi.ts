@@ -9,14 +9,11 @@ type ResponseApi = {
 
 export const HandleApi = async (request: Promise<any>, toast: React.RefObject<Toast> | null) => {
     try {
-        console.log('request', request);
         const result = await request;
         const responseApi = result?.data as ResponseApi;
         return HandleResponse(responseApi, toast);
     } catch (error) {
-        // handle the error here
         console.error(error);
-        // toast?.current?.show({ severity: 'error', summary: 'Lỗi', detail: 'Đã có lỗi xảy ra', life: 3000 });
         return HandleResponse(error, toast);
     }
 }

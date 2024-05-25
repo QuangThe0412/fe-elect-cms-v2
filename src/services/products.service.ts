@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { apiUrl } from '@/utils/constant';
-import { Product,Product2 } from '@/models';
 
 export const ProductService = {
     getProducts() {

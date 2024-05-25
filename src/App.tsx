@@ -6,17 +6,17 @@ import { Route, Routes } from 'react-router-dom';
 import { useEffect } from 'react';
 import { THEMES_PRIME_REACT } from '@/utils/constant';
 import Dashboard from '@/components/dashboards/Dashboard';
-import MenuLeft from '@/components/MenuLeft';
 import FloatButton from '@/components/FloatButton';
 import useThemeStore from '@/store/theme.store';
 import Header from '@/components/Header';
 import Product from '@/components/products/Product';
+import 'primeicons/primeicons.css';
 
 function App() {
-  const isLight = useThemeStore((state: any) => state.isLight);
+  const isDark = useThemeStore((state: any) => state.isDark);
   useEffect(() => {
-    isLight ? THEMES_PRIME_REACT.laraLightIndigo() : THEMES_PRIME_REACT.laraDarkIndigo();
-  }, [isLight]);
+    isDark ? THEMES_PRIME_REACT.laraDarkIndigo() : THEMES_PRIME_REACT.laraLightIndigo();
+  }, [isDark]);
 
   return (
     <div className="App">
@@ -25,7 +25,6 @@ function App() {
         <Header />
       </div>
       <div className='body-app'>
-        <MenuLeft />
         <Routes >
           <Route path='/' element={<Dashboard />} />
           <Route path='/products' element={<Product />} />

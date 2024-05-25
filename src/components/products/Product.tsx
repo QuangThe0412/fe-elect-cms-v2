@@ -91,6 +91,7 @@ export default function Products() {
   }, []);
 
   const getProducts = () => {
+    setLoading(true);
     HandleApi(ProductService.getProducts(), null).then(data => {
       setProducts(data)
       setLoading(false);
@@ -105,12 +106,13 @@ export default function Products() {
   }
 
   const addProduct = (product: Product) => {
+    setObjectURL('');
     setSelectedProduct(emptyProduct);
     setDialogVisible(true);
-    setObjectURL(linkImageGG + product.Image);
   };
 
   const editProduct = (product: Product) => {
+    setObjectURL(linkImageGG + product.Image);
     setSelectedProduct(product);
     setDialogVisible(true);
   };
@@ -177,6 +179,7 @@ export default function Products() {
   };
 
   const saveProduct = async () => {
+    setLoading(true);
     setSubmitted(true);
 
     if (selectedProduct?.TenMon?.trim() && selectedProduct?.DVTMon?.trim()
@@ -257,7 +260,7 @@ export default function Products() {
   };
 
   return (
-    <div className="card" style={{ width: "99%" }}>
+    <div className="card">
       <Toast ref={toast} />
       <ContextMenu model={menuModel} ref={cm} />
       <DataTable value={products}
@@ -279,7 +282,7 @@ export default function Products() {
         <Column field="IDMon" filter header="Id" ></Column>
         <Column field="IDLoaiMon" filter header="Loại" body={bodyLoaiMon} ></Column>
         <Column field="TenMon" header="Tên" style={{ width: '15%' }}></Column>
-        <Column field="Image" header="Hình ảnh" body={bodyImage} style={{ width: '10%' }}></Column>
+        <Column field="Image" header="Hình ảnh" body={bodyImage} style={{ width: '5%' }}></Column>
         <Column field="DVTMon" filter header="ĐVT" ></Column>
         <Column field="DonGiaVon" filter header="Giá vốn" body={bodyDonGiaVon} sortable ></Column>
         <Column field="DonGiaBanLe" filter header="Giá lẻ" body={bodyDonGiaLe} sortable ></Column>

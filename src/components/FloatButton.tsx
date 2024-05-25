@@ -7,8 +7,8 @@ import { useNavigate } from 'react-router-dom';
 import useThemeStore from '@/store/theme.store';
 
 export default function FloatButton() {
-    const { changeTheme, isLight } = useThemeStore((state: any) => (
-        { changeTheme: state.changeTheme, isLight: state.isLight }
+    const { changeTheme, isDark } = useThemeStore((state: any) => (
+        { changeTheme: state.changeTheme, isDark: state.isDark }
     ));
     const navigate = useNavigate();
     const toast = useRef<Toast>(null);
@@ -31,13 +31,13 @@ export default function FloatButton() {
             label: 'Change Theme',
             icon: 'pi pi-sync',
             command: () => {
-                changeTheme(isLight);
+                changeTheme(isDark);
             }
         }
     ];
 
     return (
-        <div className="card float-button">
+        <div className="float-button">
                 <Toast ref={toast} />
                 <SpeedDial model={items} direction="up" transitionDelay={80} showIcon="pi pi-bars" hideIcon="pi pi-times" buttonClassName="p-button-outlined" />
         </div>

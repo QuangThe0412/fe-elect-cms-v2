@@ -1,4 +1,4 @@
-import React, {  useRef } from 'react';
+import React, { useRef } from 'react';
 import { classNames } from 'primereact/utils';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { Dialog } from 'primereact/dialog';
@@ -58,14 +58,7 @@ const ProductDialog = (props: PropType) => {
 
             <Dialog visible={visible} style={{ width: '32rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }}
                 header={selectedProduct?.IDMon ? 'Chỉnh sữa ' : 'Thêm mới'} modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
-                <FileUpload name="file" accept="image/*" mode='basic'
-                    onSelect={handleSelectFile}
-                    emptyTemplate={
-                        selectedProduct?.Image && <img style={{ maxWidth: 200 }}
-                            src={`${linkImageGG}${selectedProduct?.Image}`}
-                            onError={handleImageError} alt={selectedProduct?.Image}
-                            className="product-image block m-auto pb-3" />
-                    } />
+                <FileUpload name="file" accept="image/*" mode='basic' onSelect={handleSelectFile} />
 
                 {objectURL && <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <img onError={handleImageError} style={{ maxWidth: 200, maxHeight: 200 }}
