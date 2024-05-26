@@ -1,3 +1,7 @@
-h1 {
-    
+.group-date {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 20px;
 }

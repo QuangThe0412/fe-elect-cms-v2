@@ -4,10 +4,9 @@ import { Dock } from 'primereact/dock';
 import { MenuItem } from 'primereact/menuitem';
 import { BrowserRouter as Link, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { classNames } from 'primereact/utils';
 import '@/styles/dock.css';
 import productImage from '@/images/product.png';
-import houseImage from '@/images/house.png';
+import { Tooltip } from 'primereact/tooltip';
 import dashboardImage from '@/images/dashboard.png';
 import permissionImage from '@/images/permission.png';
 import customerImage from '@/images/customer.png';
@@ -22,7 +21,7 @@ export default function DockMenu() {
 
     const items: MenuItem[] = [
         {
-            label: 'DashBoard',
+            label: 'Thống kê',
             icon: () => <img alt="DashBoard" src={dashboardImage} width="100%" />,
             command: () => {
                 setActiveItem('/');
@@ -30,7 +29,7 @@ export default function DockMenu() {
             },
         },
         {
-            label: 'categoryImage',
+            label: 'Loại sản phẩm',
             icon: () => <img alt="Test" src={categoryImage} width="100%" />,
             command: () => {
                 setActiveItem('/categories');
@@ -38,7 +37,7 @@ export default function DockMenu() {
             },
         },
         {
-            label: 'Product',
+            label: 'Sản phẩm',
             icon: () => <img alt="Product" src={productImage} width="100%" />,
             command: () => {
                 setActiveItem('/products');
@@ -81,7 +80,10 @@ export default function DockMenu() {
 
     return (
         <div className="card dock-demo">
-            <Dock model={items} position={"top"} />
+            <Tooltip className="dark-tooltip" target=".dock-advanced .p-dock-action" my="center+15 bottom-15" at="center top" showDelay={150} />
+            <div className="dock-window dock-advanced">
+                <Dock model={items} position={"top"} />
+            </div>
         </div>
     )
 }

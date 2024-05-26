@@ -193,11 +193,11 @@ export default function Categories() {
         onSelectionChange={(e: any) => { setSelectedCategory(e.value) }} dataKey="IDLoaiMon"
         resizableColumns showGridlines columnResizeMode="expand"
         filters={filters}
-        globalFilterFields={["TenMon", "DVTMon", "GhiChu"]} emptyMessage="No category found."
+        globalFilterFields={["IDLoaiMon", "TenLoai"]} emptyMessage="No category found."
       >
-        <Column field="IDLoaiMon" filter header="Id" ></Column>
+        <Column field="IDLoaiMon" header="Id" ></Column>
         <Column field="TenLoai" header="Tên loại"></Column>
-        <Column field="IDNhomMon" filter header="Nhóm" body={bodyNhomMon} ></Column>
+        <Column field="IDNhomMon" header="Nhóm" body={bodyNhomMon} ></Column>
 
       </DataTable>
       <CategoryDialog

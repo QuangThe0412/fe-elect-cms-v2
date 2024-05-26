@@ -1,15 +1,17 @@
-import { Product,Product2 } from './product';
+import { Product, Product2 } from './product';
 import { Category } from './category';
-import {CategoryGroup} from './categoryGroup';
+import { CategoryGroup } from './categoryGroup';
+import { Dashboard } from './dashboard';
 
 interface FileUploadState {
-    files: File[];
-  }
+  files: File[];
+}
 
 export type {
-    Product,
-    Product2,
-    Category,
-    CategoryGroup,
-    FileUploadState
+  FileUploadState,
+  Product,
+  Product2,
+  Category,
+  CategoryGroup,
+  Dashboard,
 };
