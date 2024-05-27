@@ -1,10 +1,21 @@
 
-import React from 'react'; 
+import React, { useEffect } from 'react';
 import { Divider } from 'primereact/divider';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
+import useAuth from '../../hooks/useAuth';
+import { useNavigate } from "react-router-dom";
+import { paths } from '../../constants/api';
 
 export default function Login() {
+    const navigate = useNavigate();
+    const { isAuthenticated, userRole } = useAuth();
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate(paths.dashboard)
+        }
+    }, [isAuthenticated]);
+
     return (
         <div className="card">
             <div className="flex flex-column md:flex-row">
@@ -34,4 +45,3 @@ export default function Login() {
         </div>
     )
 }
-        

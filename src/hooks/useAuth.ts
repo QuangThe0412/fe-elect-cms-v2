@@ -1,6 +1,6 @@
 const useAuth = () => {
     return {
-        isAuthenticated: true,
+        isAuthenticated: false,
         userRole: 'admin'
     }
 };
