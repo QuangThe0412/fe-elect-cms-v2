@@ -12,6 +12,7 @@
     "@types/react-dom": "^18.3.0",
     "axios": "^1.6.8",
     "chart.js": "^4.4.3",
+    "formik": "^2.4.6",
     "primeicons": "^6.0.1",
     "primereact": "^9.5.0",
     "react": "^18.3.1",

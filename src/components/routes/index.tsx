@@ -1,4 +1,7 @@
-
+import '@/styles/App.css';
+import "primereact/resources/primereact.min.css";
+import '@/styles/prime.css';
+import 'primeicons/primeicons.css';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import AdminLayout from '@/components/layout/AdminLayout';
 import PublicLayout from '@/components/layout/PublicLayout';

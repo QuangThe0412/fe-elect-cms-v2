@@ -4,6 +4,7 @@ import Products from '@/components/products/Product';
 import DashboardComponent from '@/components/dashboards/Dashboard';
 import Categories from '@/components/category/Category';
 import LoginComponent from '@/components/auth/Login';
+import { Register } from '@/components/auth/Register';
 
 export type RouteType = {
     path: string,
@@ -16,6 +17,12 @@ export const RouteArray: RouteType[] = [
     {
         path: paths.login,
         component: LoginComponent,
+        roles: [],
+        isPublic: true
+    },
+    {
+        path: paths.register,
+        component: Register,
         roles: [],
         isPublic: true
     },
