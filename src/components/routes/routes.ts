@@ -1,8 +1,9 @@
 import { paths } from '@/constants/api';
 import { userRoles } from '@/constants';
-import Products from '../products/Product';
-import DashboardComponent from '../dashboards/Dashboard';
-import Categories from '../category/Category';
+import Products from '@/components/products/Product';
+import DashboardComponent from '@/components/dashboards/Dashboard';
+import Categories from '@/components/category/Category';
+import LoginComponent from '@/components/auth/Login';
 
 export type RouteType = {
     path: string,
@@ -12,6 +13,12 @@ export type RouteType = {
 }
 
 export const RouteArray: RouteType[] = [
+    {
+        path: paths.login,
+        component: LoginComponent,
+        roles: [],
+        isPublic: true
+    },
     {
         path: paths.dashboard,
         component: DashboardComponent,

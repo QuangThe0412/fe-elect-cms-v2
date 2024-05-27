@@ -1,8 +1,10 @@
 
-export default function PublicLayout(children: any) {
+export default function PublicLayout({children}: any) {
     return (
         <div className="App">
-            {children}
+            <div className="container">
+                {children}
+            </div>
         </div>
     )
 }

@@ -4,7 +4,7 @@ import { Divider } from 'primereact/divider';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 
-export default function LoginComponent() {
+export default function Login() {
     return (
         <div className="card">
             <div className="flex flex-column md:flex-row">

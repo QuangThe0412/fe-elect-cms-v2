@@ -34,3 +34,11 @@
   color: var(--primary-color-text) !important;
   background-color: var(--red-100) !important;
 }
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
