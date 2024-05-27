@@ -13,6 +13,7 @@ import customerImage from '@/images/customer.png';
 import billImage from '@/images/bill.png';
 import categoryImage from '@/images/category.png';
 import costImage from '@/images/cost.png';
+import { paths } from '@/constants/api';
 
 export default function DockMenu() {
     const navigate = useNavigate();
@@ -25,7 +26,7 @@ export default function DockMenu() {
             icon: () => <img alt="DashBoard" src={dashboardImage} width="100%" />,
             command: () => {
                 setActiveItem('/');
-                navigate('/');
+                navigate(paths.dashboard);
             },
         },
         {
@@ -33,7 +34,7 @@ export default function DockMenu() {
             icon: () => <img alt="Test" src={categoryImage} width="100%" />,
             command: () => {
                 setActiveItem('/categories');
-                navigate('/categories');
+                navigate(paths.category);
             },
         },
         {
@@ -41,7 +42,7 @@ export default function DockMenu() {
             icon: () => <img alt="Product" src={productImage} width="100%" />,
             command: () => {
                 setActiveItem('/products');
-                navigate('/products');
+                navigate(paths.product);
             },
         },
         {

@@ -10,6 +10,8 @@ module.exports = function override(config) {
     '@/utils': 'src/utils',
     '@/store': 'src/store',
     '@/assets': 'src/assets',
+    '@/constants': 'src/constants',
+    '@/hooks': 'src/hooks',
   })(config);
 
   return config;

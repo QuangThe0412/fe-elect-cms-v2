@@ -40,5 +40,3 @@ export const THEMES_PRIME_REACT = {
   aryaOrange: () => require('primereact/resources/themes/arya-orange/theme.css'),
   aryaPurple: () => require('primereact/resources/themes/arya-purple/theme.css'),
 };
-
-export const apiUrl = 'http://localhost:3002/admin';

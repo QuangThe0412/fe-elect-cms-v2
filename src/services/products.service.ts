@@ -1,24 +1,25 @@
 import axios from 'axios';
-import { apiUrl } from '@/utils/constant';
+import { apiUrl } from '@/constants/api';
+import { paths } from '@/constants/api';
 
 export const ProductService = {
     getProducts() {
-        return axios.get(apiUrl + '/mon');
+        return axios.get(apiUrl + paths.product);
     },
 
     getProduct(id: string) {
-        return axios.get(`${apiUrl}/mon/${id}`);
+        return axios.get(apiUrl + paths.product + `/${id}`);
     },
 
     createProduct(product: FormData) {
-        return axios.post(`${apiUrl}/mon`, product);
+        return axios.post(apiUrl + paths.product, product);
     },
 
     updateProduct(id: string, updatedProduct: FormData) {
-        return axios.put(`${apiUrl}/mon/${id}`, updatedProduct);
+        return axios.put(apiUrl + paths.product + `/${id}`, updatedProduct);
     },
 
     toggleActiveProduct(id: string) {
-        return axios.delete(`${apiUrl}/mon/${id}`);
+        return axios.delete(apiUrl + paths.product + `/${id}`);
     },
 }
