@@ -9,13 +9,14 @@ import { Password } from 'primereact/password';
 import '@/styles/Auth.css';
 import Form from 'rc-field-form';
 import { Field } from 'rc-field-form';
+import { LabelField } from '@/components';
 
-type typeFormLogin = {
+type typeForm = {
     email: string;
     password: string;
 }
 
-const initialFormLogin: typeFormLogin = {
+const initialForm: typeForm = {
     email: '',
     password: '',
 };
@@ -24,8 +25,6 @@ export default function Login() {
     const navigate = useNavigate();
     const { isAuthenticated, userRole } = useAuth();
     const textTitle = 'Đăng nhập';
-    const [showMessage, setShowMessage] = useState(false);
-    const [formData, setFormData] = useState(initialFormLogin);
     const [form] = Form.useForm();
 
     useEffect(() => {
@@ -37,14 +36,10 @@ export default function Login() {
 
     const onFinish = (values: any) => {
         console.log('Success:', values);
-        setFormData(values);
-        setShowMessage(true);
     };
 
     const onFinishFailed = (errorInfo: any) => {
         console.log('Failed:', errorInfo);
-        let errorFields = form.getFieldsError();
-        console.log('errorFields', errorFields);
     };
 
     return (
@@ -52,15 +47,20 @@ export default function Login() {
             <div className="flex justify-content-center">
                 <div className="card">
                     <h1 className="text-center">{textTitle}</h1>
-                    <Form form={form} onFinish={onFinish} onFinishFailed={onFinishFailed} initialValues={initialFormLogin} className="p-fluid">
-                        <Field name="account" rules={[{ required: true, message: 'Tài khoản không được bỏ trống.' }]}>
-                            <InputText id="account" autoFocus
+                    <Form form={form} onFinish={onFinish}
+                        onFinishFailed={onFinishFailed}
+                        initialValues={initialForm}
+                        className="p-fluid">
+                        <LabelField label="Tài khoản" name="account" rules={[{ required: true, message: 'Tài khoản không được bỏ trống.' }]}>
+                            <InputText id="account" autoFocus 
                                 className={classNames({ 'p-invalid': form.isFieldTouched('account') && form.getFieldError('account') })} />
-                        </Field>
-                        <Field name="password" rules={[{ required: true, message: 'Mật khẩu không được bỏ trống.' }]}>
+                        </LabelField>
+                        
+                        <LabelField label="Mật khẩu" name="password" rules={[{ required: true, message: 'Mật khẩu không được bỏ trống.' }]}>
                             <Password id="password" toggleMask feedback={false}
                                 className={classNames({ 'p-invalid': form.isFieldTouched('password') && form.getFieldError('password') })} />
-                        </Field>
+                        </LabelField>
+                        
                         <Button type='submit' label={textTitle} icon="pi pi-user" className="w-8" />
                     </Form>
                 </div>

@@ -8,15 +8,16 @@ import { Divider } from 'primereact/divider';
 import { classNames } from 'primereact/utils';
 import '@/styles/Auth.css';
 import { validatePassword, validatePhone } from '@/utils/common';
+import { LabelField } from '@/components';
 
-type typeFormRegister = {
+type typeForm = {
     name: string;
     phone: string;
     password: string;
     date: Date | null;
 }
 
-const initialFormRegister: typeFormRegister = {
+const initialForm: typeForm = {
     name: '',
     phone: '',
     password: '',
@@ -24,54 +25,46 @@ const initialFormRegister: typeFormRegister = {
 };
 
 export const Register = () => {
-    const textTile = 'Đăng ký';
-    const [showMessage, setShowMessage] = useState(false);
-    const [formData, setFormData] = useState(initialFormRegister);
+    const textTitle = 'Đăng ký';
+    const [form] = Form.useForm();
 
-    useEffect(() => {
-        HandleSubmit();
-    }, [formData]);
+    const onFinish = (values: any) => {
+        console.log('Success:', values);
+    };
 
-    const HandleSubmit = () => {
-        console.log('formData', formData);
-    }
-
-    const passwordHeader = 'Yêu cầu mật khẩu';
-    const passwordFooter = (
-        <React.Fragment>
-            <Divider />
-            <p className="mt-2">Bắt buộc</p>
-            <ul className="pl-2 ml-2 mt-0" style={{ lineHeight: '1.5' }}>
-                <li>Có ký tự thường</li>
-                <li>Có ký tự hoa</li>
-                <li>Có số</li>
-                <li>Có it nhất 8 ký tự</li>
-            </ul>
-        </React.Fragment>
-    );
+    const onFinishFailed = (errorInfo: any) => {
+        console.log('Failed:', errorInfo);
+    };
 
     return (
         <div className="form-demo">
             <div className="flex justify-content-center">
                 <div className="card">
-                    <h1 className="text-center">{textTile}</h1>
-                    <Form initialValues={initialFormRegister} onFinish={(data) => {
-                        setFormData(data);
-                        setShowMessage(true);
-                    }}>
-                        {/* <Field name="name" rules={[{ required: true, message: 'Họ tên không được bỏ trống.' }]}>
-                            <InputText id="name" autoFocus className={classNames({ 'p-invalid': form.isFieldTouched('name') && form.getFieldError('name') })} />
-                        </Field>
-                        <Field name="phone" rules={[{ required: true, message: 'Số điện thoại không được bỏ trống.' }, { validator: (_, value) => validatePhone(value) ? Promise.resolve() : Promise.reject(new Error('Số điện thoại không hợp lệ.')) }]}>
-                            <InputText id="phone" className={classNames({ 'p-invalid': form.isFieldTouched('phone') && form.getFieldError('phone') })} />
-                        </Field> */}
-                        {/* <Field name="password" rules={[{ required: true, message: 'Mật khẩu không được bỏ trống.' }, { validator: (_, value) => validatePassword(value) ? Promise.resolve() : Promise.reject(new Error('Mật khẩu không hợp lệ.')) }]}>
-                            <Password id="password" toggleMask feedback={false} className={classNames({ 'p-invalid': form.isFieldTouched('password') && form.getFieldError('password') })} header={passwordHeader} footer={passwordFooter} />
-                        </Field> */}
-                        <Field name="date">
-                            <Calendar id="date" dateFormat="dd/mm/yy" mask="99/99/9999" showIcon />
-                        </Field>
-                        <Button type="submit" label={textTile} className="mt-2" />
+                    <h1 className="text-center">{textTitle}</h1>
+                    <Form form={form} onFinish={onFinish}
+                        onFinishFailed={onFinishFailed}
+                        initialValues={initialForm}
+                        className="p-fluid">
+                        <LabelField label="Họ tên" name="name" rules={[{ required: true, message: 'Họ tên không được bỏ trống.' }]}>
+                            <InputText id="name" autoFocus
+                                className={classNames({ 'p-invalid': form.isFieldTouched('name') && form.getFieldError('name') })} />
+                        </LabelField>
+
+                        <LabelField label="Số điện thoại" name="phone" rules={[{ required: true, message: 'Số điện thoại không được bỏ trống.' }]}>
+                            <InputText id="phone"
+                                className={classNames({ 'p-invalid': form.isFieldTouched('phone') && form.getFieldError('phone') })} />
+                        </LabelField>
+
+                        <LabelField label="Mật khẩu" name="password" rules={[{ required: true, message: 'Mật khẩu không được bỏ trống.' }]}>
+                            <Password id="password" toggleMask feedback={false}
+                                className={classNames({ 'p-invalid': form.isFieldTouched('password') && form.getFieldError('password') })} />
+                        </LabelField>
+
+                        <LabelField label="Ngày sinh" name="date">
+                            <Calendar id="date" dateFormat="dd/mm/yy" mask="99/99/9999" showIcon maxDate={new Date()} style={{width:'100%'}}/>
+                        </LabelField>
+                        
+                        <Button type='submit' label={textTitle} icon="pi pi-user" className="w-8" />
                     </Form>
                 </div>
             </div>

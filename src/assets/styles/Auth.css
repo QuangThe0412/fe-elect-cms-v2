@@ -32,3 +32,11 @@
 .text-check-box-save-info label{
     margin-bottom: 0;
 }
+
+.from-style{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    flex-direction: column;
+}
