@@ -29,12 +29,12 @@ export const RouteArray: RouteType[] = [
     {
         path: paths.dashboard,
         component: DashboardComponent,
-        roles: [userRoles.ADMIN, userRoles.SALER]
+        roles: [userRoles.ADMIN, userRoles.SALER,userRoles.GUEST]
     },
     {
         path: paths.category,
         component: Categories,
-        roles: [userRoles.ADMIN, userRoles.SALER]
+        roles: [userRoles.ADMIN, userRoles.SALER,userRoles.GUEST]
     },
     {
         path: paths.product,

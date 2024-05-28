@@ -1,6 +1,6 @@
 import erroImage from '../assets/images/error.jpg';
-import { userRoles } from '@/constants';
-import { paths } from '@/constants/api';
+import useAuth from '@/hooks/useAuth';
+import { RouteArray } from '../routes/routes'
 
 export function formatCurrency(value: number | string) {
     if (value) {
@@ -65,6 +65,15 @@ export const trimString = (value: any): any => {
         return value.trim().replace(/ +/g, ' ');
     }
     return value;
+}
+
+export function checkRoleAccess(userRole: string[], paths: string) {
+    const userHasAccess = RouteArray.some(route => {
+        const isPathMatching = route.path === paths;
+        const doesRoleMatch = route.roles.includes(userRole.join(''));
+        return isPathMatching && doesRoleMatch;
+    });
+    return userHasAccess;
 }
 
 // export const linkImageGG = 'https://drive.google.com/uc?export=view&id=';

@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Dock } from 'primereact/dock';
 import { MenuItem } from 'primereact/menuitem';
 import { BrowserRouter as Link, useLocation } from 'react-router-dom';
@@ -14,67 +14,72 @@ import billImage from '@/images/bill.png';
 import categoryImage from '@/images/category.png';
 import costImage from '@/images/cost.png';
 import { paths } from '@/constants/api';
+import { checkRoleAccess } from '@/utils/common';
+import useAuth from '@/hooks/useAuth';
 
 export default function DockMenu() {
     const navigate = useNavigate();
+    const { userRole } = useAuth();
     const location = useLocation();
-    const [activeItem, setActiveItem] = useState(location.pathname);
+    // const [activeItem, setActiveItem] = useState(location.pathname);
+
+    const HandleGoPath = (path: string) => {
+        if (!checkRoleAccess(userRole, path)) {
+            console.log('You do not have permission to access this page');
+        } else {
+            // setActiveItem(path);
+            navigate('/loaimon/*');
+        }
+    };
 
     const items: MenuItem[] = [
         {
             label: 'Thống kê',
             icon: () => <img alt="DashBoard" src={dashboardImage} width="100%" />,
             command: () => {
-                setActiveItem('/');
-                navigate(paths.dashboard);
+                HandleGoPath(paths.dashboard);
             },
         },
         {
             label: 'Loại sản phẩm',
             icon: () => <img alt="Test" src={categoryImage} width="100%" />,
             command: () => {
-                setActiveItem('/categories');
-                navigate(paths.category);
+                HandleGoPath(paths.category);
             },
         },
         {
             label: 'Sản phẩm',
             icon: () => <img alt="Product" src={productImage} width="100%" />,
             command: () => {
-                setActiveItem('/products');
-                navigate(paths.product);
+                HandleGoPath(paths.product);
             },
         },
         {
             label: 'Permission',
             icon: () => <img alt="Permission" src={permissionImage} width="100%" />,
             command: () => {
-                setActiveItem('/permission');
-                navigate('/permission');
+                HandleGoPath('/permission');
             },
         },
         {
             label: 'customerImage',
             icon: () => <img alt="Test" src={customerImage} width="100%" />,
             command: () => {
-                setActiveItem('/test');
-                navigate('/test');
+                HandleGoPath('/test');
             },
         },
         {
             label: 'costImage',
             icon: () => <img alt="Test" src={costImage} width="100%" />,
             command: () => {
-                setActiveItem('/test');
-                navigate('/test');
+                HandleGoPath('/test');
             },
         },
         {
             label: 'billImage',
             icon: () => <img alt="Test" src={billImage} width="100%" />,
             command: () => {
-                setActiveItem('/test');
-                navigate('/test');
+                HandleGoPath('/test');
             },
         }
     ];

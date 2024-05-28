@@ -27,6 +27,8 @@ const HandleResponse = (response: Response | any, toast: React.RefObject<Toast> 
             severityType = 'info';
             break;
         case 400: // bad request
+            severityType = 'error';
+            break;
         case 401: // unauthorized
         case 403: // forbidden
         case 404: // not found

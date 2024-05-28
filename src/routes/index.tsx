@@ -13,6 +13,7 @@ import { paths } from '@/constants/api';
 const RootRoutes = () => {
     const { isAuthenticated, userRole } = useAuth();
     console.log('isAuthenticated', isAuthenticated);
+    console.log('userRole', userRole);
     return (
         <BrowserRouter>
             <Routes>
