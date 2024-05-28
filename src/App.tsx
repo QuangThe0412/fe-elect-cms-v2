@@ -1,4 +1,4 @@
-import RootRoutes from '@/components/routes';
+import RootRoutes from './routes';
 import { useEffect } from 'react';
 import { THEMES_PRIME_REACT } from '@/constants/theme';
 import useThemeStore from '@/store/theme.store';

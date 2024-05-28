@@ -1,6 +1,6 @@
 import '@/styles/header.css';
 import { Avatar } from 'primereact/avatar';
-import DockMenu from '@/components/menu/Dock';
+import DockMenu from '@/containers/menu/Dock';
 
 const Header = () => {
     return (

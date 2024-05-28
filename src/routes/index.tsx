@@ -3,11 +3,11 @@ import "primereact/resources/primereact.min.css";
 import '@/styles/prime.css';
 import 'primeicons/primeicons.css';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
-import AdminLayout from '@/components/layout/AdminLayout';
-import PublicLayout from '@/components/layout/PublicLayout';
+import AdminLayout from '@/containers/layout/AdminLayout';
+import PublicLayout from '@/containers/layout/PublicLayout';
 import useAuth from '@/hooks/useAuth';
 import { RouteArray } from './routes';
-import NotFound from '../notFound';
+import NotFound from '@/containers/notFound';
 import { paths } from '@/constants/api';
 
 const RootRoutes = () => {

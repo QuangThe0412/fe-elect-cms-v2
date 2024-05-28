@@ -1,9 +1,9 @@
 
-import Dashboard from '@/components/dashboards/Dashboard';
-import FloatButton from '@/components/FloatButton';
-import Header from '@/components/Header';
-import Product from '@/components/products/Product';
-import Categories from '@/components/category/Category';
+import Dashboard from '@/containers/dashboards/Dashboard';
+import FloatButton from '@/containers/FloatButton';
+import Header from '@/containers/Header';
+import Product from '@/containers/products/Product';
+import Categories from '@/containers/category/Category';
 import { Route, Routes } from 'react-router-dom';
 
 const AdminLayout = () => {

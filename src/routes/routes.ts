@@ -1,10 +1,10 @@
 import { paths } from '@/constants/api';
 import { userRoles } from '@/constants';
-import Products from '@/components/products/Product';
-import DashboardComponent from '@/components/dashboards/Dashboard';
-import Categories from '@/components/category/Category';
-import LoginComponent from '@/components/auth/Login';
-import { Register } from '@/components/auth/Register';
+import Products from '@/containers/products/Product';
+import DashboardComponent from '@/containers/dashboards/Dashboard';
+import Categories from '@/containers/category/Category';
+import LoginComponent from '@/containers/auth/Login';
+import { Register } from '@/containers/auth/Register';
 
 export type RouteType = {
     path: string,
