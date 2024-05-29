@@ -3,11 +3,10 @@ import { Toast } from 'primereact/toast';
 import { getCookie } from '@/utils/cookie';
 import { ACCESS_COOKIE_NAME, REFRESH_COOKIE_NAME } from '@/constants';
 import { AuthService } from '@/services/auth.service';
+import { JwtPayload, jwtDecode } from 'jwt-decode';
 
 export const HandleApi = async (request: Promise<any>, toast: React.RefObject<Toast> | null) => {
     try {
-        const accessToken = getCookie(ACCESS_COOKIE_NAME);
-
         return HandleResponse(await request, toast);
     } catch (error: any) {
         console.error(error);
@@ -15,15 +14,22 @@ export const HandleApi = async (request: Promise<any>, toast: React.RefObject<To
     }
 }
 
-const tryGetNewAccessToken = async () => {
+export const tryGetAccessToken = async () => {
     const accessToken = getCookie(ACCESS_COOKIE_NAME);
-    const refreshToken = getCookie(REFRESH_COOKIE_NAME);
-    if (!accessToken || !refreshToken) return null;
+    if (!accessToken) return '';
+
+    const decodedToken: JwtPayload = jwtDecode(accessToken);
+    const { exp } = decodedToken;
+    if (exp && exp * 1000 > Date.now()) return accessToken;
+
     try {
-        return await AuthService.refreshToken(refreshToken);
+        const refreshToken = getCookie(REFRESH_COOKIE_NAME);
+        if (refreshToken) {
+            return (await AuthService.refreshToken(refreshToken))?.data?.accessToken as string;
+        }
     } catch (error) {
         console.error(error);
-        return null;
+        return '';
     }
 };
 
@@ -47,6 +53,9 @@ const HandleResponse = (response: Response | any, toast: React.RefObject<Toast> 
             severityType = 'error';
             break;
         case 401: // unauthorized
+            mess = "Chưa xác thực hoặc phiên làm việc hết hạn";
+            severityType = 'error';
+            break;
         case 403: // forbidden
         case 404: // not found
             severityType = 'error';

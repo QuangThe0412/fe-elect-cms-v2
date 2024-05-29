@@ -1,4 +1,3 @@
-
 export const userRoles = {
     ADMIN: 'ADMIN',
     CASHIER: 'CASHIER',
