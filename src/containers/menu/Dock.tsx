@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import {  useRef } from 'react';
 import { Dock } from 'primereact/dock';
 import { MenuItem } from 'primereact/menuitem';
 import { BrowserRouter as Link, useLocation } from 'react-router-dom';
@@ -16,19 +16,18 @@ import costImage from '@/images/cost.png';
 import { paths } from '@/constants/api';
 import { checkRoleAccess } from '@/utils/common';
 import useAuth from '@/hooks/useAuth';
+import { Toast } from 'primereact/toast';
 
 export default function DockMenu() {
     const navigate = useNavigate();
     const { userRole } = useAuth();
-    const location = useLocation();
-    // const [activeItem, setActiveItem] = useState(location.pathname);
+    const toast = useRef<Toast>(null);
 
     const HandleGoPath = (path: string) => {
         if (!checkRoleAccess(userRole, path)) {
-            console.log('You do not have permission to access this page');
+            toast.current?.show({ severity: 'info', summary: 'Thông báo', detail: 'Bạn không có quyền vào trang này!' });
         } else {
-            // setActiveItem(path);
-            navigate('/loaimon/*');
+            navigate(path);
         }
     };
 
@@ -86,6 +85,7 @@ export default function DockMenu() {
 
     return (
         <div className="card dock-demo">
+            <Toast ref={toast}/>
             <Tooltip className="dark-tooltip" target=".dock-advanced .p-dock-action" my="center+15 bottom-15" at="center top" showDelay={150} />
             <div className="dock-window dock-advanced">
                 <Dock model={items} position={"top"} />

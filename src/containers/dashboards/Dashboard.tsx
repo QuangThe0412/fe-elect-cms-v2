@@ -22,7 +22,7 @@ export default function DashboardComponent() {
     const getThongKe = () => {
         HandleApi(ThongKeService.getThongKe(dateFrom, dateTo), toast).then((result) => {
             let data: Dashboard[] = result?.data;
-            setNumber(data.map((item) => item.TienSauCK).reduce((a, b) => a + b, 0));
+            setNumber(data?.map((item) => item.TienSauCK).reduce((a, b) => a + b, 0) | 0);
         });
     };
 

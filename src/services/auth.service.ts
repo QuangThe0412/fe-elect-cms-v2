@@ -14,6 +14,10 @@ export class AuthService {
         return axios.post(apiUrl + paths.register, user);
     }
 
+    static refreshToken(refreshToken: string) {
+        return axios.post(apiUrl + paths.refreshToken, { refreshToken });
+    }
+
     static logout() {
         //remvoe token and refresh token
         console.log('logout');

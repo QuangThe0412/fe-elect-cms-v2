@@ -59,7 +59,7 @@ export default function Categories() {
   }, []);
 
   const getCategories = () => {
-    HandleApi(CategoryService.getCategories(), null).then((result) => {
+    HandleApi(CategoryService.getCategories(), toast).then((result) => {
       if (result.status === 200) {
         setCategories(result.data)
       }
@@ -68,7 +68,7 @@ export default function Categories() {
   }
 
   const getCategoryGroup = () => {
-    HandleApi(CategoryGroupService.getCategoryGroups(), null).then((result) => {
+    HandleApi(CategoryGroupService.getCategoryGroups(), toast).then((result) => {
       if (result.status === 200) {
         setCategoryGroups(result.data)
       }
@@ -166,7 +166,7 @@ export default function Categories() {
   const bodyNhomMon = (rowData: Category) => {
     return (
       <>
-        {categoryGroups.map((categoryGroups: CategoryGroup) => {
+        {categoryGroups?.map((categoryGroups: CategoryGroup) => {
           if (categoryGroups.IDNhomMon === rowData.IDNhomMon) {
             return categoryGroups.TenNhom;
           }

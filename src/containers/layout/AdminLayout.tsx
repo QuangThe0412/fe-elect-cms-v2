@@ -4,9 +4,10 @@ import FloatButton from '@/containers/FloatButton';
 import Header from '@/containers/Header';
 import Product from '@/containers/products/Product';
 import Categories from '@/containers/category/Category';
-import { Route, Routes } from 'react-router-dom';
+import { Outlet, Route, Routes } from 'react-router-dom';
+import React from 'react';
 
-const AdminLayout = () => {
+const AdminLayout = ({ children }: any) => {
     return (
         <div className="App">
             <FloatButton />
@@ -14,11 +15,7 @@ const AdminLayout = () => {
                 <Header />
             </div>
             <div className='body-app'>
-                <Routes >
-                    <Route path='/' element={<Dashboard />} />
-                    <Route path='/products' element={<Product />} />
-                    <Route path='/categories' element={<Categories />} />
-                </Routes>
+                {children}
             </div>
         </div>
     );
