@@ -4,6 +4,7 @@ import { THEMES_PRIME_REACT } from '@/constants/theme';
 import useThemeStore from '@/store/theme.store'; import axios from 'axios';
 import { tryGetAccessToken } from '@/services/handleApi';
 import { apiUrl } from '@/constants/api';
+import { paths } from '@/constants/api';
 
 function App() {
   const isDark = useThemeStore((state: any) => state.isDark);
@@ -13,12 +14,16 @@ function App() {
   }, [isDark]);
 
   //config middleware axios
+  const exceptUrls = [paths.login, paths.register, paths.refreshToken];
   axios.interceptors.request.use(async (config) => {
     config.baseURL = apiUrl;
-    config.headers.Authorization = await tryGetAccessToken();
+    const url = config.url;
+    if (url && exceptUrls.includes(url)) return config;
+
+    config.headers.Authorization = await tryGetAccessToken() as string;
     return config;
   });
-  
+
   return (
     <RootRoutes />
   );

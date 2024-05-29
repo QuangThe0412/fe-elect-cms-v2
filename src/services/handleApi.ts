@@ -1,9 +1,10 @@
 import React from 'react';
 import { Toast } from 'primereact/toast';
-import { getCookie } from '@/utils/cookie';
+import { eraseCookie, getCookie, setCookie } from '@/utils/cookie';
 import { ACCESS_COOKIE_NAME, REFRESH_COOKIE_NAME } from '@/constants';
 import { AuthService } from '@/services/auth.service';
 import { JwtPayload, jwtDecode } from 'jwt-decode';
+import { paths } from '@/constants/api';
 
 export const HandleApi = async (request: Promise<any>, toast: React.RefObject<Toast> | null) => {
     try {
@@ -16,20 +17,31 @@ export const HandleApi = async (request: Promise<any>, toast: React.RefObject<To
 
 export const tryGetAccessToken = async () => {
     const accessToken = getCookie(ACCESS_COOKIE_NAME);
-    if (!accessToken) return '';
+    if (!accessToken) {
+        window.location.href = paths.login;
+        return;
+    }
 
+    let _accessToken = accessToken;
     const decodedToken: JwtPayload = jwtDecode(accessToken);
     const { exp } = decodedToken;
-    if (exp && exp * 1000 > Date.now()) return accessToken;
+    if (exp && exp * 1000 > Date.now()) return _accessToken;
 
     try {
         const refreshToken = getCookie(REFRESH_COOKIE_NAME);
         if (refreshToken) {
-            return (await AuthService.refreshToken(refreshToken))?.data?.accessToken as string;
+            let result = await AuthService.refreshToken(refreshToken);
+            let newAccessToken = result?.data?.data;
+            setCookie(ACCESS_COOKIE_NAME, newAccessToken);
+            return newAccessToken;
         }
     } catch (error) {
         console.error(error);
-        return '';
+        eraseCookie(ACCESS_COOKIE_NAME);
+        eraseCookie(REFRESH_COOKIE_NAME);
+
+        window.location.href = paths.login;
+        return null;
     }
 };
 

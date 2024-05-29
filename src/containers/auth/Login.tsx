@@ -21,8 +21,8 @@ type typeForm = {
 }
 
 const initialForm: typeForm = {
-    username: '',
-    password: '',
+    username: 'quangthe',
+    password: 'Aa123123',
 };
 
 export default function Login() {

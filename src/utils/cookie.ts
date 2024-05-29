@@ -9,7 +9,7 @@ interface JwtPayload {
     };
 }
 
-const setCookie = (name: string, value: string, days: number = 7) => {
+const setCookie = (name: string, value: string, days: number = 365) => {
     let expires = '';
     if (days) {
         const date = new Date();

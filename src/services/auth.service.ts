@@ -1,5 +1,7 @@
+import { ACCESS_COOKIE_NAME, REFRESH_COOKIE_NAME } from '@/constants';
 import { paths } from '@/constants/api';
 import { User } from '@/models';
+import { eraseCookie } from '@/utils/cookie';
 import axios from 'axios';
 
 export class AuthService {
@@ -16,8 +18,7 @@ export class AuthService {
     }
 
     static logout() {
-        //remove token and refresh token
-        console.log('logout');
-        return;
+        eraseCookie(ACCESS_COOKIE_NAME);
+        eraseCookie(REFRESH_COOKIE_NAME);
     }
 }
