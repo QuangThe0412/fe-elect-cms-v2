@@ -25,7 +25,7 @@ export default function DockMenu() {
 
     const HandleGoPath = (path: string) => {
         if (!checkRoleAccess(userRole, path)) {
-            toast.current?.show({ severity: 'info', summary: 'Thông báo', detail: 'Bạn không có quyền vào trang này!' });
+            toast.current?.show({ severity: 'error', summary: 'Thông báo', detail: 'Bạn không có quyền vào trang này!' });
         } else {
             navigate(path);
         }

@@ -50,6 +50,7 @@ const HandleResponse = (response: Response | any, toast: React.RefObject<Toast> 
     let status = response?.status;
     let code = response?.data?.code;
     let mess = response?.data?.mess || "Có lỗi xảy ra";
+    let url = response?.config?.url;
     let summaryTitle = 'Thất bại';
     let severityType: "success" | "info" | "warn" | "error";
     switch (status) {
@@ -69,6 +70,9 @@ const HandleResponse = (response: Response | any, toast: React.RefObject<Toast> 
             severityType = 'error';
             break;
         case 403: // forbidden
+            mess = "Không đủ quyền truy cập " + url;
+            severityType = 'error';
+            break;
         case 404: // not found
             severityType = 'error';
             break;

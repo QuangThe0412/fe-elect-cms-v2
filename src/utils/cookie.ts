@@ -1,7 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 import { ACCESS_COOKIE_NAME } from "../constants";
 
-interface JwtPayload {
+export interface JwtPayload {
     user: {
         roles: string[];
         userId: string;
@@ -34,16 +34,15 @@ const eraseCookie = (name: string) => {
     document.cookie = `${name}=; Max-Age=-99999999;`;
 };
 
-const getRole = () => {
+const getProfile = () => {
     const accessToken = getCookie(ACCESS_COOKIE_NAME);
     if (!accessToken) return [];
     try {
-        const decodedToken : JwtPayload = jwtDecode(accessToken);
-        return decodedToken?.user?.roles || [];
+        return jwtDecode(accessToken);
     } catch (error) {
         console.error("Invalid access token", error);
         return [];
     }
 };
-export { setCookie, getCookie, eraseCookie,getRole };
+export { setCookie, getCookie, eraseCookie,getProfile };
 

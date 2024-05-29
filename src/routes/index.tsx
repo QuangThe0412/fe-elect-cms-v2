@@ -3,7 +3,7 @@ import "primereact/resources/primereact.min.css";
 import '@/styles/prime.css';
 import 'primeicons/primeicons.css';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
-import AdminLayout from '@/containers/layout/AdminLayout';
+import AdminLayout from '@/containers/layout/admin/AdminLayout';
 import PublicLayout from '@/containers/layout/PublicLayout';
 import useAuth from '@/hooks/useAuth';
 import { RouteArray } from './routes';

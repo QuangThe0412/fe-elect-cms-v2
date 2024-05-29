@@ -1,7 +1,5 @@
-import { ACCESS_COOKIE_NAME, REFRESH_COOKIE_NAME } from '@/constants';
 import { paths } from '@/constants/api';
 import { User } from '@/models';
-import { eraseCookie } from '@/utils/cookie';
 import axios from 'axios';
 
 export class AuthService {
@@ -17,8 +15,11 @@ export class AuthService {
         return axios.post(paths.refreshToken, { refreshToken });
     }
 
-    static logout() {
-        eraseCookie(ACCESS_COOKIE_NAME);
-        eraseCookie(REFRESH_COOKIE_NAME);
+    static getProfile(idUser: string) {
+        return axios.get(paths.getProfile, { params: { idUser } });
+    }
+
+    static updateProfile(user: User) {
+        return axios.put(paths.updateProfile, user);
     }
 }

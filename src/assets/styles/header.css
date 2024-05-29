@@ -9,13 +9,34 @@
     align-items: center;
   }
 
+  .card.dock-demo {
+    width: 70%;
+  }
+
   .wrapper-header{
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
     align-items: center;
     width: 100%;
   }
 
   .p-avatar{
     border-radius: 50% !important;
+  }
+
+  .group-datetime {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-right: 1em;
+  }
+
+  .group-datetime .date{
+    font-size: 1rem;
+  }
+
+  .group-datetime .time{
+    font-size: 2rem;
+    font-weight: bold;
   }
