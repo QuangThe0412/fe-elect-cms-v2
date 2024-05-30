@@ -1,5 +1,5 @@
 import { paths } from '@/constants/api';
-import { userRoles } from '@/constants';
+import { RoleEnum } from '@/constants';
 import Products from '@/containers/products/Product';
 import DashboardComponent from '@/containers/dashboards/Dashboard';
 import Categories from '@/containers/category/Category';
@@ -18,33 +18,33 @@ export const RouteArray: RouteType[] = [
     {
         path: paths.login,
         component: LoginComponent,
-        roles: [],
+        roles: [RoleEnum.ADMIN, RoleEnum.CASHIER, RoleEnum.SALER, RoleEnum.INVENTORY, RoleEnum.GUEST],
         isPublic: true
     },
     {
         path: paths.register,
         component: Register,
-        roles: [],
+        roles: [RoleEnum.ADMIN, RoleEnum.CASHIER, RoleEnum.SALER, RoleEnum.INVENTORY, RoleEnum.GUEST],
         isPublic: true
+    },
+    {
+        path: paths.user,
+        component: User,
+        roles: [RoleEnum.ADMIN, RoleEnum.CASHIER, RoleEnum.SALER, RoleEnum.INVENTORY, RoleEnum.GUEST],
     },
     {
         path: paths.dashboard,
         component: DashboardComponent,
-        roles: [userRoles.ADMIN, userRoles.SALER,userRoles.GUEST]
+        roles: [RoleEnum.ADMIN]
     },
     {
         path: paths.category,
         component: Categories,
-        roles: [userRoles.ADMIN, userRoles.SALER,userRoles.GUEST]
+        roles: [RoleEnum.ADMIN]
     },
     {
         path: paths.product,
         component: Products,
-        roles: [userRoles.ADMIN, userRoles.SALER]
-    },
-    {
-        path: paths.user,
-        component: User, //------------------ change to user component
-        roles: [userRoles.ADMIN]
+        roles: [RoleEnum.ADMIN]
     }
 ]

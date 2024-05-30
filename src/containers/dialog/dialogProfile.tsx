@@ -61,8 +61,6 @@ export default function DialogProfile({ visible, onClose, idUser }: PropType) {
             ngaySinh: values.ngaySinh,
         };
 
-        console.log('Success:', user);
-
         HandleApi(AuthService.updateProfile(user), toast).then((res) => {
             if (res && res.status === 200) {
                 onClose();

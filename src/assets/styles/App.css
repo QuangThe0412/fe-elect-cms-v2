@@ -42,3 +42,7 @@
   align-items: center;
   height: 100%;
 }
+
+.invalid {
+  border-color: red !important;
+}

@@ -1,0 +1,12 @@
+.groupCheckBox {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.groupCheckBox label {
+    width: 100% !important;
+    flex: 1 !important;
+    margin-right: 6px !important;
+}

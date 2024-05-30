@@ -1,4 +1,4 @@
-export const userRoles = {
+export const RoleEnum = {
     ADMIN: 'ADMIN',
     CASHIER: 'CASHIER',
     SALER: 'SALER',

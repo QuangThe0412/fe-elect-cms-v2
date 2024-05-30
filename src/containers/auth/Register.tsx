@@ -51,7 +51,7 @@ export const Register = () => {
                 setCookie(REFRESH_COOKIE_NAME, refreshToken);
 
                 form.resetFields();
-                window.location.href = paths.dashboard;
+                window.location.href = paths.user;
             }
         });
     };

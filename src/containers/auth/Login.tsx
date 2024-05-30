@@ -35,7 +35,7 @@ export default function Login() {
     useEffect(() => {
         //if had login then redirect to dashboard
         if (isAuthenticated) {
-            navigate(paths.dashboard)
+            navigate(paths.user)
         }
     }, [isAuthenticated]);
 
@@ -49,8 +49,7 @@ export default function Login() {
                 setCookie(REFRESH_COOKIE_NAME, refreshToken);
 
                 form.resetFields();
-                // navigate(paths.dashboard);
-                window.location.href = paths.dashboard;
+                window.location.href = paths.user;
             }
         });
     };

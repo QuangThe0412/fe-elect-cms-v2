@@ -15,7 +15,7 @@ const RootRoutes = () => {
     return (
         <BrowserRouter>
             <Routes>
-                    <Route path="/" element={isAuthenticated ? <Navigate to={paths.dashboard} /> : <Navigate to={paths.login} />} />
+                    <Route path="/" element={isAuthenticated ? <Navigate to={paths.user} /> : <Navigate to={paths.login} />} />
 
                     {RouteArray.map(route => {
                         const AppLayout = route?.isPublic ? PublicLayout : AdminLayout;

@@ -13,15 +13,35 @@ import { RadioButtonChangeEvent } from 'primereact/radiobutton';
 import { Button } from 'primereact/button';
 import { trimString } from '@/utils/common';
 import { Checkbox } from 'primereact/checkbox';
+import useAuth from '@/hooks/useAuth';
+import { RoleEnum } from '@/constants';
+import { on } from 'events';
+import UserDialog from './UserDialog';
+import { InputNumberChangeEvent } from 'primereact/inputnumber';
 
 let emptyUser: User = {
+  id: 0,
+  username: '',
+  password: '',
+  phone: '0',
+  ngaySinh: null,
+  admin: false,
+  cashier: false,
+  saler: false,
+  inventory: false,
+  guest: false,
+  createDate: null,
+  modifyDate: null,
+  Deleted: false,
 
 };
 
 export default function Users() {
-  const [Users, setUsers] = useState<User[]>([]);
+  const { userRole, profile } = useAuth();
+  const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User>(emptyUser);
   const [loading, setLoading] = useState<boolean>(true);
+  const [userChange, setUserChange] = useState<boolean>(false);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
   const [filters, setFilters] = useState<DataTableFilterMeta>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -45,16 +65,17 @@ export default function Users() {
   ];
 
   const [dialogVisible, setDialogVisible] = useState<boolean>(false);
-  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     getUsers();
-  }, []);
+  }, [userChange]);
 
   const getUsers = () => {
     HandleApi(UserService.getUsers(), toast).then((result) => {
       if (result.status === 200) {
-        setUsers(result.data)
+        let idMe = profile.userId || 0;
+        let resultData = result.data.filter((item: User) => item.id !== idMe);
+        setUsers(resultData)
       }
       setLoading(false);
     });
@@ -93,59 +114,14 @@ export default function Users() {
         <span className="p-input-icon-left">
           <i className="pi pi-search" />
           <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Tìm kiếm" />
-          <Button label="Thêm" icon="pi pi-plus" className="p-button-success ml-3"
-            onClick={() => addUser(selectedUser as User)}
-          />
+          {userRole.includes(RoleEnum.ADMIN) &&
+            <Button label="Thêm" icon="pi pi-plus" className="p-button-success ml-3"
+              onClick={() => addUser(selectedUser as User)}
+            />
+          }
         </span>
       </div>
     );
-  };
-
-  const saveUser = async () => {
-    setLoading(true);
-    setSubmitted(true);
-
-    // if (selectedUser?.TenLoai?.trim() && selectedUser?.IDNhomMon > 0) {
-    //   let _User: User = { ...selectedUser };
-    //   //remove white space
-    //   trimString(_User);
-
-    //   if (_User.IDLoaiMon) {
-    //     HandleApi(UserService.updateUser(_User.IDLoaiMon.toString(), _User), toast)
-    //       .then((result) => {
-    //         if (result.status === 200) {
-    //           getUsers();
-    //         }
-    //         setLoading(false);
-    //       });
-    //   } else {
-    //     HandleApi(UserService.createUser(_User), toast).then((result) => {
-    //       if (result.status === 200) {
-    //         getUsers();
-    //       }
-    //       setLoading(false);
-    //     });
-    //   }
-
-    //   setDialogVisible(false);
-    // }
-  };
-
-  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>, name: string) => {
-    const val = (e.target && e.target.value) || '';
-    let _User: User = { ...selectedUser };
-
-    // @ts-ignore
-    _User[`${name}`] = val;
-    setSelectedUser(_User as User);
-  };
-
-  const onUserChange = (e: RadioButtonChangeEvent, name: string) => {
-    const val = e.value || 0;
-    let _User: User = { ...selectedUser };
-
-    // _User.IDNhomMon = val;
-    setSelectedUser(_User as User);
   };
 
   const bodyCheckBox = (rowData: User, options: { field: keyof User }) => {
@@ -156,23 +132,32 @@ export default function Users() {
     );
   };
 
-const bodyDate = (rowData: User, options: { field: keyof User }) => {
+  const bodyDate = (rowData: User, options: { field: keyof User }) => {
     const field = options.field;
     const dateValue = rowData[field];
     if (dateValue) {
-        const date = new Date(dateValue as string);
-        return date instanceof Date ? date.toLocaleDateString('vi-VN') : '';
+      const date = new Date(dateValue as string);
+      return date instanceof Date ? date.toLocaleDateString('vi-VN') : '';
     }
     return '';
-}
+  }
+
+  const OnRightClickContext = (e: any) => {
+    if (!userRole.includes(RoleEnum.ADMIN)) {
+      e.originalEvent.preventDefault();
+      return;
+    }
+    cm.current?.show(e.originalEvent);
+  }
+
   return (
     <div className="card">
       <Toast ref={toast} />
       <ContextMenu model={menuModel} ref={cm} />
-      <DataTable value={Users}
+      <DataTable value={users}
         header={renderHeader()}
         rowClassName={rowClassName}
-        onContextMenu={(e) => cm.current?.show(e.originalEvent)}
+        onContextMenu={(e: any) => OnRightClickContext(e)}
         contextMenuSelection={selectedUser ? selectedUser : undefined}
         onContextMenuSelectionChange={(e: any) => { setSelectedUser(e.value) }}
         paginator rows={25} rowsPerPageOptions={[5, 10, 25, 50]}
@@ -187,16 +172,24 @@ const bodyDate = (rowData: User, options: { field: keyof User }) => {
       >
         <Column field="id" header="Id" ></Column>
         <Column field="username" header="Tên"></Column>
+        <Column field="phone" header="Điện thoại"></Column>
         <Column field="ngaySinh" header="Ngày sinh" body={bodyDate as (data: any, options: any) => React.ReactNode}></Column>
         <Column field="admin" header="admin" body={bodyCheckBox as (data: any, options: any) => React.ReactNode}></Column>
         <Column field="cashier" header="cashier" body={bodyCheckBox as (data: any, options: any) => React.ReactNode}></Column>
         <Column field="inventory" header="inventory" body={bodyCheckBox as (data: any, options: any) => React.ReactNode}></Column>
         <Column field="saler" header="saler" body={bodyCheckBox as (data: any, options: any) => React.ReactNode}></Column>
         <Column field="guest" header="guest" body={bodyCheckBox as (data: any, options: any) => React.ReactNode}></Column>
-        <Column field="phone" header="Điện thoại"></Column>
         <Column field="createDate" header="Ngày tạo" body={bodyDate as (data: any, options: any) => React.ReactNode}></Column>
         <Column field="modifyDate" header="Ngày sửa" body={bodyDate as (data: any, options: any) => React.ReactNode}></Column>
       </DataTable>
+      <UserDialog
+        visible={dialogVisible}
+        onClose={() => {
+          setDialogVisible(false)
+        }}
+        idUser={selectedUser.id || 0}
+        onUserChange={() => {setUserChange(!userChange)}} // refresh data
+      />
     </div>
   );
 }

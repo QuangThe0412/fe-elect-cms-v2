@@ -11,7 +11,11 @@ export class UserService {
         return axios.post(paths.user, user);
     }
 
-    static async updateUser(id: string, user: User) {
+    static async getUser(id: number) {
+        return axios.get(`${paths.user}/${id}`);
+    }
+
+    static async updateUser(id: number, user: User) {
         return axios.put(`${paths.user}/${id}`, user);
     }
 

@@ -135,7 +135,7 @@ export default function Categories() {
           });
       } else {
         HandleApi(CategoryService.createCategory(_category), toast).then((result) => {
-          if (result.status === 200) {
+          if (result.status === 201) {
             getCategories();
           }
           setLoading(false);

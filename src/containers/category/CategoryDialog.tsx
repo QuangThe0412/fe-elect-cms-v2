@@ -47,7 +47,7 @@ const CategoryDialog = (props: PropType) => {
             <Toast ref={toast} />
 
             <Dialog visible={visible} style={{ width: '32rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }}
-                header={selectedCategory?.IDLoaiMon ? 'Chỉnh sữa ' : 'Thêm mới'} modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
+                header={selectedCategory?.IDLoaiMon ? 'Chỉnh sửa ' : 'Thêm mới'} modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
                 <div className="field">
                     <label htmlFor="TenLoai" className="font-bold">
                         Tên Loại

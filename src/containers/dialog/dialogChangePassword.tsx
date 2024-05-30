@@ -79,8 +79,8 @@ export default function DialogChangePassword({ visible, onClose, idUser }: PropT
                         rules={[
                             { required: true, message: 'Mật khẩu hiện tại không được bỏ trống.' },
                         ]}>
-                        {(control, meta) => (<InputText {...control} id="oldPassword"
-                            className={classNames({ [styles.invalid]: meta.touched && meta.errors.length })} />)}
+                        {(control, meta) => (<Password toggleMask {...control} id="oldPassword"
+                            className={classNames({ 'invalid': meta.errors.length })} />)}
                     </LabelField>
 
                     <LabelField label="Mật khẩu mới" name="newPassword"
@@ -91,8 +91,8 @@ export default function DialogChangePassword({ visible, onClose, idUser }: PropT
                                 message: 'Mật khẩu phải chứa ít nhất một ký tự thường, một ký tự hoa, một số và có ít nhất 8 ký tự.'
                             }
                         ]}>
-                        {(control, meta) => (<InputText {...control} id="newPassword"
-                            className={classNames({ [styles.invalid]: meta.touched && meta.errors.length })} />)}
+                        {(control, meta) => (<Password toggleMask {...control} id="newPassword"
+                            className={classNames({ 'invalid': meta.errors.length })} />)}
                     </LabelField>
 
                     <LabelField label="Nhập lại mật khẩu mới" name="reNewPassword"
@@ -107,8 +107,8 @@ export default function DialogChangePassword({ visible, onClose, idUser }: PropT
                                 },
                             }),
                         ]}>
-                        {(control, meta) => (<InputText {...control} id="reNewPassword"
-                            className={classNames({ [styles.invalid]: meta.touched && meta.errors.length })} />)}
+                        {(control, meta) => (<Password toggleMask {...control} id="reNewPassword"
+                            className={classNames({ 'invalid': meta.errors.length })} />)}
                     </LabelField>
                     <Button type='submit' label='Cập nhật' className="w-6" style={{ float: 'right' }} />
                 </Form>
