@@ -68,12 +68,13 @@ export const trimString = (value: any): any => {
 }
 
 export function checkRoleAccess(userRole: string[], paths: string) {
-    const userHasAccess = RouteArray.some(route => {
-        const isPathMatching = route.path === paths;
-        const doesRoleMatch = route.roles.includes(userRole.join(''));
-        return isPathMatching && doesRoleMatch;
-    });
-    return userHasAccess;
+    let routeMap = RouteArray.find(route => route.path === paths);
+    if (!routeMap) {
+        return false;
+    }
+
+    let checkAccess = routeMap.roles.some(role => userRole.includes(role));
+    return checkAccess;
 }
 
 // export const linkImageGG = 'https://drive.google.com/uc?export=view&id=';

@@ -5,6 +5,7 @@ import DashboardComponent from '@/containers/dashboards/Dashboard';
 import Categories from '@/containers/category/Category';
 import LoginComponent from '@/containers/auth/Login';
 import { Register } from '@/containers/auth/Register';
+import User from '@/containers/user/User';
 
 export type RouteType = {
     path: string,
@@ -40,5 +41,10 @@ export const RouteArray: RouteType[] = [
         path: paths.product,
         component: Products,
         roles: [userRoles.ADMIN, userRoles.SALER]
+    },
+    {
+        path: paths.user,
+        component: User, //------------------ change to user component
+        roles: [userRoles.ADMIN]
     }
 ]

@@ -1,16 +1,20 @@
 export const apiUrl = 'http://localhost:3002/admin';
 
 export const paths = {
-    dashboard: '/thongke',
+    //auth
     login: '/auth/login',
     refreshToken: '/auth/refreshToken',
-    getProfile: '/auth/me',
-    updateProfile: '/auth/updateProfile',
-    changePassword: '/auth/changePassword',
-
     register: '/auth/register',
+    //account
+    getProfile: '/account/me',
+    updateProfile: '/account/updateProfile',
+    changePassword: '/account/changePassword',
+    //product
     product: '/mon',
     categoryGroup: '/nhommon',
     category: '/loaimon',
-    userList: '/user',
+    //======
+    dashboard: '/thongke',
+    user: '/nguoiDung',
+    
 };

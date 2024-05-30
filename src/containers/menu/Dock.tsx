@@ -33,6 +33,13 @@ export default function DockMenu() {
 
     const items: MenuItem[] = [
         {
+            label: 'Người dùng',
+            icon: () => <img alt="User" src={permissionImage} width="100%" />,
+            command: () => {
+                HandleGoPath(paths.user);
+            },
+        },
+        {
             label: 'Thống kê',
             icon: () => <img alt="DashBoard" src={dashboardImage} width="100%" />,
             command: () => {
@@ -51,13 +58,6 @@ export default function DockMenu() {
             icon: () => <img alt="Product" src={productImage} width="100%" />,
             command: () => {
                 HandleGoPath(paths.product);
-            },
-        },
-        {
-            label: 'Permission',
-            icon: () => <img alt="Permission" src={permissionImage} width="100%" />,
-            command: () => {
-                HandleGoPath('/permission');
             },
         },
         {

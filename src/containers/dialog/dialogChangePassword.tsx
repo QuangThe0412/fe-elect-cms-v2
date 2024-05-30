@@ -49,6 +49,15 @@ export default function DialogChangePassword({ visible, onClose, idUser }: PropT
         HandleApi(AuthService.changePassword(values), toast).then((res) => {
             if (res && res.status === 200) {
                 HandleHide();
+            } else {
+                const { code, mess } = res;
+                if (code === 'incorrect_old_password')
+                    form.setFields([
+                        {
+                            name: 'oldPassword',
+                            errors: [mess]
+                        }
+                    ]);
             }
         });
     };
@@ -60,7 +69,7 @@ export default function DialogChangePassword({ visible, onClose, idUser }: PropT
     return (
         <>
             <Toast ref={toast}></Toast>
-            <Dialog header="Đổi mật khẩu" visible={visible} style={{ width: '35vw'}}
+            <Dialog header="Đổi mật khẩu" visible={visible} style={{ width: '35vw' }}
                 onHide={() => { if (!visible) return; HandleHide(); }}>
                 <Form form={form} onFinish={onFinish}
                     onFinishFailed={onFinishFailed}

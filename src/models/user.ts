@@ -9,7 +9,7 @@ export interface User {
     saler?: boolean;
     inventory?: boolean;
     guest?: boolean;
-    createDate?: Date;
-    modifyDate?: Date;
+    createDate?: Date| null;
+    modifyDate?: Date| null;
     Deleted?: boolean;
 }
