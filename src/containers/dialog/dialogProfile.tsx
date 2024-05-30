@@ -89,7 +89,7 @@ export default function DialogProfile({ visible, onClose, idUser }: PropType) {
                             { pattern: /(84|0[3|5|7|8|9])+([0-9]{8})\b/, message: 'Số điện thoại không đúng' }
                         ]}>
                         <InputText id="phone"
-                            className={classNames({ 'p-invalid': form.isFieldTouched('phone') && form.getFieldError('phone') })} />
+                             />
                     </LabelField>
 
                     <LabelField label="Ngày sinh" name="ngaySinh">

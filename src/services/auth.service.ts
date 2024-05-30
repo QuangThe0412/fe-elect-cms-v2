@@ -1,4 +1,5 @@
 import { paths } from '@/constants/api';
+import { typeFormChangePassword } from '@/containers/dialog/dialogChangePassword';
 import { User } from '@/models';
 import axios from 'axios';
 
@@ -21,5 +22,9 @@ export class AuthService {
 
     static updateProfile(user: User) {
         return axios.put(paths.updateProfile, user);
+    }
+
+    static changePassword(data : typeFormChangePassword) {
+        return axios.put(paths.changePassword, data);
     }
 }

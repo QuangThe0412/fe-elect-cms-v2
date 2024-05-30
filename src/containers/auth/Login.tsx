@@ -1,4 +1,4 @@
-import React, { useState, useEffect ,useRef} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { classNames } from 'primereact/utils';
@@ -43,8 +43,8 @@ export default function Login() {
         let { username, password } = values;
         HandleApi(AuthService.login(username, password), toast).then((res) => {
             console.log(res);
-            if(res && res.status === 200) {
-                const {accessToken, refreshToken} = res.data;
+            if (res && res.status === 200) {
+                const { accessToken, refreshToken } = res.data;
                 setCookie(ACCESS_COOKIE_NAME, accessToken);
                 setCookie(REFRESH_COOKIE_NAME, refreshToken);
 
@@ -61,7 +61,7 @@ export default function Login() {
 
     return (
         <div className="form-demo">
-        <Toast ref={toast} />
+            <Toast ref={toast} />
             <div className="flex justify-content-center">
                 <div className="card">
                     <h1 className="text-center">{textTitle}</h1>
@@ -70,15 +70,18 @@ export default function Login() {
                         initialValues={initialForm}
                         className="p-fluid">
                         <LabelField label="Tài khoản" name="username" rules={[{ required: true, message: 'Tài khoản không được bỏ trống.' }]}>
-                            <InputText id="username" autoFocus 
+                            <InputText id="username" autoFocus
                                 className={classNames({ 'p-invalid': form.isFieldTouched('username') && form.getFieldError('username') })} />
                         </LabelField>
-                        
-                        <LabelField label="Mật khẩu" name="password" rules={[{ required: true, message: 'Mật khẩu không được bỏ trống.' }]}>
+
+                        <LabelField label="Mật khẩu" name="password"
+                            rules={[
+                                { required: true, message: 'Mật khẩu không được bỏ trống.' }
+                            ]}>
                             <Password id="password" toggleMask feedback={false}
                                 className={classNames({ 'p-invalid': form.isFieldTouched('password') && form.getFieldError('password') })} />
                         </LabelField>
-                        
+
                         <Button type='submit' label={textTitle} icon="pi pi-user" className="w-8" />
                     </Form>
                 </div>

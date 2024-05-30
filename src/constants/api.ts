@@ -6,6 +6,8 @@ export const paths = {
     refreshToken: '/auth/refreshToken',
     getProfile: '/auth/me',
     updateProfile: '/auth/updateProfile',
+    changePassword: '/auth/changePassword',
+
     register: '/auth/register',
     product: '/mon',
     categoryGroup: '/nhommon',

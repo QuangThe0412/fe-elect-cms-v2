@@ -54,11 +54,9 @@ const LabelField: React.FunctionComponent<LabelFieldProps> = ({
       return (
         <div style={{ position: 'relative'}}>
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <label style={{ flex: 'none', width: 100 }}>{label || name}</label>
-
+            <label style={{ flex: 'none', width: '35%' }}>{label || name}</label>
             {childNode}
           </div>
-
           <FieldState {...meta} />
           <Error>{meta.errors}</Error>
           <Error warning>{meta.warnings}</Error>

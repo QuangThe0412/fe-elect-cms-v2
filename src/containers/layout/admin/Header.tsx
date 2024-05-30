@@ -10,12 +10,14 @@ import { ACCESS_COOKIE_NAME, REFRESH_COOKIE_NAME } from '@/constants';
 import { paths } from '@/constants/api';
 import { Button } from 'primereact/button';
 import DialogProfile from '@/containers/dialog/dialogProfile';
+import DialogChangePassword from '@/containers/dialog/dialogChangePassword';
 
 const Header = () => {
     const { profile } = useAuth();
     const menu = useRef<Menu>(null);
     const toast = useRef<Toast>(null);
     const [visible, setVisible] = useState<boolean>(false);
+    const [visibleChangePassword, setVisibleChangePassword] = useState<boolean>(false);
 
     const items = [
         {
@@ -32,8 +34,7 @@ const Header = () => {
                     label: 'Đổi mật khẩu',
                     icon: 'pi pi-lock',
                     command: () => {
-                        console.log('Đổi mật khẩu');
-                        toast.current?.show({ severity: 'info', summary: 'Thông báo', detail: 'Chức năng đang phát triển' });
+                        setVisibleChangePassword(true);
                     }
                 },
                 {
@@ -57,6 +58,10 @@ const Header = () => {
         setVisible(false);
     };
 
+    const onCloseChangePassword = () => {
+        setVisibleChangePassword(false);
+    };
+
     return (
         <>
             <div className='wrapper-header'>
@@ -67,6 +72,7 @@ const Header = () => {
                 <Button label={profile.username} icon="pi pi-user" style={{ backgroundColor: '#9c27b0', color: '#ffffff' }}
                     onClick={(event: any) => menu?.current?.toggle(event)} aria-controls="popup_avatar" aria-haspopup />
                 <DialogProfile idUser={profile.userId} visible={visible} onClose={onClose} />
+                <DialogChangePassword idUser={profile.userId} visible={visibleChangePassword} onClose={onCloseChangePassword} />
             </div>
         </>
     );
