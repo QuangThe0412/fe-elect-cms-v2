@@ -10,7 +10,7 @@ export interface Product {
     GhiChu: string | '',
     Image: string | '',
     modifyDate: Date | null,
-    createdDate: Date | null,
+    createDate: Date | null,
     SoLuongTonKho: number | 0,
     TenMon: string | '',
     ThoiGianBH: number | 0,

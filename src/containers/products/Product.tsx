@@ -36,8 +36,8 @@ let emptyProduct: Product = {
   Deleted: false,
   GhiChu: '',
   Image: '',
-  NgaySua: null,
-  NgayTao: null
+  modifyDate: null,
+  createDate: null
 };
 
 export default function Products() {
