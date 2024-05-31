@@ -31,7 +31,6 @@ const initialForm: typeForm = {
     ngaySinh: null,
 };
 
-
 export default function DialogProfile({ visible, onClose, idUser }: PropType) {
     const [form] = Form.useForm();
     const toast = useRef<Toast>(null);

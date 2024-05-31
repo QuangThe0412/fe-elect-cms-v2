@@ -37,14 +37,13 @@ export const Register = () => {
     const navigate = useNavigate();
 
     const onFinish = (values: typeForm) => {
-        console.log('Success:', values);
-        let user: User = {
+        let newUser: User = {
             username: values.username,
             phone: values.phone,
             password: values.password,
             ngaySinh: values.ngaySinh,
         };
-        HandleApi(AuthService.register(user), toast).then((res) => {
+        HandleApi(AuthService.register(newUser), toast).then((res) => {
             if(res && res.status === 201) {
                 const {accessToken, refreshToken} = res.data;
                 setCookie(ACCESS_COOKIE_NAME, accessToken);

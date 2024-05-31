@@ -7,7 +7,7 @@ export class CategoryService {
         return axios.get(paths.category);
     }
 
-    static getCategory(id: string) {
+    static getCategory(id: number) {
         return axios.get(paths.category + `/${id}`);
     }
 
@@ -15,11 +15,11 @@ export class CategoryService {
         return axios.post(paths.category, category);
     }
 
-    static updateCategory(id: string, updatedCategory: Category) {
+    static updateCategory(id: number, updatedCategory: Category) {
         return axios.put(paths.category + `/${id}`, updatedCategory);
     }
 
-    static toggleActiveCategory(id: string) {
+    static toggleActiveCategory(id: number) {
         return axios.delete(paths.category + `/${id}`);
     }
 }

@@ -27,6 +27,7 @@ export default function Categories() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [categoryGroups, setCategoryGroups] = useState<CategoryGroup[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<Category>(emptyCategory);
+  const [categoryChange, setCategoryChange] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
   const [filters, setFilters] = useState<DataTableFilterMeta>({
@@ -51,12 +52,12 @@ export default function Categories() {
   ];
 
   const [dialogVisible, setDialogVisible] = useState<boolean>(false);
-  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     getCategories();
     getCategoryGroup();
-  }, []);
+    console.log('useEffect');
+  }, [categoryChange]);
 
   const getCategories = () => {
     HandleApi(CategoryService.getCategories(), toast).then((result) => {
@@ -87,7 +88,7 @@ export default function Categories() {
   };
 
   const toggleActiveCategory = (category: Category) => {
-    HandleApi(CategoryService.toggleActiveCategory(category.IDLoaiMon.toString()), toast).then(() => {
+    HandleApi(CategoryService.toggleActiveCategory(category.IDLoaiMon), toast).then(() => {
       getCategories();
     });
   };
@@ -114,53 +115,6 @@ export default function Categories() {
         </span>
       </div>
     );
-  };
-
-  const saveCategory = async () => {
-    setLoading(true);
-    setSubmitted(true);
-
-    if (selectedCategory?.TenLoai?.trim() && selectedCategory?.IDNhomMon > 0) {
-      let _category: Category = { ...selectedCategory };
-      //remove white space
-      trimString(_category);
-
-      if (_category.IDLoaiMon) {
-        HandleApi(CategoryService.updateCategory(_category.IDLoaiMon.toString(), _category), toast)
-          .then((result) => {
-            if (result.status === 200) {
-              getCategories();
-            }
-            setLoading(false);
-          });
-      } else {
-        HandleApi(CategoryService.createCategory(_category), toast).then((result) => {
-          if (result.status === 201) {
-            getCategories();
-          }
-          setLoading(false);
-        });
-      }
-
-      setDialogVisible(false);
-    }
-  };
-
-  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>, name: string) => {
-    const val = (e.target && e.target.value) || '';
-    let _category: Category = { ...selectedCategory };
-
-    // @ts-ignore
-    _category[`${name}`] = val;
-    setSelectedCategory(_category as Category);
-  };
-
-  const onCategoryChange = (e: RadioButtonChangeEvent, name: string) => {
-    const val = e.value || 0;
-    let _category: Category = { ...selectedCategory };
-
-    _category.IDNhomMon = val;
-    setSelectedCategory(_category as Category);
   };
 
   const bodyNhomMon = (rowData: Category) => {
@@ -201,16 +155,15 @@ export default function Categories() {
 
       </DataTable>
       <CategoryDialog
-        submitted={submitted}
         visible={dialogVisible}
         onClose={() => {
           setDialogVisible(false)
         }}
-        onSaved={saveCategory}
-        onInputChange={onInputChange}
-        selectedCategory={selectedCategory as Category}
-        categoryGroup={categoryGroups as CategoryGroup[]}
-        onCategoryChange={onCategoryChange}
+        idCategory={selectedCategory.IDLoaiMon}
+        onCategoryChange={() => {
+          console.log('onCategoryChange');
+          setCategoryChange(!categoryChange)
+        }} // refresh data
       />
     </div>
   );
