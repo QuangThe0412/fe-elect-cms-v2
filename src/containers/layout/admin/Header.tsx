@@ -4,7 +4,7 @@ import DockMenu from '@/containers/menu/Dock';
 import { Toast } from 'primereact/toast';
 import { Menu } from 'primereact/menu';
 import useAuth from '@/hooks/useAuth';
-import TimeDisplay from '../../products/TImeDisplay';
+import TimeDisplay from './TImeDisplay';
 import { eraseCookie } from '@/utils/cookie';
 import { ACCESS_COOKIE_NAME, REFRESH_COOKIE_NAME } from '@/constants';
 import { paths } from '@/constants/api';

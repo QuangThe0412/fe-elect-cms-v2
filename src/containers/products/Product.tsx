@@ -134,11 +134,13 @@ export default function Products() {
   };
 
   const bodyTonKho = (rowData: Product) => {
-    const stockClassName = classNames('border-circle w-2rem h-2rem inline-flex font-bold justify-content-center align-items-center text-sm', {
-      'bg-red-100 text-red-900': rowData.SoLuongTonKho <= 10,
-      'bg-blue-100 text-blue-900': rowData.SoLuongTonKho > 10 && rowData.SoLuongTonKho < 25,
-      'bg-teal-100 text-teal-900': rowData.SoLuongTonKho > 26
-    });
+    const stockClassName = classNames(
+      'border-circle border-black w-2rem h-2rem inline-flex font-bold justify-content-center align-items-center text-sm'
+      , {
+        'bg-red-100 text-red-900': rowData.SoLuongTonKho <= 10,
+        'bg-blue-100 text-blue-900': rowData.SoLuongTonKho > 10 && rowData.SoLuongTonKho < 25,
+        'bg-teal-100 text-teal-900': rowData.SoLuongTonKho > 26
+      });
 
     return <div className={stockClassName}>{rowData.SoLuongTonKho}</div>;
   };
@@ -271,7 +273,7 @@ export default function Products() {
         onContextMenu={(e) => cm.current?.show(e.originalEvent)}
         contextMenuSelection={selectedProduct ? selectedProduct : undefined}
         onContextMenuSelectionChange={(e: any) => { setSelectedProduct(e.value) }}
-        paginator rows={25} rowsPerPageOptions={[5, 10, 25, 50]}
+        paginator rows={15} rowsPerPageOptions={[5, 10, 25, 50]}
         stripedRows sortMode="multiple" removableSort
         tableStyle={{ width: '100%' }}
         loading={loading} scrollable scrollHeight="75.5vh"

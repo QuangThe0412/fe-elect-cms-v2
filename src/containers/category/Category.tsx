@@ -139,7 +139,7 @@ export default function Categories() {
         onContextMenu={(e) => cm.current?.show(e.originalEvent)}
         contextMenuSelection={selectedCategory ? selectedCategory : undefined}
         onContextMenuSelectionChange={(e: any) => { setSelectedCategory(e.value) }}
-        paginator rows={25} rowsPerPageOptions={[5, 10, 25, 50]}
+        paginator rows={15} rowsPerPageOptions={[5, 10, 25, 50]}
         stripedRows sortMode="multiple" removableSort
         tableStyle={{ width: '100%' }}
         loading={loading} scrollable scrollHeight="75.5vh"

@@ -139,8 +139,8 @@ console.log(selectedCategoryGroup);
                                     setSelectedCategoryGroup(e.value);
                                 }}
                                 options={categoryGroups} optionLabel={'TenNhom'}
-                                placeholder="Chọn nhóm món" className="w-full md:w-14rem" />
-                        )}
+                                placeholder="Chọn nhóm món" className="w-full" />
+                            )}
                     </LabelField>
 
                     <Button loading={loading} type='submit' label={idCategory ? 'Cập nhật' : 'Tạo mới'} className="w-6" style={{ float: 'right' }} />

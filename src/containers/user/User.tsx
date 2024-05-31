@@ -160,7 +160,7 @@ export default function Users() {
         onContextMenu={(e: any) => OnRightClickContext(e)}
         contextMenuSelection={selectedUser ? selectedUser : undefined}
         onContextMenuSelectionChange={(e: any) => { setSelectedUser(e.value) }}
-        paginator rows={25} rowsPerPageOptions={[5, 10, 25, 50]}
+        paginator rows={15} rowsPerPageOptions={[5, 10, 25, 50]}
         stripedRows sortMode="multiple" removableSort
         tableStyle={{ width: '100%' }}
         loading={loading} scrollable scrollHeight="75.5vh"

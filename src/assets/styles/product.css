@@ -1,14 +1,18 @@
-.p-datatable .p-datatable-tbody > tr > td {
-  overflow:hidden;
+.p-datatable .p-datatable-tbody>tr>td {
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.p-image img{
+.p-image img {
   width: 90%;
 }
 
 .card {
   width: 100%;
-  padding:0 1% 1% 1%;
+  padding: 0 1% 1% 1%;
+}
+
+.border-black {
+  border: 1px solid black;
 }
