@@ -35,6 +35,7 @@ const initialForm: typeForm = {
 export default function DialogProfile({ visible, onClose, idUser }: PropType) {
     const [form] = Form.useForm();
     const toast = useRef<Toast>(null);
+    const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
         if (visible) {
@@ -55,6 +56,7 @@ export default function DialogProfile({ visible, onClose, idUser }: PropType) {
     };
 
     const onFinish = (values: typeForm) => {
+        setLoading(true);
         let user: User = {
             id: parseInt(idUser),
             phone: values.phone,
@@ -65,6 +67,7 @@ export default function DialogProfile({ visible, onClose, idUser }: PropType) {
             if (res && res.status === 200) {
                 onClose();
             }
+            setLoading(false);
         });
     };
 
@@ -98,7 +101,7 @@ export default function DialogProfile({ visible, onClose, idUser }: PropType) {
                             style={{ width: '100%' }} />
                     </LabelField>
 
-                    <Button type='submit' label='Cập nhật' className="w-6" style={{float: 'right'}} />
+                    <Button loading={loading} type='submit' label='Cập nhật' className="w-6" style={{float: 'right'}} />
                 </Form>
             </Dialog>
         </>

@@ -37,6 +37,7 @@ const initialForm: typeFormChangePassword = {
 export default function DialogChangePassword({ visible, onClose, idUser }: PropType) {
     const [form] = Form.useForm();
     const toast = useRef<Toast>(null);
+    const [loading, setLoading] = useState<boolean>(false);
 
     const HandleHide = () => {
         onClose();
@@ -44,8 +45,8 @@ export default function DialogChangePassword({ visible, onClose, idUser }: PropT
     };
 
     const onFinish = (values: typeFormChangePassword) => {
+        setLoading(true);
         values.idUser = idUser;
-        console.log(values);
         HandleApi(AuthService.changePassword(values), toast).then((res) => {
             if (res && res.status === 200) {
                 HandleHide();
@@ -59,6 +60,7 @@ export default function DialogChangePassword({ visible, onClose, idUser }: PropT
                         }
                     ]);
             }
+            setLoading(false);
         });
     };
 
@@ -110,7 +112,7 @@ export default function DialogChangePassword({ visible, onClose, idUser }: PropT
                         {(control, meta) => (<Password toggleMask {...control} id="reNewPassword"
                             className={classNames({ 'invalid': meta.errors.length })} />)}
                     </LabelField>
-                    <Button type='submit' label='Cập nhật' className="w-6" style={{ float: 'right' }} />
+                    <Button loading={loading} type='submit' label='Cập nhật' className="w-6" style={{ float: 'right' }} />
                 </Form>
             </Dialog>
         </>

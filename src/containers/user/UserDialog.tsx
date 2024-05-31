@@ -31,6 +31,11 @@ type typeForm = {
     password: string;
     phone: string;
     ngaySinh: Date | null;
+    admin: boolean;
+    saler: boolean;
+    inventory: boolean;
+    cashier: boolean;
+    guest: boolean;
 }
 
 const initialForm: typeForm = {
@@ -39,12 +44,23 @@ const initialForm: typeForm = {
     phone: '',
     password: '',
     ngaySinh: null,
+    admin: false,
+    saler: false,
+    inventory: false,
+    cashier: false,
+    guest: true,
 };
 
 
 export default function UserDialog({ visible, onClose, idUser, onUserChange }: PropType) {
     const [form] = Form.useForm();
     const toast = useRef<Toast>(null);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [admin, setAdmin] = useState<boolean>(false);
+    const [saler, setSaler] = useState<boolean>(false);
+    const [inventory, setInventory] = useState<boolean>(false);
+    const [cashier, setCashier] = useState<boolean>(false);
+    const [guest, setGuest] = useState<boolean>(true);
 
     useEffect(() => {
         if (visible && idUser > 0) {
@@ -55,10 +71,20 @@ export default function UserDialog({ visible, onClose, idUser, onUserChange }: P
     const getProfile = () => {
         HandleApi(UserService.getUser(idUser), null).then((res) => {
             if (res && res.status === 200) {
-                const { phone, ngaySinh, username } = res.data as User;
+                const { phone, ngaySinh, username, admin, saler, inventory, cashier, guest } = res.data as User;
+                setAdmin(!!admin);
+                setSaler(!!saler);
+                setInventory(!!inventory);
+                setCashier(!!cashier);
+                setGuest(!!guest);
                 form.setFieldsValue({
                     phone,
                     username,
+                    admin,
+                    saler,
+                    inventory,
+                    cashier,
+                    guest,
                     ngaySinh: ngaySinh ? new Date(ngaySinh) : null,
                 });
             }
@@ -71,14 +97,30 @@ export default function UserDialog({ visible, onClose, idUser, onUserChange }: P
             password: values.password,
             phone: values.phone,
             ngaySinh: values.ngaySinh,
+            admin: admin,
+            saler: saler,
+            inventory: inventory,
+            cashier: cashier,
+            guest: guest,
         };
 
-        HandleApi(UserService.updateUser(idUser, user), toast).then((res) => {
-            if (res && res.status === 200) {
-                onUserChange();
-                HandClose();
-            }
-        });
+        if (idUser) { // update
+            HandleApi(UserService.updateUser(idUser, user), toast).then((res) => {
+                if (res && res.status === 200) {
+                    onUserChange();
+                    HandClose();
+                }
+                setLoading(false);
+            });
+        } else {
+            HandleApi(UserService.createUser(user), toast).then((res) => {
+                if (res && res.status === 201) {
+                    onUserChange();
+                    HandClose();
+                }
+                setLoading(false);
+            });
+        }
     };
 
     const onFinishFailed = (errorInfo: any) => {
@@ -87,7 +129,32 @@ export default function UserDialog({ visible, onClose, idUser, onUserChange }: P
 
     const HandClose = () => {
         form.resetFields();
+        setAdmin(false);
+        setSaler(false);
+        setInventory(false);
+        setCashier(false);
+        setGuest(true);
         onClose();
+    };
+
+    const onClickAdmin = (e: any) => {
+        setAdmin(e.checked);
+    };
+
+    const onClickSaler = (e: any) => {
+        setSaler(e.checked);
+    };
+
+    const onClickInventory = (e: any) => {
+        setInventory(e.checked);
+    };
+
+    const onClickCashier = (e: any) => {
+        setCashier(e.checked);
+    };
+
+    const onClickGuest = (e: any) => {
+        setGuest(e.checked);
     };
 
     return (
@@ -104,7 +171,7 @@ export default function UserDialog({ visible, onClose, idUser, onUserChange }: P
                             { required: true, message: 'Tài khoản không được bỏ trống.' },
                             { pattern: /^[a-zA-Z0-9]+$/, message: 'Tài khoản không được chứa ký tự đặc biệt.' }
                         ]}>
-                        {(control, meta) => (<InputText {...control} id="username"
+                        {(control, meta) => (<InputText {...control} id="username" disabled={!!idUser}
                             className={classNames({ 'invalid': meta.errors.length })} />)}
                     </LabelField>
 
@@ -142,25 +209,25 @@ export default function UserDialog({ visible, onClose, idUser, onUserChange }: P
                     <LabelField label="Roles" name="role">
                         <div className={styles.groupCheckBox}>
                             <LabelField label="ADMIN" name="admin">
-                                <Checkbox inputId="admin" value={RoleEnum.ADMIN} checked={false} />
+                                <Checkbox inputId="admin" value={RoleEnum.ADMIN} checked={admin} onClick={onClickAdmin} />
                             </LabelField>
                             <LabelField label="SALER" name="saler">
-                                <Checkbox inputId="saler" value={RoleEnum.SALER} checked={false} />
+                                <Checkbox inputId="saler" value={RoleEnum.SALER} checked={saler} onClick={onClickSaler} />
                             </LabelField>
 
                             <LabelField label="INVENTORY" name="inventory">
-                                <Checkbox inputId="inventory" value={RoleEnum.INVENTORY} checked={false} />
+                                <Checkbox inputId="inventory" value={RoleEnum.INVENTORY} checked={inventory} onClick={onClickInventory} />
                             </LabelField>
                             <LabelField label="CASHIER" name="cashier">
-                                <Checkbox inputId="cashier" value={RoleEnum.CASHIER} checked={false} />
+                                <Checkbox inputId="cashier" value={RoleEnum.CASHIER} checked={cashier} onClick={onClickCashier} />
                             </LabelField>
 
                             <LabelField label="GUEST" name="guest">
-                                <Checkbox inputId="guest" value={RoleEnum.GUEST} checked={true} disabled />
+                                <Checkbox inputId="guest" value={RoleEnum.GUEST} checked={guest} disabled onClick={onClickGuest} />
                             </LabelField>
                         </div>
                     </LabelField>
-                    <Button type='submit' label='Cập nhật' className="w-6" style={{ float: 'right' }} />
+                    <Button loading={loading} type='submit' label={idUser ? 'Sửa' : 'Tạo'} className="w-6" style={{ float: 'right' }} />
                 </Form>
             </Dialog>
         </>
