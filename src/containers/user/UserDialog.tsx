@@ -92,8 +92,10 @@ export default function UserDialog({ visible, onClose, idUser, onUserChange }: P
     };
 
     const onFinish = (values: typeForm) => {
+        setLoading(true);
         let user: User = {
             id: idUser,
+            username: values.username,
             password: values.password,
             phone: values.phone,
             ngaySinh: values.ngaySinh,
@@ -103,7 +105,7 @@ export default function UserDialog({ visible, onClose, idUser, onUserChange }: P
             cashier: cashier,
             guest: guest,
         };
-
+        
         if (idUser) { // update
             HandleApi(UserService.updateUser(idUser, user), toast).then((res) => {
                 if (res && res.status === 200) {
@@ -214,20 +216,18 @@ export default function UserDialog({ visible, onClose, idUser, onUserChange }: P
                             <LabelField label="SALER" name="saler">
                                 <Checkbox inputId="saler" value={RoleEnum.SALER} checked={saler} onClick={onClickSaler} />
                             </LabelField>
-
                             <LabelField label="INVENTORY" name="inventory">
                                 <Checkbox inputId="inventory" value={RoleEnum.INVENTORY} checked={inventory} onClick={onClickInventory} />
                             </LabelField>
                             <LabelField label="CASHIER" name="cashier">
                                 <Checkbox inputId="cashier" value={RoleEnum.CASHIER} checked={cashier} onClick={onClickCashier} />
                             </LabelField>
-
                             <LabelField label="GUEST" name="guest">
                                 <Checkbox inputId="guest" value={RoleEnum.GUEST} checked={guest} disabled onClick={onClickGuest} />
                             </LabelField>
                         </div>
                     </LabelField>
-                    <Button loading={loading} type='submit' label={idUser ? 'Sửa' : 'Tạo'} className="w-6" style={{ float: 'right' }} />
+                    <Button loading={loading} type='submit' label={idUser ? 'Cập nhật' : 'Tạo mới'} className="w-6" style={{ float: 'right' }} />
                 </Form>
             </Dialog>
         </>
