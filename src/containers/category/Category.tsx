@@ -56,11 +56,10 @@ export default function Categories() {
   useEffect(() => {
     getCategories();
     getCategoryGroup();
-    console.log('useEffect');
   }, [categoryChange]);
 
   const getCategories = () => {
-    HandleApi(CategoryService.getCategories(), toast).then((result) => {
+    HandleApi(CategoryService.getCategories(), null).then((result) => {
       if (result.status === 200) {
         setCategories(result.data)
       }
@@ -69,7 +68,7 @@ export default function Categories() {
   }
 
   const getCategoryGroup = () => {
-    HandleApi(CategoryGroupService.getCategoryGroups(), toast).then((result) => {
+    HandleApi(CategoryGroupService.getCategoryGroups(), null).then((result) => {
       if (result.status === 200) {
         setCategoryGroups(result.data)
       }

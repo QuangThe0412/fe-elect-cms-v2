@@ -216,7 +216,6 @@ export default function Products() {
         }}
         idProduct={selectedProduct.IDMon}
         onProductChange={() => {
-          console.log('onProductChange');
           setProductChange(!productChange)
         }} // refresh data
       />

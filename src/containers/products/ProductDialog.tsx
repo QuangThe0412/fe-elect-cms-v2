@@ -238,8 +238,16 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
                                     : Promise.resolve()
                             }
                         ]}>
-                        {(control, meta) => (<InputNumber {...control} id="priceRetail" 
-                            className={classNames({ 'invalid': meta.errors.length })} />)}
+                        {(control, meta) => (
+                            <InputNumber
+                                {...control}
+                                id="priceRetail"
+                                className={classNames({ 'invalid': meta.errors.length })}
+                                onChange={(value) => {
+                                    control.onChange(value?.value);
+                                }}
+                            />
+                        )}
                     </LabelField>
                     <LabelField label="Giá bán sỉ" name="priceWholeSale"
                         rules={[
@@ -251,7 +259,12 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
                             }
                         ]}>
                         {(control, meta) => (<InputNumber {...control} id="priceWholeSale"
-                            className={classNames({ 'invalid': meta.errors.length })} />)}
+                            className={classNames({ 'invalid': meta.errors.length })}
+                            onChange={(value) => {
+                                control.onChange(value?.value);
+                            }}
+                        />
+                        )}
 
                     </LabelField>
                     <LabelField label="Giá vốn" name="priceCost"
@@ -264,7 +277,12 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
                             }
                         ]}>
                         {(control, meta) => (<InputNumber {...control} id="priceCost"
-                            className={classNames({ 'invalid': meta.errors.length })} />)}
+                            className={classNames({ 'invalid': meta.errors.length })}
+                            onChange={(value) => {
+                                control.onChange(value?.value);
+                            }}
+                        />
+                        )}
                     </LabelField>
                     <LabelField label="Số lượng tồn kho" name="quantity"
                         rules={[
@@ -276,15 +294,21 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
                             }
                         ]}>
                         {(control, meta) => (<InputNumber {...control} id="quantity"
-                            className={classNames({ 'invalid': meta.errors.length })} />)}
+                            className={classNames({ 'invalid': meta.errors.length })}
+                            onChange={(value) => {
+                                control.onChange(value?.value);
+                            }}
+                        />
+                        )}
                     </LabelField>
-                    <LabelField label="Thời gian bảo hành" name="timeWarranty"
-                    // rules={[
-                    //     { required: true, message: 'Thời gian bảo hành không được bỏ trống.' },
-                    // ]}
-                    >
+                    <LabelField label="Thời gian bảo hành" name="timeWarranty">
                         {(control, meta) => (<InputNumber {...control} id="timeWarranty"
-                            className={classNames({ 'invalid': meta.errors.length })} />)}
+                            className={classNames({ 'invalid': meta.errors.length })}
+                            onChange={(value) => {
+                                control.onChange(value?.value);
+                            }}
+                        />
+                        )}
                     </LabelField>
                     <LabelField label="Ghi chú" name="note">
                         {(control, meta) => (<InputTextarea {...control} id="note"
