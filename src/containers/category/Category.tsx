@@ -161,7 +161,6 @@ export default function Categories() {
         }}
         idCategory={selectedCategory.IDLoaiMon}
         onCategoryChange={() => {
-          console.log('onCategoryChange');
           setCategoryChange(!categoryChange)
         }} // refresh data
       />

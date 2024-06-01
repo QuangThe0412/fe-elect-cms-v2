@@ -6,7 +6,7 @@ export const ProductService = {
         return axios.get( paths.product);
     },
 
-    getProduct(id: string) {
+    getProduct(id: number) {
         return axios.get( paths.product + `/${id}`);
     },
 
@@ -14,11 +14,11 @@ export const ProductService = {
         return axios.post( paths.product, product);
     },
 
-    updateProduct(id: string, updatedProduct: FormData) {
+    updateProduct(id: number, updatedProduct: FormData) {
         return axios.put(paths.product + `/${id}`, updatedProduct);
     },
 
-    toggleActiveProduct(id: string) {
+    toggleActiveProduct(id: number) {
         return axios.delete( paths.product + `/${id}`);
     },
 }

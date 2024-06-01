@@ -43,6 +43,7 @@ let emptyProduct: Product = {
 export default function Products() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [productChange, setProductChange] = useState<boolean>(false);
   const [selectedProduct, setSelectedProduct] = useState<Product>(emptyProduct);
   const [loading, setLoading] = useState<boolean>(true);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
@@ -68,8 +69,6 @@ export default function Products() {
   ];
 
   const [dialogVisible, setDialogVisible] = useState<boolean>(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [objectURL, setObjectURL] = useState<string>('');
 
   const emptyImage: FileUploadState = {
     files: [new File([], "")],
@@ -82,7 +81,7 @@ export default function Products() {
   useEffect(() => {
     getProducts();
     getCategory();
-  }, []);
+  }, [productChange]);
 
   const getProducts = () => {
     setLoading(true);
@@ -104,33 +103,19 @@ export default function Products() {
   }
 
   const addProduct = (product: Product) => {
-    setObjectURL('');
     setSelectedProduct(emptyProduct);
     setDialogVisible(true);
   };
 
   const editProduct = (product: Product) => {
-    setObjectURL(linkImageGG + product.Image);
     setSelectedProduct(product);
     setDialogVisible(true);
   };
 
   const toggleActiveProduct = (product: Product) => {
-    HandleApi(ProductService.toggleActiveProduct(product.IDMon.toString()), toast).then(() => {
+    HandleApi(ProductService.toggleActiveProduct(product.IDMon), toast).then(() => {
       getProducts();
     });
-  };
-
-  const bodyDonGiaVon = (rowData: Product) => {
-    return formatCurrency(rowData.DonGiaVon);
-  };
-
-  const bodyDonGiaLe = (rowData: Product) => {
-    return formatCurrency(rowData.DonGiaBanLe);
-  };
-
-  const bodyDonGiaBanSi = (rowData: Product) => {
-    return formatCurrency(rowData.DonGiaBanSi);
   };
 
   const bodyTonKho = (rowData: Product) => {
@@ -180,62 +165,6 @@ export default function Products() {
     );
   };
 
-  const saveProduct = async () => {
-    setLoading(true);
-    setSubmitted(true);
-
-    if (selectedProduct?.TenMon?.trim() && selectedProduct?.DVTMon?.trim()
-      && selectedProduct?.DonGiaBanSi > 0 && selectedProduct?.DonGiaVon > 0
-      && selectedProduct?.DonGiaBanLe > 0 && selectedProduct?.SoLuongTonKho >= 0) {
-      let _product: Product2 = { ...selectedProduct as Product2 };
-      //remove white space
-      trimString(_product);
-
-      const formData = await convertFormData(_product, fileImage);
-
-      if (_product.IDMon) {
-        HandleApi(ProductService.updateProduct(_product.IDMon.toString(), formData), toast)
-          .then(() => {
-            getProducts();
-          });
-      } else {
-        HandleApi(ProductService.createProduct(formData), toast).then(() => {
-          getProducts();
-        });
-      }
-
-      setFileImage(emptyImage);
-      setObjectURL('');
-      setDialogVisible(false);
-    }
-  };
-
-  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>, name: string) => {
-    const val = (e.target && e.target.value) || '';
-    let _product: Product = { ...selectedProduct };
-
-    // @ts-ignore
-    _product[`${name}`] = val;
-    setSelectedProduct(_product as Product);
-  };
-
-  const onInputNumberChange = (e: InputNumberChangeEvent, name: string) => {
-    const val = e.value || 0;
-    let _product: Product = { ...selectedProduct };
-
-    // @ts-ignore
-    _product[`${name}`] = val;
-    setSelectedProduct(_product as Product);
-  };
-
-  const onCategoryChange = (e: RadioButtonChangeEvent, name: string) => {
-    const val = e.value || 0;
-    let _product: Product = { ...selectedProduct };
-
-    _product.IDLoaiMon = val;
-    setSelectedProduct(_product as Product);
-  };
-
   const bodyLoaiMon = (rowData: Product) => {
     return (
       <>
@@ -246,21 +175,6 @@ export default function Products() {
         })}
       </>
     );
-  };
-
-  const handleSelectFile = async (event: any) => {
-    const file = event.files[0];
-    const reader = new FileReader();
-    let blob = await fetch(file.objectURL).then((r) => r.blob());
-
-    reader.readAsDataURL(blob);
-
-    reader.onloadend = function () {
-      setFileImage({
-        files: [new File([blob], file.name, { type: file.type })],
-      });
-      setObjectURL(file.objectURL);
-    };
   };
 
   return (
@@ -288,28 +202,23 @@ export default function Products() {
         <Column field="TenMon" header="Tên" style={{ width: '15%' }}></Column>
         <Column field="Image" header="Hình ảnh" body={bodyImage} style={{ width: '5%' }}></Column>
         <Column field="DVTMon" filter header="ĐVT" ></Column>
-        <Column field="DonGiaVon" filter header="Giá vốn" body={bodyDonGiaVon} sortable ></Column>
-        <Column field="DonGiaBanLe" filter header="Giá lẻ" body={bodyDonGiaLe} sortable ></Column>
-        <Column field="DonGiaBanSi" filter header="Giá sỉ" body={bodyDonGiaBanSi} sortable ></Column>
+        <Column field="DonGiaVon" filter header="Giá vốn" body={(rowData: Product) => <>{formatCurrency(rowData.DonGiaVon)}</>} sortable ></Column>
+        <Column field="DonGiaBanLe" filter header="Giá lẻ" body={(rowData: Product) => <>{formatCurrency(rowData.DonGiaBanLe)}</>} sortable ></Column>
+        <Column field="DonGiaBanSi" filter header="Giá sỉ" body={(rowData: Product) => <>{formatCurrency(rowData.DonGiaBanSi)}</>} sortable ></Column>
         <Column field="SoLuongTonKho" header="Tồn kho" body={bodyTonKho} sortable ></Column>
         <Column field="ThoiGianBH" header="Bảo hành" sortable ></Column>
         <Column field="GhiChu" header="Ghi chú" ></Column>
       </DataTable>
       <ProductDialog
-        submitted={submitted}
         visible={dialogVisible}
         onClose={() => {
           setDialogVisible(false)
-          setObjectURL('');
         }}
-        onSaved={saveProduct}
-        onInputChange={onInputChange}
-        onInputNumberChange={onInputNumberChange}
-        selectedProduct={selectedProduct as Product}
-        categories={categories as Category[]}
-        onCategoryChange={onCategoryChange}
-        handleSelectFile={handleSelectFile}
-        objectURL={objectURL}
+        idProduct={selectedProduct.IDMon}
+        onProductChange={() => {
+          console.log('onProductChange');
+          setProductChange(!productChange)
+        }} // refresh data
       />
     </div>
   );

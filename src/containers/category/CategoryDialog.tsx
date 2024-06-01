@@ -111,7 +111,7 @@ export default
     const onFinishFailed = (errorInfo: any) => {
         console.log('Failed:', errorInfo);
     };
-console.log(selectedCategoryGroup);
+    
     return (
         <>
             <Toast ref={toast}></Toast>

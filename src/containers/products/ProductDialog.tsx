@@ -1,165 +1,290 @@
-import React, { useRef } from 'react';
-import { classNames } from 'primereact/utils';
-import { InputTextarea } from 'primereact/inputtextarea';
+import React, { useEffect, useRef, useState } from 'react';
+import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
-import { Category, Product } from '@/models';
-import { Button } from 'primereact/button';
-import { RadioButton } from 'primereact/radiobutton';
-import { InputNumber } from 'primereact/inputnumber';
+import Form from 'rc-field-form';
 import { Toast } from 'primereact/toast';
+import { ProductService } from '@/services/products.service';
+import { CategoryGroupService } from '@/services/categoryGroup.service';
+import { Product, Category, Product2, FileUploadState } from '@/models';
+import { HandleApi } from '@/services/handleApi';
+import { LabelField } from '@/components';
+import { classNames } from 'primereact/utils';
+import { RadioButton } from 'primereact/radiobutton';
+import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
+import Categories from '../category/Category';
+import { CategoryService } from '@/services/category.service';
+import { convertFormData, linkImageGG, trimString } from '@/utils/common';
+import { InputTextarea } from 'primereact/inputtextarea';
 import { FileUpload } from 'primereact/fileupload';
-import { linkImageGG, handleImageError } from '@/utils/common';
 
 type PropType = {
-    categories: Category[],
-    selectedProduct: Product,
+    idProduct: number,
     visible: boolean,
-    submitted: boolean,
-    objectURL: string,
-    onClose?: () => void,
-    onSaved?: () => void,
-    onInputChange: (e: any, name: string) => void,
-    onInputNumberChange: (e: any, name: string) => void,
-    onCategoryChange: (e: any, name: string) => void
-    handleSelectFile: (e: any) => void
+    onClose: () => void,
+    onProductChange: () => void,
+};
+
+type typeForm = {
+    id: number;
+    idCategory: number;
+    unit: string;
+    priceRetail: number;
+    priceWholeSale: number;
+    priceCost: number;
+    note: string;
+    modifyDate: Date | null,
+    createDate: Date | null,
+    quantity: number;
+    nameProduct: string;
+    timeWarranty: number;
 }
 
-const ProductDialog = (props: PropType) => {
-    let {
-        selectedProduct,
-        visible,
-        submitted,
-        objectURL,
-        categories,
-        onClose,
-        onSaved,
-        onInputChange,
-        onInputNumberChange,
-        onCategoryChange,
-        handleSelectFile
-    } = props;
-    const toast = useRef<Toast>(null);
+const initialForm: typeForm = {
+    id: 0,
+    idCategory: 0,
+    unit: '',
+    priceRetail: 0,
+    priceWholeSale: 0,
+    priceCost: 0,
+    note: '',
+    modifyDate: null,
+    createDate: null,
+    quantity: 0,
+    nameProduct: '',
+    timeWarranty: 0,
+};
 
-    const hideDialog = () => {
-        onClose?.();
+
+export default function ProductDialog({ visible, onClose, idProduct, onProductChange }: PropType) {
+    const [form] = Form.useForm();
+    const toast = useRef<Toast>(null);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [selectedCategory, setSelectedCategory] = useState<Category>();
+    const [objectURL, setObjectURL] = useState<string>('');
+
+    const emptyImage: FileUploadState = {
+        files: [new File([], "")],
+    }
+
+    const [fileImage, setFileImage] = useState<FileUploadState>({
+        files: [],
+    });
+
+    useEffect(() => {
+        getCategories();
+        if (visible && idProduct > 0) {
+            getProduct();
+        }
+    }, [visible]);
+
+    const HandClose = () => {
+        onClose();
+        form.resetFields();
+        setSelectedCategory(undefined);
+        setObjectURL('');
     };
 
-    const productDialogFooter = (
-        <React.Fragment>
-            <Button label="Cancel" icon="pi pi-times" outlined onClick={hideDialog} />
-            <Button label="Save" icon="pi pi-check" onClick={onSaved} />
-        </React.Fragment>
-    );
+    const getProduct = () => {
+        HandleApi(ProductService.getProduct(idProduct), null).then((res) => {
+            if (res && res.status === 200) {
+                let product = res.data as Product;
+                console.log(product);
+
+                setSelectedCategory(categories.find((x) => x.IDLoaiMon === product.IDLoaiMon));
+                form.setFieldsValue({
+                    id: product.IDMon,
+                    idCategory: product.IDLoaiMon,
+                    unit: product.DVTMon,
+                    priceRetail: product.DonGiaBanLe,
+                    priceWholeSale: product.DonGiaBanSi,
+                    priceCost: product.DonGiaVon,
+                    note: product.GhiChu,
+                    image: product.Image,
+                    modifyDate: product.modifyDate,
+                    createDate: product.createDate,
+                    quantity: product.SoLuongTonKho,
+                    nameProduct: product.TenMon,
+                    timeWarranty: product.ThoiGianBH,
+                });
+
+                setObjectURL(linkImageGG + product.Image);
+            }
+        });
+    };
+
+    const getCategories = () => {
+        HandleApi(CategoryService.getCategories(), null).then((result) => {
+            if (result.status === 200) {
+                let data = result.data as Category[];
+                setCategories(data);
+            }
+            setLoading(false);
+        });
+    }
+
+    const onFinish = async (values: typeForm) => {
+        setLoading(true);
+        let product: Product = {
+            IDMon: idProduct,
+            IDLoaiMon: values.idCategory,
+            DVTMon: values.unit,
+            DonGiaBanLe: values.priceRetail,
+            DonGiaBanSi: values.priceWholeSale,
+            DonGiaVon: values.priceCost,
+            GhiChu: values.note,
+            modifyDate: values.modifyDate,
+            createDate: values.createDate,
+            SoLuongTonKho: values.quantity,
+            TenMon: values.nameProduct,
+            ThoiGianBH: values.timeWarranty,
+            Deleted: false,
+            Image: ''
+        };
+
+        let _product: Product2 = { ...product as Product2 };
+        trimString(_product);
+
+        const formData = await convertFormData(_product, fileImage);
+
+        if (idProduct) { // update
+            HandleApi(ProductService.updateProduct(idProduct, formData), toast).then((res) => {
+                if (res && res.status === 200) {
+                    console.log('aaaaaaa');
+                    onProductChange();
+                    HandClose();
+                }
+                setLoading(false);
+            });
+        } else { // create
+            HandleApi(ProductService.createProduct(formData), toast).then((res) => {
+                if (res.status === 201) {
+                    console.log(res.data);
+                    onProductChange();
+                    HandClose();
+                }
+                setLoading(false);
+            });
+        }
+    };
+
+    const onFinishFailed = (errorInfo: any) => {
+        console.log('Failed:', errorInfo);
+    };
+
+    const handleSelectFile = async (event: any) => {
+        const file = event.files[0];
+        const reader = new FileReader();
+        let blob = await fetch(file.objectURL).then((r) => r.blob());
+
+        reader.readAsDataURL(blob);
+
+        reader.onloadend = function () {
+            setFileImage({
+                files: [new File([blob], file.name, { type: file.type })],
+            });
+            setObjectURL(file.objectURL);
+        };
+    };
 
     return (
         <>
-            <Toast ref={toast} />
+            <Toast ref={toast}></Toast>
+            <Dialog header={idProduct ? 'Cập nhật' : 'Thêm mới'} visible={visible} style={{ width: '35vw' }}
+                onHide={() => { if (!visible) return; HandClose(); }}>
+                <Form form={form} onFinish={onFinish}
+                    onFinishFailed={onFinishFailed}
+                    initialValues={initialForm}
+                    className="p-fluid">
+                    <LabelField label="Hình ảnh" name="image">
+                        {(control, meta) => (
+                            <FileUpload
+                                {...control}
+                                id="image"
+                                mode="basic"
+                                accept="image/*"
+                                maxFileSize={1000000}
+                                onSelect={handleSelectFile}
+                                className={classNames({ 'invalid': meta.errors.length })}
+                            />
+                        )}
+                    </LabelField>
 
-            <Dialog visible={visible} style={{ width: '32rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }}
-                header={selectedProduct?.IDMon ? 'Chỉnh sửa ' : 'Thêm mới'} modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
-                <FileUpload name="file" accept="image/*" mode='basic' onSelect={handleSelectFile} />
+                    {objectURL && <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <img style={{ maxWidth: 200, maxHeight: 200 }}
+                            src={objectURL} />
+                    </div>}
+                    <LabelField label="Tên sản phẩm" name="nameProduct"
+                        rules={[
+                            { required: true, message: 'Tên sản phẩm không được bỏ trống.' },
+                        ]}>
+                        {(control, meta) => (<InputText {...control} id="nameProduct"
+                            className={classNames({ 'invalid': meta.errors.length })} />)}
+                    </LabelField>
+                    <LabelField label="Loại món" name="idCategory"
+                        rules={[
+                            { required: true, message: 'Loại món không được bỏ trống.' },
+                        ]}>
+                        {(control, meta) => (
+                            <Dropdown value={selectedCategory}
+                                onChange={(e: DropdownChangeEvent) => {
+                                    setSelectedCategory(e.value);
+                                }}
+                                options={categories} optionLabel={'TenLoai'}
+                                placeholder="Chọn loại món" className="w-full" />
+                        )}
+                    </LabelField>
+                    <LabelField label="Đơn vị tính" name="unit"
+                        rules={[
+                            { required: true, message: 'Đơn vị tính không được bỏ trống.' },
+                        ]}>
+                        {(control, meta) => (<InputText {...control} id="unit"
+                            className={classNames({ 'invalid': meta.errors.length })} />)}
+                    </LabelField>
+                    <LabelField label="Giá bán lẻ" name="priceRetail"
+                        rules={[
+                            { required: true, message: 'Giá bán lẻ không được bỏ trống.' },
+                        ]}>
+                        {(control, meta) => (<InputText {...control} id="priceRetail"
+                            className={classNames({ 'invalid': meta.errors.length })} />)}
+                    </LabelField>
+                    <LabelField label="Giá bán sỉ" name="priceWholeSale"
+                        rules={[
+                            { required: true, message: 'Giá bán sỉ không được bỏ trống.' },
+                        ]}>
+                        {(control, meta) => (<InputText {...control} id="priceWholeSale"
+                            className={classNames({ 'invalid': meta.errors.length })} />)}
 
-                {objectURL && <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <img onError={handleImageError} style={{ maxWidth: 200, maxHeight: 200 }}
-                        src={objectURL} />
-                </div>}
-
-                <div className="field">
-                    <label htmlFor="TenMon" className="font-bold">
-                        Tên món
-                    </label>
-                    <InputText id="TenMon" value={selectedProduct?.TenMon} onChange={(e) => onInputChange(e, 'TenMon')} required
-                        autoFocus className={classNames({ 'p-invalid': submitted && !selectedProduct?.TenMon })} />
-                    {submitted && !selectedProduct?.TenMon && <small className="p-error">Tên món không được bỏ trống.</small>}
-                </div>
-                <div className="field">
-                    <label className="mb-3 font-bold">Loại món</label>
-                    <div className="formgrid grid">
-                        {
-                            categories.map((category: Category) => (
-                                <div key={category.IDLoaiMon} className="field-radiobutton col-6">
-                                    <RadioButton inputId={category.IDLoaiMon.toString()} name="category" value={category.IDLoaiMon}
-                                        onChange={(e: any) => onCategoryChange(e, 'IDLoaiMon')}
-                                        checked={selectedProduct.IDLoaiMon === category.IDLoaiMon} />
-                                    <label htmlFor={category.IDLoaiMon.toString()}>{category.TenLoai}</label>
-                                </div>
-                            ))
-                        }
-                    </div>
-                </div>
-                <div className="formgrid grid">
-                    <div className="field col">
-                        <label htmlFor="ThoiGianBH" className="font-bold">
-                            Bảo hành (tháng)
-                        </label>
-                        <InputNumber id="ThoiGianBH" value={selectedProduct?.ThoiGianBH} onChange={(e: any) => onInputNumberChange(e, 'ThoiGianBH')} required
-                            autoFocus className={classNames({ 'p-invalid': submitted && !selectedProduct?.ThoiGianBH })} />
-                        {submitted && !selectedProduct?.ThoiGianBH && <small className="p-error">Thời gian bảo hành không được bỏ trống.</small>}
-                    </div>
-                    <div className="field col">
-                        <label htmlFor="DVTMon" className="font-bold">
-                            Đơn vị tính
-                        </label>
-                        <InputText id="DVTMon" value={selectedProduct?.DVTMon} onChange={(e) => onInputChange(e, 'DVTMon')} required
-                            autoFocus className={classNames({ 'p-invalid': submitted && !selectedProduct?.DVTMon })} />
-                        {submitted && !selectedProduct?.DVTMon && <small className="p-error">Đơn vị tính không được bỏ trống.</small>}
-                    </div>
-                </div>
-                <div className="formgrid grid">
-                    <div className="field col">
-                        <label htmlFor="DonGiaBanSi" className="font-bold">
-                            Giá bán sỉ
-                        </label>
-                        <InputNumber id="DonGiaBanSi" value={selectedProduct?.DonGiaBanSi}
-                            onChange={(e: any) => onInputNumberChange(e, 'DonGiaBanSi')}
-                            mode="currency" currency="VND" locale="vn-VN" required
-                            autoFocus className={classNames({ 'p-invalid': submitted && !selectedProduct?.DonGiaBanSi })} />
-                        {submitted && !selectedProduct?.DonGiaBanSi && <small className="p-error">Giá bán sỉ không được bỏ trống.</small>}
-                    </div>
-                    <div className="field col">
-                        <label htmlFor="DonGiaBanLe" className="font-bold">
-                            Giá bán lẻ
-                        </label>
-                        <InputNumber id="DonGiaBanLe" value={selectedProduct?.DonGiaBanLe}
-                            onChange={(e: any) => onInputNumberChange(e, 'DonGiaBanLe')}
-                            mode="currency" currency="VND" locale="vn-VN" required
-                            autoFocus className={classNames({ 'p-invalid': submitted && !selectedProduct?.DonGiaBanLe })} />
-                        {submitted && !selectedProduct?.DonGiaBanLe && <small className="p-error">Giá bán lẻ không được bỏ trống.</small>}
-                    </div>
-                </div>
-                <div className="formgrid grid">
-                    <div className="field col">
-                        <label htmlFor="DonGiaVon" className="font-bold">
-                            Giá vốn
-                        </label>
-                        <InputNumber id="DonGiaVon" value={selectedProduct?.DonGiaVon}
-                            onChange={(e: any) => onInputNumberChange(e, 'DonGiaVon')}
-                            mode="currency" currency="VND" locale="vn-VN" required
-                            autoFocus className={classNames({ 'p-invalid': submitted && !selectedProduct?.DonGiaVon })} />
-                        {submitted && !selectedProduct?.DonGiaVon && <small className="p-error">Giá vốn không được bỏ trống.</small>}
-                    </div>
-                    <div className="field col">
-                        <label htmlFor="SoLuongTonKho" className="font-bold">
-                            Số lượng tồn kho
-                        </label>
-                        <InputNumber id="SoLuongTonKho" value={selectedProduct?.SoLuongTonKho}
-                            onChange={(e: any) => onInputNumberChange(e, 'SoLuongTonKho')} required
-                            autoFocus className={classNames({ 'p-invalid': submitted && !selectedProduct?.SoLuongTonKho })} />
-                        {submitted && !selectedProduct?.SoLuongTonKho && <small className="p-error">Số lượng tồn kho không được bỏ trống.</small>}
-                    </div>
-                </div>
-                <div className="field">
-                    <label htmlFor="GhiChu" className="font-bold">
-                        Ghi chú
-                    </label>
-                    <InputTextarea id="GhiChu" value={selectedProduct?.GhiChu ?? ""}
-                        onChange={(e) => onInputChange(e, 'GhiChu')}
-                        required rows={2} cols={20} />
-                </div>
+                    </LabelField>
+                    <LabelField label="Giá vốn" name="priceCost"
+                        rules={[
+                            { required: true, message: 'Giá vốn không được bỏ trống.' },
+                        ]}>
+                        {(control, meta) => (<InputText {...control} id="priceCost"
+                            className={classNames({ 'invalid': meta.errors.length })} />)}
+                    </LabelField>
+                    <LabelField label="Thời gian bảo hành" name="timeWarranty"
+                        rules={[
+                            { required: true, message: 'Thời gian bảo hành không được bỏ trống.' },
+                        ]}>
+                        {(control, meta) => (<InputText {...control} id="timeWarranty"
+                            className={classNames({ 'invalid': meta.errors.length })} />)}
+                    </LabelField>
+                    <LabelField label="Số lượng tồn kho" name="quantity"
+                        rules={[
+                            { required: true, message: 'Số lượng tồn kho không được bỏ trống.' },
+                        ]}>
+                        {(control, meta) => (<InputText {...control} id="quantity"
+                            className={classNames({ 'invalid': meta.errors.length })} />)}
+                    </LabelField>
+                    <LabelField label="Ghi chú" name="note">
+                        {(control, meta) => (<InputTextarea {...control} id="note"
+                            className={classNames({ 'invalid': meta.errors.length })} />)}
+                    </LabelField>
+                    <Button loading={loading} type='submit' label={idProduct ? 'Cập nhật' : 'Tạo mới'} className="w-6" style={{ float: 'right' }} />
+                </Form>
             </Dialog>
         </>
     )
 }
-
-export default ProductDialog;
