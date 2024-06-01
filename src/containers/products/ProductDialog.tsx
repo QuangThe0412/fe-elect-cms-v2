@@ -17,6 +17,7 @@ import { CategoryService } from '@/services/category.service';
 import { convertFormData, linkImageGG, trimString } from '@/utils/common';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { FileUpload } from 'primereact/fileupload';
+import { InputNumber } from 'primereact/inputnumber';
 
 type PropType = {
     idProduct: number,
@@ -33,8 +34,6 @@ type typeForm = {
     priceWholeSale: number;
     priceCost: number;
     note: string;
-    modifyDate: Date | null,
-    createDate: Date | null,
     quantity: number;
     nameProduct: string;
     timeWarranty: number;
@@ -48,8 +47,6 @@ const initialForm: typeForm = {
     priceWholeSale: 0,
     priceCost: 0,
     note: '',
-    modifyDate: null,
-    createDate: null,
     quantity: 0,
     nameProduct: '',
     timeWarranty: 0,
@@ -128,30 +125,28 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
         setLoading(true);
         let product: Product = {
             IDMon: idProduct,
-            IDLoaiMon: values.idCategory,
+            IDLoaiMon: selectedCategory?.IDLoaiMon || 0,
             DVTMon: values.unit,
             DonGiaBanLe: values.priceRetail,
             DonGiaBanSi: values.priceWholeSale,
             DonGiaVon: values.priceCost,
             GhiChu: values.note,
-            modifyDate: values.modifyDate,
-            createDate: values.createDate,
             SoLuongTonKho: values.quantity,
             TenMon: values.nameProduct,
             ThoiGianBH: values.timeWarranty,
             Deleted: false,
-            Image: ''
+            Image: '',
+            createDate: null,
+            modifyDate: null,
         };
 
         let _product: Product2 = { ...product as Product2 };
         trimString(_product);
 
         const formData = await convertFormData(_product, fileImage);
-
         if (idProduct) { // update
             HandleApi(ProductService.updateProduct(idProduct, formData), toast).then((res) => {
                 if (res && res.status === 200) {
-                    console.log('aaaaaaa');
                     onProductChange();
                     HandClose();
                 }
@@ -160,7 +155,6 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
         } else { // create
             HandleApi(ProductService.createProduct(formData), toast).then((res) => {
                 if (res.status === 201) {
-                    console.log(res.data);
                     onProductChange();
                     HandClose();
                 }
@@ -187,7 +181,6 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
             setObjectURL(file.objectURL);
         };
     };
-
     return (
         <>
             <Toast ref={toast}></Toast>
@@ -199,21 +192,15 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
                     className="p-fluid">
                     <LabelField label="Hình ảnh" name="image">
                         {(control, meta) => (
-                            <FileUpload
-                                {...control}
-                                id="image"
-                                mode="basic"
-                                accept="image/*"
-                                maxFileSize={1000000}
+                            <FileUpload {...control} id="image" mode="basic" accept="image/*"
+                                maxFileSize={1000000} className={classNames({ 'invalid': meta.errors.length })}
                                 onSelect={handleSelectFile}
-                                className={classNames({ 'invalid': meta.errors.length })}
                             />
                         )}
                     </LabelField>
 
-                    {objectURL && <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <img style={{ maxWidth: 200, maxHeight: 200 }}
-                            src={objectURL} />
+                    {objectURL && <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>
+                        <img style={{ maxWidth: 200, maxHeight: 200 }} src={objectURL} />
                     </div>}
                     <LabelField label="Tên sản phẩm" name="nameProduct"
                         rules={[
@@ -245,37 +232,58 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
                     <LabelField label="Giá bán lẻ" name="priceRetail"
                         rules={[
                             { required: true, message: 'Giá bán lẻ không được bỏ trống.' },
+                            {
+                                validator: (_, value) => value < 1
+                                    ? Promise.reject('Vui lòng nhập giá lẻ.')
+                                    : Promise.resolve()
+                            }
                         ]}>
-                        {(control, meta) => (<InputText {...control} id="priceRetail"
+                        {(control, meta) => (<InputNumber {...control} id="priceRetail" 
                             className={classNames({ 'invalid': meta.errors.length })} />)}
                     </LabelField>
                     <LabelField label="Giá bán sỉ" name="priceWholeSale"
                         rules={[
                             { required: true, message: 'Giá bán sỉ không được bỏ trống.' },
+                            {
+                                validator: (_, value) => value < 1
+                                    ? Promise.reject('Vui lòng nhập giá sỉ.')
+                                    : Promise.resolve()
+                            }
                         ]}>
-                        {(control, meta) => (<InputText {...control} id="priceWholeSale"
+                        {(control, meta) => (<InputNumber {...control} id="priceWholeSale"
                             className={classNames({ 'invalid': meta.errors.length })} />)}
 
                     </LabelField>
                     <LabelField label="Giá vốn" name="priceCost"
                         rules={[
                             { required: true, message: 'Giá vốn không được bỏ trống.' },
+                            {
+                                validator: (_, value) => value < 1
+                                    ? Promise.reject('Vui lòng nhập giá vốn.')
+                                    : Promise.resolve()
+                            }
                         ]}>
-                        {(control, meta) => (<InputText {...control} id="priceCost"
-                            className={classNames({ 'invalid': meta.errors.length })} />)}
-                    </LabelField>
-                    <LabelField label="Thời gian bảo hành" name="timeWarranty"
-                        rules={[
-                            { required: true, message: 'Thời gian bảo hành không được bỏ trống.' },
-                        ]}>
-                        {(control, meta) => (<InputText {...control} id="timeWarranty"
+                        {(control, meta) => (<InputNumber {...control} id="priceCost"
                             className={classNames({ 'invalid': meta.errors.length })} />)}
                     </LabelField>
                     <LabelField label="Số lượng tồn kho" name="quantity"
                         rules={[
                             { required: true, message: 'Số lượng tồn kho không được bỏ trống.' },
+                            {
+                                validator: (_, value) => value < 1
+                                    ? Promise.reject('Vui lòng nhập số lượng tồn kho.')
+                                    : Promise.resolve()
+                            }
                         ]}>
-                        {(control, meta) => (<InputText {...control} id="quantity"
+                        {(control, meta) => (<InputNumber {...control} id="quantity"
+                            className={classNames({ 'invalid': meta.errors.length })} />)}
+                    </LabelField>
+                    <LabelField label="Thời gian bảo hành" name="timeWarranty"
+                    // rules={[
+                    //     { required: true, message: 'Thời gian bảo hành không được bỏ trống.' },
+                    // ]}
+                    >
+                        {(control, meta) => (<InputNumber {...control} id="timeWarranty"
                             className={classNames({ 'invalid': meta.errors.length })} />)}
                     </LabelField>
                     <LabelField label="Ghi chú" name="note">
