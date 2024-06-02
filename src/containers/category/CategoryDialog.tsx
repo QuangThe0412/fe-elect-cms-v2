@@ -57,7 +57,6 @@ export default
         HandleApi(CategoryService.getCategory(idCategory), null).then((res) => {
             if (res && res.status === 200) {
                 const { IDLoaiMon, IDNhomMon, TenLoai } = res.data as Category;
-                console.log(res.data);
                 const categoryGroup = categoryGroups.find((x) => x.IDNhomMon === IDNhomMon);
                 setSelectedCategoryGroup(categoryGroup);
                 form.setFieldsValue({

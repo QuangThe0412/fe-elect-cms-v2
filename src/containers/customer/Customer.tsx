@@ -5,13 +5,15 @@ import { DataTable, DataTableFilterMeta } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { CustomerService } from '@/services/customer.service';
 import { InputText } from 'primereact/inputtext';
-import { Customer } from '@/models';
+import { Customer, TypeCustomer } from '@/models';
 import { Toast } from 'primereact/toast';
 import { ContextMenu } from 'primereact/contextmenu';
 import { FilterMatchMode } from 'primereact/api';
 import CustomerDialog from './CustomerDialog';
 import { HandleApi } from '@/services/handleApi';
 import { Button } from 'primereact/button';
+import { TypeCustomerService } from '@/services/typecustomer.service';
+import { Tag } from 'primereact/tag';
 
 let emptyCustomer: Customer = {
   IDKhachHang: 0,
@@ -30,6 +32,7 @@ export default function CustomerComponent() {
   const [selectedCustomer, setSelectedCustomer] = useState<Customer>(emptyCustomer);
   const [customerChange, setCustomerChange] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
+  const [typesCustomer, setTypesCustomer] = useState<TypeCustomer[]>([]);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
   const [filters, setFilters] = useState<DataTableFilterMeta>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -55,6 +58,7 @@ export default function CustomerComponent() {
   const [dialogVisible, setDialogVisible] = useState<boolean>(false);
 
   useEffect(() => {
+    getTypesCustomer();
     getCustomer();
   }, [customerChange]);
 
@@ -66,6 +70,14 @@ export default function CustomerComponent() {
       setLoading(false);
     });
   }
+
+  const getTypesCustomer = () => {
+    HandleApi(TypeCustomerService.getTypeCustomers(), null).then((res) => {
+      if (res && res.status === 200) {
+        setTypesCustomer(res.data);
+      }
+    });
+  };
 
 
   const addCustomer = (customer: Customer) => {
@@ -108,6 +120,16 @@ export default function CustomerComponent() {
     );
   };
 
+  const bodyTypeCustomer = (rowData: Customer) => {
+    const typeCustomer = typesCustomer.find((type) => type.IDLoaiKH === rowData.IDLoaiKH);
+    let nameTypeCustomer = typeCustomer?.TenLoaiKH;
+    let serverityText = 'info' as 'info' | 'success' | 'warning' | 'danger' | null | undefined;
+    if (typeCustomer?.IDLoaiKH === 1) {
+      serverityText = 'success';
+    }
+    return <Tag className="mr-2" icon="pi pi-info-circle" severity={serverityText} value={nameTypeCustomer}></Tag>
+  }
+
   return (
     <div className="card">
       <Toast ref={toast} />
@@ -129,7 +151,7 @@ export default function CustomerComponent() {
         globalFilterFields={["username", "IDKhachHang", "IDLoaiKH", "DienThoai,", "TenKhachHang"]} emptyMessage="No Customer found."
       >
         <Column field="IDKhachHang" header="Id" ></Column>
-        <Column field="IDLoaiKH" header="IdLoaiKH"></Column>
+        <Column field="IDLoaiKH" header="Loại khách hàng" body={bodyTypeCustomer}></Column>
         <Column field="username" header="Tài khoản"></Column>
         <Column field="TenKhachHang" header="Tên khách hàng"></Column>
         <Column field="DienThoai" header="Số điện thoại"></Column>

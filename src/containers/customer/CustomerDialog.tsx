@@ -5,12 +5,13 @@ import { InputText } from 'primereact/inputtext';
 import Form from 'rc-field-form';
 import { Toast } from 'primereact/toast';
 import { CustomerService } from '@/services/customer.service';
-import { Customer } from '@/models';
+import { Customer, TypeCustomer } from '@/models';
 import { HandleApi } from '@/services/handleApi';
 import { LabelField } from '@/components';
 import { classNames } from 'primereact/utils';
 import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
 import { Password } from 'primereact/password';
+import { TypeCustomerService } from '@/services/typecustomer.service';
 
 type PropType = {
     idCustomer: number,
@@ -37,14 +38,15 @@ const initialForm: typeForm = {
     password: '',
 };
 
-
 export default function CustomerDialog({ visible, onClose, idCustomer, onCustomerChange }: PropType) {
     const [form] = Form.useForm();
     const toast = useRef<Toast>(null);
     const [loading, setLoading] = useState<boolean>(false);
-    const [typesCustomer, setTypesCustomer] = useState<any[]>([]);
+    const [typesCustomer, setTypesCustomer] = useState<TypeCustomer[]>([]);
+    const [selectedTypeCustomer, setSelectedTypeCustomer] = useState<TypeCustomer>();
 
     useEffect(() => {
+        getTypesCustomer();
         if (visible && idCustomer > 0) {
             getCustomer();
         }
@@ -53,12 +55,15 @@ export default function CustomerDialog({ visible, onClose, idCustomer, onCustome
     const HandClose = () => {
         onClose();
         form.resetFields();
+        setSelectedTypeCustomer(undefined);
     };
 
     const getCustomer = () => {
         HandleApi(CustomerService.getCustomer(idCustomer), null).then((res) => {
             if (res && res.status === 200) {
                 const customer = res.data as Customer;
+                const typeCustomer = typesCustomer.find((x) => x.IDLoaiKH === customer.IDLoaiKH);
+                setSelectedTypeCustomer(typeCustomer);
                 form.setFieldsValue({
                     idCustomer: customer.IDKhachHang,
                     nameCustomer: customer.TenKhachHang,
@@ -71,18 +76,18 @@ export default function CustomerDialog({ visible, onClose, idCustomer, onCustome
     };
 
     const getTypesCustomer = () => {
-        // HandleApi(CustomerService.getTypesCustomer(), null).then((res) => {
-        //     if (res && res.status === 200) {
-        //         setTypesCustomer(res.data);
-        //     }
-        // });
+        HandleApi(TypeCustomerService.getTypeCustomers() , null).then((res) => {
+            if (res && res.status === 200) {
+                setTypesCustomer(res.data);
+            }
+        });
     };
 
     const onFinish = (values: typeForm) => {
         setLoading(true);
         let customer: Customer = {
             IDKhachHang: idCustomer,
-            IDLoaiKH: values.idTypeCustomer,
+            IDLoaiKH: selectedTypeCustomer?.IDLoaiKH,
             TenKhachHang: values.nameCustomer,
             DienThoai: values.phone,
             username: values.username,
@@ -157,19 +162,16 @@ export default function CustomerDialog({ visible, onClose, idCustomer, onCustome
                         {(control, meta) => (<Password {...control} id="password" toggleMask
                             className={classNames({ 'invalid': meta.errors.length })} />)}
                     </LabelField>
-                    {/* <LabelField label="Loại khách hàng" name="idGroupCustomer"
-                        rules={[
-                            { required: true, message: 'Loại khách hàng không được bỏ trống.' },
-                        ]}>
+                    <LabelField label="Loại khách hàng" name="idTypeCustomer">
                         {(control, meta) => (
-                            <Dropdown value={selectedCustomerGroup}
+                            <Dropdown value={selectedTypeCustomer}
                                 onChange={(e: DropdownChangeEvent) => {
-                                    setSelectedCustomerGroup(e.value);
+                                    setSelectedTypeCustomer(e.value);
                                 }}
-                                options={CustomerGroups} optionLabel={'TenNhom'}
+                                options={typesCustomer} optionLabel={'TenLoaiKH'}
                                 placeholder="Chọn loại khách hàng" className="w-full" />
                             )}
-                    </LabelField> */}
+                    </LabelField>
 
                     <Button loading={loading} type='submit' label={idCustomer ? 'Cập nhật' : 'Tạo mới'} className="w-6" style={{ float: 'right' }} />
                 </Form>

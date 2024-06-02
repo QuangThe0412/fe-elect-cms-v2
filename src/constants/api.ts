@@ -17,5 +17,5 @@ export const paths = {
     dashboard: '/thongke',
     user: '/nguoiDung',
     customer:'/khachHang',
-    customerType:'/loaiKH',
+    customerType:'/loaiKhachHang',
 };
