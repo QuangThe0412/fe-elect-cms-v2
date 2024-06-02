@@ -30,11 +30,19 @@ const initialForm: typeForm = {
     ngaySinh: null,
 };
 
+const intitRoles = {
+    ADMIN: false,
+    SALER: false,
+    INVENTORY: false,
+    CASHIER: false,
+    GUEST: false,
+};
+
 export default function DialogProfile({ visible, onClose, idUser }: PropType) {
     const [form] = Form.useForm();
     const toast = useRef<Toast>(null);
     const [loading, setLoading] = useState<boolean>(false);
-    const [isAdmin, setIsAdmin] = useState<boolean>(false);
+    const [roles, setRoles] = useState(intitRoles);
 
     useEffect(() => {
         if (visible) {
@@ -46,7 +54,13 @@ export default function DialogProfile({ visible, onClose, idUser }: PropType) {
         HandleApi(AuthService.getProfile(idUser), null).then((res) => {
             if (res && res.status === 200) {
                 const { phone, ngaySinh, admin, saler, inventory, cashier, guest } = res.data as User;
-                setIsAdmin(!!!admin);
+                setRoles({
+                    ADMIN: !!admin,
+                    SALER: !!saler,
+                    INVENTORY: !!inventory,
+                    CASHIER: !!cashier,
+                    GUEST: !!guest,
+                });
                 form.setFieldsValue({
                     idUser: idUser,
                     phone,
@@ -91,7 +105,7 @@ export default function DialogProfile({ visible, onClose, idUser }: PropType) {
                             { required: true, message: 'Số điện thoại không được bỏ trống.' },
                             { pattern: /(84|0[3|5|7|8|9])+([0-9]{8})\b/, message: 'Số điện thoại không đúng' }
                         ]}>
-                        <InputText id="phone" disabled={isAdmin} />
+                        <InputText id="phone" disabled={!roles.ADMIN} />
                     </LabelField>
 
                     <LabelField label="Ngày sinh" name="ngaySinh">
@@ -108,7 +122,7 @@ export default function DialogProfile({ visible, onClose, idUser }: PropType) {
                                 <div className="flex align-items-center" key={value}>
                                     <Checkbox inputId={value} name="role" disabled
                                         value={RoleEnum[value as keyof typeof RoleEnum]}
-                                        checked={form?.getFieldValue(value.toLocaleLowerCase())} //========= erorororooror
+                                        checked={roles[value as keyof typeof roles]}
                                     />
                                     <label htmlFor={value} className="ml-2">{label}</label>
                                 </div>

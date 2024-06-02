@@ -108,18 +108,6 @@ export default function CustomerComponent() {
     );
   };
 
-  const bodyNhomMon = (rowData: Customer) => {
-    return (
-      <>
-        {/* {CustomerGroups?.map((CustomerGroups: CustomerGroup) => {
-          if (CustomerGroups.IDNhomMon === rowData.IDNhomMon) {
-            return CustomerGroups.TenNhom;
-          }
-        })} */}
-      </>
-    );
-  };
-
   return (
     <div className="card">
       <Toast ref={toast} />
