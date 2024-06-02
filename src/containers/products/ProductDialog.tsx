@@ -5,14 +5,11 @@ import { InputText } from 'primereact/inputtext';
 import Form from 'rc-field-form';
 import { Toast } from 'primereact/toast';
 import { ProductService } from '@/services/products.service';
-import { CategoryGroupService } from '@/services/categoryGroup.service';
 import { Product, Category, Product2, FileUploadState } from '@/models';
 import { HandleApi } from '@/services/handleApi';
 import { LabelField } from '@/components';
 import { classNames } from 'primereact/utils';
-import { RadioButton } from 'primereact/radiobutton';
 import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
-import Categories from '../category/Category';
 import { CategoryService } from '@/services/category.service';
 import { convertFormData, linkImageGG, trimString } from '@/utils/common';
 import { InputTextarea } from 'primereact/inputtextarea';
@@ -87,7 +84,6 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
         HandleApi(ProductService.getProduct(idProduct), null).then((res) => {
             if (res && res.status === 200) {
                 let product = res.data as Product;
-                console.log(product);
 
                 setSelectedCategory(categories.find((x) => x.IDLoaiMon === product.IDLoaiMon));
                 form.setFieldsValue({

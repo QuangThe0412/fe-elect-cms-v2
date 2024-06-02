@@ -12,9 +12,7 @@ import { ContextMenu } from 'primereact/contextmenu';
 import { FilterMatchMode } from 'primereact/api';
 import CategoryDialog from './CategoryDialog';
 import { HandleApi } from '@/services/handleApi';
-import { RadioButtonChangeEvent } from 'primereact/radiobutton';
 import { Button } from 'primereact/button';
-import { trimString } from '@/utils/common';
 
 let emptyCategory: Category = {
   IDLoaiMon: 0,

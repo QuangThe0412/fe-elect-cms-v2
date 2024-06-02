@@ -70,7 +70,7 @@ const HandleResponse = (response: Response | any, toast: React.RefObject<Toast> 
             severityType = 'error';
             break;
         case 403: // forbidden
-            mess = "Không đủ quyền truy cập " + url;
+            // mess = "Không đủ quyền truy cập " + url;
             severityType = 'error';
             break;
         case 404: // not found

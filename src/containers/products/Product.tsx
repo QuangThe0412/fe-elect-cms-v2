@@ -6,8 +6,8 @@ import { Column } from 'primereact/column';
 import { ProductService } from '@/services/products.service';
 import { CategoryService } from '@/services/category.service';
 import { InputText } from 'primereact/inputtext';
-import { Product, Product2, Category } from '@/models';
-import { formatCurrency, handleImageError, trimString } from '@/utils/common';
+import { Product, Category } from '@/models';
+import { formatCurrency, handleImageError } from '@/utils/common';
 import erroImage from '@/images/error.jpg';
 import { classNames } from 'primereact/utils';
 import { Toast } from 'primereact/toast';
@@ -15,13 +15,10 @@ import { ContextMenu } from 'primereact/contextmenu';
 import { FilterMatchMode } from 'primereact/api';
 import { Button } from 'primereact/button';
 import ProductDialog from './ProductDialog';
-import { InputNumberChangeEvent } from 'primereact/inputnumber';
 import { HandleApi } from '@/services/handleApi';
-import { RadioButtonChangeEvent } from 'primereact/radiobutton';
 import { Image } from 'primereact/image';
 import { FileUploadState } from '@/models';
 import { linkImageGG } from '@/utils/common';
-import { convertFormData } from '@/utils/common';
 
 let emptyProduct: Product = {
   TenMon: '',
@@ -158,7 +155,7 @@ export default function Products() {
         </span>
         <Button label="Nhập Excel" icon="pi pi-file-import" className="p-button-help"
           onClick={() => {
-            toast.current?.show({ severity: 'info', summary: 'Product Selected', detail: 'Nhập' });
+            toast.current?.show({ severity: 'info', summary: 'Thông báo', detail: 'Tính năng đang phát triển' });
           }}
         />
       </div>

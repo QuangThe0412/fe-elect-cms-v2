@@ -10,7 +10,6 @@ import { Category, CategoryGroup } from '@/models';
 import { HandleApi } from '@/services/handleApi';
 import { LabelField } from '@/components';
 import { classNames } from 'primereact/utils';
-import { RadioButton } from 'primereact/radiobutton';
 import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
 
 type PropType = {

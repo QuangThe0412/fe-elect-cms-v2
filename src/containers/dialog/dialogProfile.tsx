@@ -9,9 +9,8 @@ import { User } from '@/models';
 import { HandleApi } from '@/services/handleApi';
 import { LabelField } from '@/components';
 import { Calendar } from 'primereact/calendar';
-import { Password } from 'primereact/password';
-import { classNames } from 'primereact/utils';
-import { on } from 'events';
+import { RoleEnum } from '@/constants';
+import { Checkbox } from 'primereact/checkbox';
 
 type PropType = {
     idUser: string,
@@ -45,9 +44,12 @@ export default function DialogProfile({ visible, onClose, idUser }: PropType) {
     const getProfile = () => {
         HandleApi(AuthService.getProfile(idUser), null).then((res) => {
             if (res && res.status === 200) {
-                const { phone, ngaySinh } = res.data as User;
+                const { phone, ngaySinh, admin, saler, inventory, cashier, guest } = res.data as User;
+                console.log(res.data);
                 form.setFieldsValue({
+                    idUser: idUser,
                     phone,
+                    admin, saler, inventory, cashier, guest,
                     ngaySinh: ngaySinh ? new Date(ngaySinh) : null,
                 });
             }
@@ -88,8 +90,7 @@ export default function DialogProfile({ visible, onClose, idUser }: PropType) {
                             { required: true, message: 'Số điện thoại không được bỏ trống.' },
                             { pattern: /(84|0[3|5|7|8|9])+([0-9]{8})\b/, message: 'Số điện thoại không đúng' }
                         ]}>
-                        <InputText id="phone"
-                             />
+                        <InputText id="phone" />
                     </LabelField>
 
                     <LabelField label="Ngày sinh" name="ngaySinh">
@@ -100,7 +101,22 @@ export default function DialogProfile({ visible, onClose, idUser }: PropType) {
                             style={{ width: '100%' }} />
                     </LabelField>
 
-                    <Button loading={loading} type='submit' label='Cập nhật' className="w-6" style={{float: 'right'}} />
+                    <LabelField label="Vai trò" name="role">
+                        <div className="flex flex-wrap gap-3">
+                            {Object.entries(RoleEnum).map(([value, label]) => (
+                                console.log(value),
+                                <div className="flex align-items-center">
+                                    <Checkbox inputId={value} name="role" disabled
+                                        value={RoleEnum[value as keyof typeof RoleEnum]}
+                                        checked={form.getFieldValue(value.toLocaleLowerCase())}
+                                    />
+                                    <label htmlFor={value} className="ml-2">{label}</label>
+                                </div>
+                            ))}
+                        </div>
+                    </LabelField>
+
+                    <Button loading={loading} type='submit' label='Cập nhật' className="w-6" style={{ float: 'right' }} />
                 </Form>
             </Dialog>
         </>

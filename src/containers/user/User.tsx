@@ -9,15 +9,11 @@ import { Toast } from 'primereact/toast';
 import { ContextMenu } from 'primereact/contextmenu';
 import { FilterMatchMode } from 'primereact/api';
 import { HandleApi } from '@/services/handleApi';
-import { RadioButtonChangeEvent } from 'primereact/radiobutton';
 import { Button } from 'primereact/button';
-import { trimString } from '@/utils/common';
 import { Checkbox } from 'primereact/checkbox';
 import useAuth from '@/hooks/useAuth';
 import { RoleEnum } from '@/constants';
-import { on } from 'events';
 import UserDialog from './UserDialog';
-import { InputNumberChangeEvent } from 'primereact/inputnumber';
 
 let emptyUser: User = {
   id: 0,
@@ -71,7 +67,7 @@ export default function Users() {
   }, [userChange]);
 
   const getUsers = () => {
-    HandleApi(UserService.getUsers(), toast).then((result) => {
+    HandleApi(UserService.getUsers(), null).then((result) => {
       if (result.status === 200) {
         let idMe = profile.userId || 0;
         let resultData = result.data.filter((item: User) => item.id !== idMe);
