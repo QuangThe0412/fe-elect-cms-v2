@@ -3,6 +3,7 @@ import { Category } from './category';
 import { CategoryGroup } from './categoryGroup';
 import { Dashboard } from './dashboard';
 import { User } from './user';
+import { Customer } from './customer';
 
 interface FileUploadState {
   files: File[];
@@ -16,4 +17,5 @@ export type {
   CategoryGroup,
   Dashboard,
   User,
+  Customer,
 };

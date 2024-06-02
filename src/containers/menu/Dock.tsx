@@ -48,7 +48,7 @@ export default function DockMenu() {
         },
         {
             label: 'Loại sản phẩm',
-            icon: () => <img alt="Test" src={categoryImage} width="100%" />,
+            icon: () => <img alt="Category" src={categoryImage} width="100%" />,
             command: () => {
                 HandleGoPath(paths.category);
             },
@@ -61,10 +61,10 @@ export default function DockMenu() {
             },
         },
         {
-            label: 'customerImage',
-            icon: () => <img alt="Test" src={customerImage} width="100%" />,
+            label: 'Khách hàng',
+            icon: () => <img alt="Customer" src={customerImage} width="100%" />,
             command: () => {
-                HandleGoPath('/test');
+                HandleGoPath(paths.customer);
             },
         },
         {

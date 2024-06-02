@@ -1,11 +1,12 @@
 import { paths } from '@/constants/api';
 import { RoleEnum } from '@/constants';
+import { Register } from '@/containers/auth/Register';
 import Products from '@/containers/products/Product';
 import DashboardComponent from '@/containers/dashboards/Dashboard';
 import Categories from '@/containers/category/Category';
 import LoginComponent from '@/containers/auth/Login';
-import { Register } from '@/containers/auth/Register';
 import User from '@/containers/user/User';
+import CustomerComponent from '@/containers/customer/Customer';
 
 export type RouteType = {
     path: string,
@@ -46,5 +47,10 @@ export const RouteArray: RouteType[] = [
         path: paths.product,
         component: Products,
         roles: [RoleEnum.ADMIN]
-    }
+    },
+    {
+        path: paths.customer,
+        component: CustomerComponent,
+        roles: [RoleEnum.ADMIN]
+    },
 ]

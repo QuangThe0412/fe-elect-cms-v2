@@ -16,5 +16,5 @@ export const paths = {
     //======
     dashboard: '/thongke',
     user: '/nguoiDung',
-    
+    customer:'/khachHang',
 };

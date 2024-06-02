@@ -30,11 +30,9 @@ export default function Categories() {
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
   const [filters, setFilters] = useState<DataTableFilterMeta>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    IDMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    TenMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
     IDLoaiMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    DVTMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    GhiChu: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    TenLoai: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    IDNhomMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
   });
 
   const toast = useRef<Toast>(null);
