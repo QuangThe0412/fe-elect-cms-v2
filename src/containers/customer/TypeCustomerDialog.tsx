@@ -30,7 +30,6 @@ export default function TypeCustomerDialog({ visible, onClose,onTypeCustomerChan
     const toast = useRef<Toast>(null);
 
     useEffect(() => {
-        setLoading(true);
         getTypesTypeCustomer();
     }, [visible, onChangeTypeCustomer]);
 

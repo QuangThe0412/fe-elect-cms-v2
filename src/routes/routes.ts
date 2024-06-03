@@ -7,6 +7,7 @@ import Categories from '@/containers/category/Category';
 import LoginComponent from '@/containers/auth/Login';
 import User from '@/containers/user/User';
 import CustomerComponent from '@/containers/customer/Customer';
+import DiscountComponent from '@/containers/discount/Discount';
 
 export type RouteType = {
     path: string,
@@ -51,6 +52,11 @@ export const RouteArray: RouteType[] = [
     {
         path: paths.customer,
         component: CustomerComponent,
+        roles: [RoleEnum.ADMIN]
+    },
+    {
+        path: paths.discount,
+        component: DiscountComponent,
         roles: [RoleEnum.ADMIN]
     }
 ]

@@ -12,6 +12,7 @@ import customerImage from '@/images/customer.png';
 import billImage from '@/images/bill.png';
 import categoryImage from '@/images/category.png';
 import costImage from '@/images/cost.png';
+import discount from '@/images/discount.png';
 import { paths } from '@/constants/api';
 import { checkRoleAccess } from '@/utils/common';
 import useAuth from '@/hooks/useAuth';
@@ -64,6 +65,13 @@ export default function DockMenu() {
             icon: () => <img alt="Customer" src={customerImage} width="100%" />,
             command: () => {
                 HandleGoPath(paths.customer);
+            },
+        },
+        {
+            label: 'Khuyến mãi',
+            icon: () => <img alt="Discount" src={discount} width="100%" />,
+            command: () => {
+                HandleGoPath(paths.discount);
             },
         },
         {
