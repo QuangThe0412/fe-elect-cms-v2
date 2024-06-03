@@ -56,7 +56,7 @@ export const convertFormData = async (data: any, file?: any) => {
     if (file) {
         formData.append('file', file.files[0]);
     }
-    
+
     return formData;
 };
 
@@ -75,6 +75,16 @@ export function checkRoleAccess(userRole: string[], paths: string) {
 
     let checkAccess = routeMap.roles.some(role => userRole.includes(role));
     return checkAccess;
+}
+
+export const bodyDate = (rowData: any, options: { field: keyof any }) => {
+    const field = options.field;
+    const dateValue = rowData[field];
+    if (dateValue) {
+        const date = new Date(dateValue as string);
+        return date instanceof Date ? date.toLocaleDateString('vi-VN') : '';
+    }
+    return '';
 }
 
 // export const linkImageGG = 'https://drive.google.com/uc?export=view&id=';

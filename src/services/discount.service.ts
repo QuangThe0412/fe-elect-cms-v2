@@ -22,4 +22,9 @@ export const DiscountService = {
     toggleActiveDiscount(id: number) {
         return axios.delete(paths.discount + `/${id}`);
     },
+
+    //details
+    getDiscountDetails(idDiscount: number) {
+        return axios.get(paths.discount + `/${idDiscount}` + paths.discountDetails);
+    },
 }

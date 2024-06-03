@@ -14,6 +14,7 @@ import { Checkbox } from 'primereact/checkbox';
 import useAuth from '@/hooks/useAuth';
 import { RoleEnum } from '@/constants';
 import UserDialog from './UserDialog';
+import { bodyDate } from '@/utils/common';
 
 let emptyUser: User = {
   id: 0,
@@ -127,16 +128,6 @@ export default function Users() {
       <Checkbox checked={checked} disabled></Checkbox>
     );
   };
-
-  const bodyDate = (rowData: User, options: { field: keyof User }) => {
-    const field = options.field;
-    const dateValue = rowData[field];
-    if (dateValue) {
-      const date = new Date(dateValue as string);
-      return date instanceof Date ? date.toLocaleDateString('vi-VN') : '';
-    }
-    return '';
-  }
 
   const OnRightClickContext = (e: any) => {
     if (!userRole.includes(RoleEnum.ADMIN)) {
