@@ -52,5 +52,5 @@ export const RouteArray: RouteType[] = [
         path: paths.customer,
         component: CustomerComponent,
         roles: [RoleEnum.ADMIN]
-    },
+    }
 ]

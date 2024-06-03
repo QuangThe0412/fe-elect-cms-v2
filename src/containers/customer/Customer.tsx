@@ -14,6 +14,7 @@ import { HandleApi } from '@/services/handleApi';
 import { Button } from 'primereact/button';
 import { TypeCustomerService } from '@/services/typecustomer.service';
 import { Tag } from 'primereact/tag';
+import TypeCustomerDialog from './TypeCustomerDialog';
 
 let emptyCustomer: Customer = {
   IDKhachHang: 0,
@@ -27,12 +28,24 @@ let emptyCustomer: Customer = {
   Deleted: null,
 };
 
+const severityMap: { [key: number]: string } = {
+  1: '',
+  2: 'success',
+  3: 'info',
+  4: 'warning',
+  5: 'danger',
+  6: 'secondary',
+  7: 'contrast',
+};
+
 export default function CustomerComponent() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer>(emptyCustomer);
   const [customerChange, setCustomerChange] = useState<boolean>(false);
+  const [typeCustomerChange, setTypeCustomerChange] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [typesCustomer, setTypesCustomer] = useState<TypeCustomer[]>([]);
+  const [visibleTypeCustomer, setVisibleTypeCustomer] = useState<boolean>(false);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
   const [filters, setFilters] = useState<DataTableFilterMeta>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -60,7 +73,7 @@ export default function CustomerComponent() {
   useEffect(() => {
     getTypesCustomer();
     getCustomer();
-  }, [customerChange]);
+  }, [customerChange, typeCustomerChange]);
 
   const getCustomer = () => {
     HandleApi(CustomerService.getCustomers(), null).then((result) => {
@@ -79,6 +92,9 @@ export default function CustomerComponent() {
     });
   };
 
+  const addTypeCustomers = () => {
+    setVisibleTypeCustomer(true);
+  };
 
   const addCustomer = (customer: Customer) => {
     setSelectedCustomer(emptyCustomer);
@@ -116,6 +132,9 @@ export default function CustomerComponent() {
             onClick={() => addCustomer(selectedCustomer as Customer)}
           />
         </span>
+        <Button label="Loại khách hàng" icon="pi pi-eye" className="p-button-primary ml-3"
+          onClick={() => addTypeCustomers()}
+        />
       </div>
     );
   };
@@ -123,11 +142,11 @@ export default function CustomerComponent() {
   const bodyTypeCustomer = (rowData: Customer) => {
     const typeCustomer = typesCustomer.find((type) => type.IDLoaiKH === rowData.IDLoaiKH);
     let nameTypeCustomer = typeCustomer?.TenLoaiKH;
-    let serverityText = 'info' as 'info' | 'success' | 'warning' | 'danger' | null | undefined;
-    if (typeCustomer?.IDLoaiKH === 1) {
-      serverityText = 'success';
+    let serverityText = null;
+    if (typeCustomer) {
+      serverityText = severityMap[typeCustomer?.IDLoaiKH] as 'info' | 'success' | 'warning' | 'danger' | null | undefined;
     }
-    return <Tag className="mr-2" icon="pi pi-info-circle" severity={serverityText} value={nameTypeCustomer}></Tag>
+    return <Tag className="mr-2" severity={serverityText} value={nameTypeCustomer}></Tag>
   }
 
   return (
@@ -155,7 +174,6 @@ export default function CustomerComponent() {
         <Column field="username" header="Tài khoản"></Column>
         <Column field="TenKhachHang" header="Tên khách hàng"></Column>
         <Column field="DienThoai" header="Số điện thoại"></Column>
-
       </DataTable>
       <CustomerDialog
         visible={dialogVisible}
@@ -166,6 +184,13 @@ export default function CustomerComponent() {
         onCustomerChange={() => {
           setCustomerChange(!customerChange)
         }} // refresh data
+      />
+      <TypeCustomerDialog
+        visible={visibleTypeCustomer}
+        onClose={() => setVisibleTypeCustomer(false)}
+        onTypeCustomerChange={() => {
+          setTypeCustomerChange(!typeCustomerChange)
+        }}
       />
     </div>
   );

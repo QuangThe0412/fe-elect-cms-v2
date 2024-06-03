@@ -1,6 +1,7 @@
 export interface TypeCustomer {
     IDLoaiKH: number;
-    TenLoaiKH: string;
+    TenLoaiKH: string | null;
+    MoTa: string | null;
     createDate?: Date;
     modifyDate?: Date;
     createBy?: string;
