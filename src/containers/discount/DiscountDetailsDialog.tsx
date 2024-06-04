@@ -63,7 +63,9 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
         setLoading(true);
         HandleApi(DiscountService.getDiscountDetails(idDiscount), null).then((res) => {
             if (res && res.status === 200) {
-                setDetailsDiscount(res.data)
+                let data = res.data as DiscountDetails[];
+                let arrayDetailsDiscount = data.filter((item) => !item.Deleted);
+                setDetailsDiscount(arrayDetailsDiscount)
             }
             setLoading(false);
         });
@@ -123,12 +125,12 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
 
         discount.PhanTramKM = parseInt(discount.PhanTramKM as any);
 
-        if(discount.IDMon === 0 || discount.PhanTramKM === 0 
+        if (discount.IDMon === 0 || discount.PhanTramKM === 0
             || (discount.PhanTramKM && discount?.PhanTramKM >= 100)) {
-                toast.current?.show({ severity: 'error', summary: 'Lỗi', detail: 'Dữ liệu không hợp lệ' });
-                setLoading(false);
-                return;
-            }
+            toast.current?.show({ severity: 'error', summary: 'Lỗi', detail: 'Dữ liệu không hợp lệ' });
+            setLoading(false);
+            return;
+        }
 
         if (idDiscount) { // update
             HandleApi(DiscountDetailsService.updateDiscountDetail(idDiscount, discount), toast).then((res) => {
@@ -170,7 +172,19 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
     };
 
     const bodyTemplateButton = (rowData: DiscountDetails) => {
-        return <Button label='Xóa' />
+        return <Button icon="pi pi-times" onClick={deleteRow(rowData.IDChiTietKM)} />
+    };
+
+    const deleteRow = (ChiTietKM: number) => {
+        return () => {
+            setLoading(true);
+            HandleApi(DiscountDetailsService.deletedDiscountDetail(ChiTietKM), toast).then((res) => {
+                if (res.status === 200) {
+                    setChangeDetailDiscount(!changeDetailDiscount);
+                }
+                setLoading(false);
+            });
+        };
     };
 
     return (

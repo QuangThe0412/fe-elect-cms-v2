@@ -11,7 +11,7 @@ export const DiscountDetailsService = {
         return axios.put(paths.discountDetails + `/${id}`, updatedDiscountDetail);
     },
 
-    toggleActiveDiscountDetail(id: number) {
+    deletedDiscountDetail(id: number) {
         return axios.delete(paths.discountDetails + `/${id}`);
     },
 }
