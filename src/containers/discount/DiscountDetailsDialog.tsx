@@ -169,6 +169,10 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
         );
     };
 
+    const bodyTemplateButton = (rowData: DiscountDetails) => {
+        return <Button label='Xóa' />
+    };
+
     return (
         <>
             <Toast ref={toast}></Toast>
@@ -183,6 +187,7 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
 
                     <Column field="PhanTramKM" header="Phần trăm KM" editor={(options) => textEditor(options)} style={{ width: '20%' }}></Column>
                     <Column rowEditor headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
+                    <Column body={bodyTemplateButton} headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
                 </DataTable>
             </Dialog>
         </>
