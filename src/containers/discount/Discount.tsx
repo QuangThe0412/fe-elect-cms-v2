@@ -196,6 +196,7 @@ export default function DiscountComponent() {
         }} // refresh data
       />
       <DiscountDetailsDialog
+        nameDiscount={selectedDiscount.TenKhuyenMai}
         visibleDiscountDetails={dialogDetailsVisible}
         onClose={() => { setDialogDetailsVisible(false) }}
         idDiscount={selectedDiscount.IDKhuyenMai}
