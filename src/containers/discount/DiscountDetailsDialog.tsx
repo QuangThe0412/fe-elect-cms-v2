@@ -115,6 +115,8 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
     );
 
     const onRowEditComplete = (e: DataTableRowEditCompleteEvent) => {
+        e.originalEvent.preventDefault();
+
         setLoading(true);
         let _detailsDiscount = [...detailsDiscount];
         let { newData, index } = e;
@@ -123,8 +125,7 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
         const discount = _detailsDiscount[index];
         let idDiscount = discount.IDChiTietKM;
 
-        discount.PhanTramKM = parseInt(discount.PhanTramKM as any);
-
+        discount.PhanTramKM = parseInt(discount.PhanTramKM as any) ?? 0;
         if (discount.IDMon === 0 || discount.PhanTramKM === 0
             || (discount.PhanTramKM && discount?.PhanTramKM >= 100)) {
             toast.current?.show({ severity: 'error', summary: 'Lỗi', detail: 'Dữ liệu không hợp lệ' });
@@ -133,19 +134,29 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
         }
 
         if (idDiscount) { // update
-            HandleApi(DiscountDetailsService.updateDiscountDetail(idDiscount, discount), toast).then((res) => {
-                if (res.status === 200) {
-                    setChangeDetailDiscount(!changeDetailDiscount);
-                }
-                setLoading(false);
-            });
+            HandleApi(DiscountDetailsService.updateDiscountDetail(idDiscount, discount), toast)
+                .then((res) => {
+                    if (res.status === 200) {
+                        setChangeDetailDiscount(!changeDetailDiscount);
+                    }
+                    setLoading(false);
+                })
+                .catch((error) => {
+                    toast.current?.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể cập nhật chi tiết giảm giá' });
+                    setLoading(false);
+                });
         } else { // create
-            HandleApi(DiscountDetailsService.createDiscountDetail(discount), toast).then((res) => {
-                if (res.status === 201) {
-                    setChangeDetailDiscount(!changeDetailDiscount);
-                }
-                setLoading(false);
-            });
+            HandleApi(DiscountDetailsService.createDiscountDetail(discount), toast)
+                .then((res) => {
+                    if (res.status === 201) {
+                        setChangeDetailDiscount(!changeDetailDiscount);
+                    }
+                    setLoading(false);
+                })
+                .catch((error) => {
+                    toast.current?.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tạo chi tiết giảm giá mới' });
+                    setLoading(false);
+                });
         }
     };
 
@@ -163,7 +174,6 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
             <Dropdown value={rowData.IDMon}
                 options={arrayProducts} filter
                 onChange={(e: DropdownChangeEvent) => {
-                    console.log(e.value);
                     options.editorCallback!(e.value);
                 }}
                 optionLabel="TenMon" optionValue="IDMon" placeholder="Chọn món"
@@ -176,6 +186,7 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
     };
 
     const deleteRow = (ChiTietKM: number) => {
+        if (!ChiTietKM) return;
         return () => {
             setLoading(true);
             HandleApi(DiscountDetailsService.deletedDiscountDetail(ChiTietKM), toast).then((res) => {

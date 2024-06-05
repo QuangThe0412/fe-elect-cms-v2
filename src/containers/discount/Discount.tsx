@@ -66,7 +66,6 @@ export default function DiscountComponent() {
 
   const getDiscount = () => {
     HandleApi(DiscountService.getDiscounts(), null).then((result) => {
-      console.log(result);
       if (result.status === 200) {
         setDiscount(result.data)
       }
