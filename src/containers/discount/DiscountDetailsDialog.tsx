@@ -58,11 +58,12 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
     useEffect(() => {
         const fetchData = async () => {
             if (visibleDiscountDetails && idDiscount > 0) {
-                await getProduct();
+                const productRes: Product[] = await getProduct();
+                setProducts(productRes);
 
                 getDetailsDiscount().then((res) => {
                     res.forEach((item) => {
-                        let product = products.find((p) => p.IDMon === item.IDMon);
+                        let product = productRes.find((p) => p.IDMon === item.IDMon);
                         if (product) {
                             item.TenMon = product.TenMon;
                             item.GiaLe = product.DonGiaBanLe;
@@ -81,6 +82,7 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
     const HandClose = () => {
         onClose();
         setDetailsDiscount([]);
+        setSelectedproduct(null);
     };
 
     const getDetailsDiscount = async () => {
@@ -103,7 +105,6 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
         if (res && res.status === 200) {
             let data = res.data as Product[];
             arrayProducts = data.filter((item) => !item.Deleted);
-            setProducts(arrayProducts);
         }
         setLoading(false);
         return arrayProducts;
@@ -116,10 +117,18 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
     };
 
     const AddNewRow = (e: any) => {
-        e.target.disable = true;
+        // e.target.disable = true;
+        setSelectedproduct({} as Product);
         let _detailsDiscount = [...detailsDiscount];
 
         emptyDiscountDetails.IDKhuyenMai = idDiscount;
+        emptyDiscountDetails.IDMon = 0;
+        emptyDiscountDetails.TenMon = '';
+        emptyDiscountDetails.GiaLe = 0;
+        emptyDiscountDetails.GiaSi = 0;
+        emptyDiscountDetails.GiaGoc = 0;
+        emptyDiscountDetails.PhanTramKM = 0;
+
         _detailsDiscount.push(emptyDiscountDetails);
         setDetailsDiscount(_detailsDiscount);
     };
@@ -139,27 +148,23 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
     const onRowEditComplete = (e: DataTableRowEditCompleteEvent) => {
         setLoading(true);
         let _detailsDiscount = [...detailsDiscount];
-        let { newData, index } = e;
+        let { index, newData } = e;
 
-        _detailsDiscount[index] = newData as ExtendedDiscountDetails;
-        setDetailsDiscount(_detailsDiscount);
-        const discount = _detailsDiscount[index];
-        let idDiscount = discount.IDChiTietKM;
+        const updatedDiscount = { ...newData } as ExtendedDiscountDetails;
+        updatedDiscount.PhanTramKM = parseInt(updatedDiscount.PhanTramKM as any) || 0;
 
-        console.log({ discount });
+        _detailsDiscount[index] = updatedDiscount;
+        let idDiscount = updatedDiscount.IDChiTietKM;
 
-
-        discount.PhanTramKM = parseInt(discount.PhanTramKM as any) ?? 0;
-        if (discount.IDMon === 0 || discount.PhanTramKM === 0
-            || (discount.PhanTramKM && discount?.PhanTramKM >= 100)) {
+        if (updatedDiscount.IDMon === 0 || updatedDiscount.PhanTramKM === 0
+            || (updatedDiscount.PhanTramKM && updatedDiscount?.PhanTramKM >= 100)) {
             toast.current?.show({ severity: 'error', summary: 'Lỗi', detail: 'Dữ liệu không hợp lệ' });
             setLoading(false);
-            setSelectedproduct(null);
             return;
         }
 
         if (idDiscount) { // update
-            HandleApi(DiscountDetailsService.updateDiscountDetail(idDiscount, discount), toast)
+            HandleApi(DiscountDetailsService.updateDiscountDetail(idDiscount, updatedDiscount), toast)
                 .then((res) => {
                     if (res.status === 200) {
                         setChangeDetailDiscount(!changeDetailDiscount);
@@ -171,7 +176,7 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
             setLoading(false);
             setSelectedproduct(null);
         } else { // create
-            HandleApi(DiscountDetailsService.createDiscountDetail(discount), toast)
+            HandleApi(DiscountDetailsService.createDiscountDetail(updatedDiscount), toast)
                 .then((res) => {
                     if (res.status === 201) {
                         setChangeDetailDiscount(!changeDetailDiscount);
@@ -190,7 +195,7 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
         const arrayProducts = products.filter((item) => !item.Deleted);
         return (
             <Dropdown
-                value={selectedproduct as Product}
+                value={selectedproduct ? selectedproduct.IDMon : rowData.IDMon}
                 options={arrayProducts} filter
                 onChange={(e: DropdownChangeEvent) => {
                     options.editorCallback!(e.value);
@@ -218,7 +223,13 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
     };
 
     const deleteRow = (ChiTietKM: number) => {
-        if (!ChiTietKM) return;
+        if (!ChiTietKM) {
+            return () => {
+                let _detailsDiscount = [...detailsDiscount];
+                _detailsDiscount.pop();
+                setDetailsDiscount(_detailsDiscount);
+            };
+        }
         return () => {
             setLoading(true);
             HandleApi(DiscountDetailsService.deletedDiscountDetail(ChiTietKM), toast).then((res) => {
@@ -230,16 +241,19 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
         };
     };
 
+    const bodyChonMon = (rowData: ExtendedDiscountDetails) => {
+        return rowData.TenMon;
+    };
+    
     return (
         <>
             <Toast ref={toast}></Toast>
             <Dialog header={headerElement} visible={visibleDiscountDetails} style={{ width: '90vw' }}
                 onHide={() => { if (!visibleDiscountDetails) return; HandClose(); }} >
-                <DataTable value={detailsDiscount} editMode="row" dataKey="IDChiTietKM" loading={loading}
+                <DataTable value={detailsDiscount} editMode="row" loading={loading}
                     onRowEditComplete={onRowEditComplete} tableStyle={{ minWidth: '50rem' }}>
                     <Column field="IDChiTietKM" header="Id" style={{ width: '10%' }}></Column>
-                    <Column field="IdMon" header="Chọn món" editor={(options) => productEditor(options)} style={{ width: '20%' }}></Column>
-                    <Column field="TenMon" header="Món" style={{ width: '20%' }}></Column>
+                    <Column field="IDMon" body={bodyChonMon} header="Món" editor={(options) => productEditor(options)} style={{ width: '20%' }}></Column>
                     <Column field="GiaGoc" header="Giá gốc" style={{ width: '20%' }}></Column>
                     <Column field="GiaSi" header="Giá sỉ" style={{ width: '20%' }}></Column>
                     <Column field="GiaLe" header="Giá lẻ" style={{ width: '20%' }}></Column>

@@ -178,10 +178,10 @@ export default function DiscountComponent() {
         <Column field="IdLoaiKH" header="Loại khách hàng" body={bodyLoaiKH}></Column>
         <Column field="TuNgay" header="Từ Ngày" body={bodyDate as (data: any, options: any) => React.ReactNode}></Column>
         <Column field="DenNgay" header="Đến Ngày" body={bodyDate as (data: any, options: any) => React.ReactNode}></Column>
-        <Column field="createDate" header="Ngày Tạo" body={bodyDate as (data: any, options: any) => React.ReactNode}></Column>
-        <Column field="modifyDate" header="Ngày Sửa" body={bodyDate as (data: any, options: any) => React.ReactNode}></Column>
-        <Column field="createBy" header="Người Tạo"></Column>
-        <Column field="modifyBy" header="Người Sửa"></Column>
+        {/* <Column field="createDate" header="Ngày Tạo" body={bodyDate as (data: any, options: any) => React.ReactNode}></Column> */}
+        {/* <Column field="modifyDate" header="Ngày Sửa" body={bodyDate as (data: any, options: any) => React.ReactNode}></Column> */}
+        {/* <Column field="createBy" header="Người Tạo"></Column> */}
+        {/* <Column field="modifyBy" header="Người Sửa"></Column> */}
 
       </DataTable>
       <DiscountDialog
