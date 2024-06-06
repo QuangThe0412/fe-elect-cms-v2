@@ -52,12 +52,30 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
     const [loading, setLoading] = useState<boolean>(false);
     const [detailsDiscount, setDetailsDiscount] = useState<ExtendedDiscountDetails[]>([]);
     const [changeDetailDiscount, setChangeDetailDiscount] = useState<boolean>(false);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [selectedproduct, setSelectedproduct] = useState<Product | null>(null);
 
     useEffect(() => {
-        if (visibleDiscountDetails && idDiscount > 0) {
-            getDetailsDiscount();
-            getProduct();
+        const fetchData = async () => {
+            if (visibleDiscountDetails && idDiscount > 0) {
+                await getProduct();
+
+                getDetailsDiscount().then((res) => {
+                    res.forEach((item) => {
+                        let product = products.find((p) => p.IDMon === item.IDMon);
+                        if (product) {
+                            item.TenMon = product.TenMon;
+                            item.GiaLe = product.DonGiaBanLe;
+                            item.GiaSi = product.DonGiaBanSi;
+                            item.GiaGoc = product.DonGiaVon;
+                        }
+                    });
+                    setDetailsDiscount(res);
+                });
+            };
         }
+
+        fetchData();
     }, [changeDetailDiscount, visibleDiscountDetails]);
 
     const HandClose = () => {
@@ -65,52 +83,30 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
         setDetailsDiscount([]);
     };
 
-    const getDetailsDiscount = () => {
-        console.log('getDetailsDiscount')
+    const getDetailsDiscount = async () => {
         setLoading(true);
-        HandleApi(DiscountService.getDiscountDetails(idDiscount), null).then((res) => {
-            if (res && res.status === 200) {
-                let data = res.data as ExtendedDiscountDetails[];
-                let arrayDetailsDiscount = data.filter((item) => !item.Deleted);
-                setDetailsDiscount(arrayDetailsDiscount)
-            }
-            setLoading(false);
-        });
+        let arrayDetailsDiscount: ExtendedDiscountDetails[] = [];
+        const res = await HandleApi(DiscountService.getDiscountDetails(idDiscount), null);
+
+        if (res && res.status === 200) {
+            let data = res.data as ExtendedDiscountDetails[];
+            arrayDetailsDiscount = data.filter((item) => !item.Deleted);
+        }
+        setLoading(false);
+        return arrayDetailsDiscount;
     };
 
-    const getProduct = () => {
-        console.log('getProduct')
-        HandleApi(ProductService.getProducts(), null).then((res) => {
-            if (res && res.status === 200) {
-                let data = res.data as Product[];
-                let arrayProducts = data.filter((item) => !item.Deleted)
-                    .map((item) => ({
-                        IDMon: item.IDMon,
-                        TenMon: item.TenMon,
-                        GiaLe: item.DonGiaBanLe,
-                        GiaSi: item.DonGiaBanSi,
-                        GiaGoc: item.DonGiaVon,
-                    }));
-
-                let newData = detailsDiscount.map((item) => {
-                    let product = arrayProducts.find(p => p.IDMon === item.IDMon);
-                    console.log('product', product?.IDMon, item.IDMon);
-                    if (product) {
-                        return {
-                            ...item,
-                            TenMon: product.TenMon,
-                            GiaLe: product.GiaLe,
-                            GiaSi: product.GiaSi,
-                            GiaGoc: product.GiaGoc,
-                        };
-                    } else {
-                        return item;
-                    }
-                });
-                console.log({newData});
-                setDetailsDiscount(newData);
-            }
-        });
+    const getProduct = async () => {
+        setLoading(true);
+        let arrayProducts: Product[] = [];
+        const res = await HandleApi(ProductService.getProducts(), null);
+        if (res && res.status === 200) {
+            let data = res.data as Product[];
+            arrayProducts = data.filter((item) => !item.Deleted);
+            setProducts(arrayProducts);
+        }
+        setLoading(false);
+        return arrayProducts;
     };
 
     const textEditor = (options: ColumnEditorOptions) => {
@@ -141,21 +137,24 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
     );
 
     const onRowEditComplete = (e: DataTableRowEditCompleteEvent) => {
-        e.originalEvent.preventDefault();
-
         setLoading(true);
         let _detailsDiscount = [...detailsDiscount];
         let { newData, index } = e;
 
         _detailsDiscount[index] = newData as ExtendedDiscountDetails;
+        setDetailsDiscount(_detailsDiscount);
         const discount = _detailsDiscount[index];
         let idDiscount = discount.IDChiTietKM;
+
+        console.log({ discount });
+
 
         discount.PhanTramKM = parseInt(discount.PhanTramKM as any) ?? 0;
         if (discount.IDMon === 0 || discount.PhanTramKM === 0
             || (discount.PhanTramKM && discount?.PhanTramKM >= 100)) {
             toast.current?.show({ severity: 'error', summary: 'Lỗi', detail: 'Dữ liệu không hợp lệ' });
             setLoading(false);
+            setSelectedproduct(null);
             return;
         }
 
@@ -165,59 +164,51 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
                     if (res.status === 200) {
                         setChangeDetailDiscount(!changeDetailDiscount);
                     }
-                    setLoading(false);
                 })
                 .catch((error) => {
                     toast.current?.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể cập nhật chi tiết giảm giá' });
-                    setLoading(false);
                 });
+            setLoading(false);
+            setSelectedproduct(null);
         } else { // create
             HandleApi(DiscountDetailsService.createDiscountDetail(discount), toast)
                 .then((res) => {
                     if (res.status === 201) {
                         setChangeDetailDiscount(!changeDetailDiscount);
                     }
-                    setLoading(false);
                 })
                 .catch((error) => {
                     toast.current?.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tạo chi tiết giảm giá mới' });
-                    setLoading(false);
                 });
+            setLoading(false);
+            setSelectedproduct(null);
         }
     };
 
-    const productBodyTemplate = (rowData: ExtendedDiscountDetails) => {
-        let product = detailsDiscount.find(p => p.IDMon === rowData?.IDMon);
-        return product ? product.TenMon : '';
-    };
-
     const productEditor = (options: ColumnEditorOptions) => {
-        const { rowIndex } = options;
-        const arrayProducts = detailsDiscount.map((item) => {
-            return {
-                IDMon: item.IDMon,
-                TenMon: item.TenMon,
-                GiaLe: item.GiaLe,
-                GiaSi: item.GiaSi,
-                GiaGoc: item.GiaGoc,
-            };
-        });
-        const { rowData } = options;
-        console.log(rowData);
+        const { rowIndex, rowData } = options;
+        const arrayProducts = products.filter((item) => !item.Deleted);
         return (
-            <Dropdown value={rowData.IDMon}
+            <Dropdown
+                value={selectedproduct as Product}
                 options={arrayProducts} filter
                 onChange={(e: DropdownChangeEvent) => {
                     options.editorCallback!(e.value);
-                    const dataNew = arrayProducts.find((p) => p.IDMon === e.value) || {} as ExtendedDiscountDetails;
-                    const detailsDiscountWithNew = detailsDiscount[rowIndex] as ExtendedDiscountDetails;
-                    detailsDiscountWithNew.IDMon = e.value;
-                    detailsDiscountWithNew.TenMon = dataNew.TenMon;
-                    detailsDiscountWithNew.GiaLe = dataNew.GiaLe;
-                    detailsDiscountWithNew.GiaSi = dataNew.GiaSi;
-                    detailsDiscountWithNew.GiaGoc = dataNew.GiaGoc;
+                    const product = arrayProducts.find((p) => p.IDMon === e.value) || {} as Product;
+                    const detailsNew = detailsDiscount[rowIndex] as ExtendedDiscountDetails;
+                    detailsNew.IDMon = product.IDMon;
+                    detailsNew.TenMon = product.TenMon;
+                    detailsNew.GiaLe = product.DonGiaBanLe;
+                    detailsNew.GiaSi = product.DonGiaBanSi;
+                    detailsNew.GiaGoc = product.DonGiaVon;
+                    setDetailsDiscount([
+                        ...detailsDiscount.slice(0, rowIndex),
+                        detailsNew,
+                        ...detailsDiscount.slice(rowIndex + 1)
+                    ]);
+                    setSelectedproduct(product as Product);
                 }}
-                optionLabel="TenMon" optionValue="IDMon" placeholder="Chọn món"
+                optionLabel="TenMon" optionValue="IDMon"
             />
         );
     };
@@ -239,13 +230,6 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
         };
     };
 
-    // const bodyPrice = (rowData: any, keyColumn: string) => {
-    //     if (!rowData?.IDMon || !keyColumn) return '';
-    //     let product = detailsDiscount.find((p) => p.IDMon === rowData?.IDMon);
-    //     let value = product ? product[`${keyColumn}` as keyof ExtendedDiscountDetails] : '';
-    //     return value;
-    // };
-    console.log(detailsDiscount);
     return (
         <>
             <Toast ref={toast}></Toast>
@@ -254,8 +238,8 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
                 <DataTable value={detailsDiscount} editMode="row" dataKey="IDChiTietKM" loading={loading}
                     onRowEditComplete={onRowEditComplete} tableStyle={{ minWidth: '50rem' }}>
                     <Column field="IDChiTietKM" header="Id" style={{ width: '10%' }}></Column>
-                    <Column field="TenMon" header="Món" body={productBodyTemplate}
-                        editor={(options) => productEditor(options)} style={{ width: '20%' }}></Column>
+                    <Column field="IdMon" header="Chọn món" editor={(options) => productEditor(options)} style={{ width: '20%' }}></Column>
+                    <Column field="TenMon" header="Món" style={{ width: '20%' }}></Column>
                     <Column field="GiaGoc" header="Giá gốc" style={{ width: '20%' }}></Column>
                     <Column field="GiaSi" header="Giá sỉ" style={{ width: '20%' }}></Column>
                     <Column field="GiaLe" header="Giá lẻ" style={{ width: '20%' }}></Column>
