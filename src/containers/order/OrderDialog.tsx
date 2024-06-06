@@ -4,145 +4,81 @@ import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import Form from 'rc-field-form';
 import { Toast } from 'primereact/toast';
-import { CategoryService } from '@/services/category.service';
-import { CategoryGroupService } from '@/services/categoryGroup.service';
-import { Category, CategoryGroup } from '@/models';
+import { OrderDetailsService } from '@/services/orderDetails.service';
+import { Order, OrderDetail } from '@/models';
 import { HandleApi } from '@/services/handleApi';
 import { LabelField } from '@/components';
 import { classNames } from 'primereact/utils';
 import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
 
 type PropType = {
-    idCategory: number,
+    idOrder: number,
     visible: boolean,
     onClose: () => void,
-    onCategoryChange: () => void,
 };
-
-type typeForm = {
-    idCategory: number;
-    nameCategory: string;
-    idGroupCategory: number;
-}
-
-const initialForm: typeForm = {
-    idCategory: 0,
-    nameCategory: '',
-    idGroupCategory: 0,
-};
-
 
 export default
-    function CategoryDialog({ visible, onClose, idCategory, onCategoryChange }: PropType) {
+    function OrderDialog({ visible, onClose, idOrder }: PropType) {
     const [form] = Form.useForm();
     const toast = useRef<Toast>(null);
     const [loading, setLoading] = useState<boolean>(false);
-    const [categoryGroups, setCategoryGroups] = useState<CategoryGroup[]>([]);
-    const [selectedCategoryGroup, setSelectedCategoryGroup] = useState<CategoryGroup>();
+    const [orderDetails, setOrderDetails] = useState<OrderDetail[]>([]);
 
     useEffect(() => {
-        getCategoryGroup();
-        if (visible && idCategory > 0) {
-            getCategory();
+        if (visible && idOrder > 0) {
+            getOrderDetails();
         }
     }, [visible]);
 
     const HandClose = () => {
         onClose();
         form.resetFields();
-        setSelectedCategoryGroup(undefined);
     };
 
-    const getCategory = () => {
-        HandleApi(CategoryService.getCategory(idCategory), null).then((res) => {
+    const getOrderDetails = () => {
+        HandleApi(OrderDetailsService.getOrderDetail(idOrder) , null).then((res) => {
             if (res && res.status === 200) {
-                const { IDLoaiMon, IDNhomMon, TenLoai } = res.data as Category;
-                const categoryGroup = categoryGroups.find((x) => x.IDNhomMon === IDNhomMon);
-                setSelectedCategoryGroup(categoryGroup);
-                form.setFieldsValue({
-                    idCategory: IDLoaiMon,
-                    nameCategory: TenLoai,
-                    idGroupCategory: IDNhomMon
-                });
+                setOrderDetails(res.data);
             }
         });
     };
 
-    const getCategoryGroup = () => {
-        HandleApi(CategoryGroupService.getCategoryGroups(), toast).then((result) => {
-            if (result.status === 200) {
-                let data = result.data;
-                setCategoryGroups(data);
-            }
-            setLoading(false);
-        });
-    }
+    // const deleteRow = (ChiTietKM: number) => {
+    //     if (!ChiTietKM) {
+    //         return () => {
+    //             let _detailsDiscount = [...detailsDiscount];
+    //             _detailsDiscount.pop();
+    //             setDetailsDiscount(_detailsDiscount);
+    //         };
+    //     }
+    //     return () => {
+    //         setLoading(true);
+    //         HandleApi(DiscountDetailsService.deletedDiscountDetail(ChiTietKM), toast).then((res) => {
+    //             if (res.status === 200) {
+    //                 setChangeDetailDiscount(!changeDetailDiscount);
+    //             }
+    //             setLoading(false);
+    //         });
+    //     };
+    // };
 
-    const onFinish = (values: typeForm) => {
-        setLoading(true);
-        let category: Category = {
-            IDLoaiMon: idCategory,
-            IDNhomMon: selectedCategoryGroup?.IDNhomMon as number,
-            TenLoai: values.nameCategory,
-        };
-
-        if (idCategory) { // update
-            HandleApi(CategoryService.updateCategory(idCategory, category), toast).then((res) => {
-                if (res.status === 200) {
-                    onCategoryChange();
-                    HandClose();
-                }
-                setLoading(false);
-            });
-        } else { // create
-            HandleApi(CategoryService.createCategory(category), toast).then((res) => {
-                if (res.status === 201) {
-                    console.log(res.data);
-                    onCategoryChange();
-                    HandClose();
-                }
-                setLoading(false);
-            });
-        }
-    };
-
-    const onFinishFailed = (errorInfo: any) => {
-        console.log('Failed:', errorInfo);
-    };
-    
+    // const bodyTemplateButtonDeleted = (rowData: ExtendedDiscountDetails) => {
+    //     return <Button icon='pi pi-trash' onClick={deleteRow(rowData.IDChiTietKM)} />
+    // };
     return (
         <>
             <Toast ref={toast}></Toast>
-            <Dialog header={idCategory ? 'Cập nhật' : 'Thêm mới'} visible={visible} style={{ width: '35vw' }}
+            <Dialog header={idOrder ? 'Cập nhật' : 'Thêm mới'} visible={visible} style={{ width: '35vw' }}
                 onHide={() => { if (!visible) return; HandClose(); }}>
-                <Form form={form} onFinish={onFinish}
-                    onFinishFailed={onFinishFailed}
-                    initialValues={initialForm}
-                    className="p-fluid">
-                    <LabelField label="Tên loại" name="nameCategory"
-                        rules={[
-                            { required: true, message: 'Tên loại không được bỏ trống.' },
-                        ]}>
-                        {(control, meta) => (<InputText {...control} id="nameCategory"
-                            className={classNames({ 'invalid': meta.errors.length })} />)}
-                    </LabelField>
-
-                    <LabelField label="Nhóm món" name="idGroupCategory"
-                        rules={[
-                            { required: true, message: 'Nhóm món không được bỏ trống.' },
-                        ]}>
-                        {(control, meta) => (
-                            <Dropdown value={selectedCategoryGroup}
-                                onChange={(e: DropdownChangeEvent) => {
-                                    setSelectedCategoryGroup(e.value);
-                                }}
-                                options={categoryGroups} optionLabel={'TenNhom'}
-                                placeholder="Chọn nhóm món" className="w-full" />
-                            )}
-                    </LabelField>
-
-                    <Button loading={loading} type='submit' label={idCategory ? 'Cập nhật' : 'Tạo mới'} className="w-6" style={{ float: 'right' }} />
-                </Form>
+                {/* <DataTable value={detailsDiscount} editMode="row" loading={loading}
+                    onRowEditComplete={onRowEditComplete} tableStyle={{ minWidth: '50rem' }}>
+                    <Column field="IDChiTietKM" header="Id" style={{ width: '10%' }}></Column>
+                    <Column field="PhanTramKM" header="Phần trăm KM" editor={(options) => textEditor(options)} style={{ width: '20%' }}></Column>
+                    <Column rowEditor headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
+                    <Column body={bodyTemplateButtonDeleted} headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
+                </DataTable> */}
             </Dialog>
         </>
     )

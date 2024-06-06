@@ -35,13 +35,13 @@ export default function Orders() {
   const toast = useRef<Toast>(null);
   const cm = useRef<ContextMenu>(null);
   const menuModel = [
-    { label: 'Hủy', icon: 'pi pi-fw pi-pencil', command: () => console.log('Hủy') },
-    { label: 'Hoàn thành', icon: 'pi pi-fw pi-plus-circle', command: () => console.log('Hoàn thành') },
-    { label: 'Đang xử lý', icon: 'pi pi-fw pi-pencil', command: () => console.log('Đang xử lý') },
+    { label: 'Đang xử lý', icon: 'pi pi-spin pi-spinner', command: () => HandleStatus(STATUS_ENUM.PENDING) },
+    { label: 'Hoàn thành', icon: 'pi pi-fw pi-check', command: () => HandleStatus(STATUS_ENUM.FINISH) },
+    { label: 'Hủy', icon: 'pi pi-fw pi-times', command: () => HandleStatus(STATUS_ENUM.CANCEL) },
     {
       label: 'Chi tiết',
-      icon: 'pi pi-eyes',
-      command: () => console.log('Chi tiết')
+      icon: 'pi pi-eye',
+      command: () => setDialogVisible(true)
     }
   ];
 
@@ -51,7 +51,6 @@ export default function Orders() {
       setCustomers(customerRes);
 
       const ordersRes = await getOrders();
-      console.log({ ordersRes });
       setOrders(ordersRes);
     };
 
@@ -80,18 +79,38 @@ export default function Orders() {
     return result;
   }
 
+  const HandleStatus = (status: number) => {
+    HandleApi(OrderService.updateStatusOrder(selectedOrder?.IDHoaDon as number, status), toast).then((res) => {
+      console.log(res);
+      if (res.status === 200) {
+        setOrderChange(!orderChange);
+      }
+    });
+  };
+
   const rowClassName = (data: Order) => {
     let enumData = data.TrangThai;
-    console.log({ enumData });
-    console.log('/////',STATUS_ENUM.PENDING);
-
     switch (enumData) {
       case STATUS_ENUM.PENDING:
-        return 'bg-warning';
-      case STATUS_ENUM.FINISH:
-        return 'bg-success';
+        return 'bg-help';
       case STATUS_ENUM.CANCEL:
         return 'bg-danger';
+      case STATUS_ENUM.FINISH:
+        return '';
+      default:
+        return '';
+    }
+  };
+
+  const bodyStatus = (data: Order) => {
+    let enumData = data.TrangThai;
+    switch (enumData) {
+      case STATUS_ENUM.PENDING:
+        return <span className="text-help">Đang xử lý</span>;
+      case STATUS_ENUM.CANCEL:
+        return <span className="text-danger">Hủy</span>;
+      case STATUS_ENUM.FINISH:
+        return <span className="text-success">Hoàn thành</span>;
       default:
         return '';
     }
@@ -105,6 +124,11 @@ export default function Orders() {
     setGlobalFilterValue(value);
   };
 
+  const bodyKhachHang = (data: Order) => {
+    let customer = customers.find((x) => x.IDKhachHang === data.IDKhachHang);
+    return customer?.TenKhachHang;
+  };
+
   const renderHeader = () => {
     return (
       <div className="flex flex-wrap gap-2 justify-content-between align-items-center">
@@ -115,7 +139,6 @@ export default function Orders() {
       </div>
     );
   };
-
 
   return (
     <div className="card">
@@ -144,22 +167,19 @@ export default function Orders() {
       >
         <Column field="IDHoaDon" header="Id" ></Column>
         <Column field="IDBaoGia" header="Id báo giá"></Column>
-        <Column field="IDKhachHang" header="Id khách hàng"  ></Column>
-        <Column field="TrangThai" header="Trạng thái"  ></Column>
+        <Column field="IDKhachHang" header="Id khách hàng"  body={bodyKhachHang}></Column>
+        <Column field="TrangThai" header="Trạng thái" body={bodyStatus} ></Column>
         <Column field="CongNo" header="Công nợ"  ></Column>
         <Column field="GhiChu" header="Ghi chú"  ></Column>
 
       </DataTable>
-      {/* <OrderDialog
+      <OrderDialog
         visible={dialogVisible}
         onClose={() => {
           setDialogVisible(false)
         }}
-        idOrder={selectedOrder.IDLoaiMon}
-        onOrderChange={() => {
-          setOrderChange(!orderChange)
-        }} // refresh data
-      /> */}
+        idOrder={selectedOrder?.IDHoaDon as number}
+      />
     </div>
   );
 }
