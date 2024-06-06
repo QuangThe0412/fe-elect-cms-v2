@@ -1,4 +1,4 @@
-import {  useRef } from 'react';
+import { useRef } from 'react';
 import { Dock } from 'primereact/dock';
 import { MenuItem } from 'primereact/menuitem';
 import { BrowserRouter as Link, useLocation } from 'react-router-dom';
@@ -75,15 +75,15 @@ export default function DockMenu() {
             },
         },
         {
-            label: 'costImage',
-            icon: () => <img alt="Test" src={costImage} width="100%" />,
+            label: 'Hóa đơn',
+            icon: () => <img alt="Order" src={billImage} width="100%" />,
             command: () => {
-                HandleGoPath('/test');
+                HandleGoPath(paths.order);
             },
         },
         {
-            label: 'billImage',
-            icon: () => <img alt="Test" src={billImage} width="100%" />,
+            label: 'costImage',
+            icon: () => <img alt="Test" src={costImage} width="100%" />,
             command: () => {
                 HandleGoPath('/test');
             },
@@ -92,7 +92,7 @@ export default function DockMenu() {
 
     return (
         <div className="card dock-demo">
-            <Toast ref={toast}/>
+            <Toast ref={toast} />
             <Tooltip className="dark-tooltip" target=".dock-advanced .p-dock-action" my="center+15 bottom-15" at="center top" showDelay={150} />
             <div className="dock-window dock-advanced">
                 <Dock model={items} position={"top"} />

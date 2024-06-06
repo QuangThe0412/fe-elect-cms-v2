@@ -20,4 +20,6 @@ export const paths = {
     customerType:'/loaiKhachHang',
     discount:'/khuyenMai',
     discountDetails:'/chiTietKhuyenMai',
+    order:'/hoadon',
+    orderDetails:'/chiTietHoaDon',
 };

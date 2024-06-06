@@ -36,9 +36,11 @@ export default function DiscountComponent() {
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
   const [filters, setFilters] = useState<DataTableFilterMeta>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    IDLoaiMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    TenLoai: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    IDNhomMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    IDKhuyenMai: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    TenKhuyenMai: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    IdLoaiKH: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    TuNgay: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    DenNgay: { value: null, matchMode: FilterMatchMode.CONTAINS },
   });
   const [discountChange, setDiscountChange] = useState<boolean>(false);
   const [typeCustomers, setTypeCustomers] = useState<TypeCustomer[]>([]);

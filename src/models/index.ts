@@ -7,6 +7,8 @@ import { Customer } from './customer';
 import { TypeCustomer } from './typeCustomer';
 import { Discount } from './discount';
 import { DiscountDetails } from './discountDetails';
+import { Order } from './order';
+import { OrderDetail } from './orderDetails';
 
 interface FileUploadState {
   files: File[];
@@ -23,5 +25,7 @@ export type {
   Customer,
   TypeCustomer,
   Discount,
-  DiscountDetails
+  DiscountDetails,
+  Order,
+  OrderDetail,
 };
