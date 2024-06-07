@@ -81,7 +81,6 @@ export default function Orders() {
 
   const HandleStatus = (status: number) => {
     HandleApi(OrderService.updateStatusOrder(selectedOrder?.IDHoaDon as number, status), toast).then((res) => {
-      console.log(res);
       if (res.status === 200) {
         setOrderChange(!orderChange);
       }

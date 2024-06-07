@@ -42,7 +42,6 @@ export default function Login() {
     const onFinish = (values: typeForm) => {
         let { username, password } = values;
         HandleApi(AuthService.login(username, password), toast).then((res) => {
-            console.log(res);
             if (res && res.status === 200) {
                 const { accessToken, refreshToken } = res.data;
                 setCookie(ACCESS_COOKIE_NAME, accessToken);

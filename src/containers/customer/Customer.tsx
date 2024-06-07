@@ -112,7 +112,7 @@ export default function CustomerComponent() {
     });
   };
 
-  const rowClassName = (data: Customer) => (!data.Deleted ? '' : 'bg-warning');
+  const rowClassName = (data: Customer) => (!data.Deleted ? '' : 'bg-danger');
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;

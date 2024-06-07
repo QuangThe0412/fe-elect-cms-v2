@@ -95,7 +95,7 @@ export default function Users() {
     });
   };
 
-  const rowClassName = (data: User) => (!data.Deleted ? '' : 'bg-warning');
+  const rowClassName = (data: User) => (!data.Deleted ? '' : 'bg-danger');
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;

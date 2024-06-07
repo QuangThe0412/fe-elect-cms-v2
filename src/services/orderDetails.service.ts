@@ -3,10 +3,6 @@ import axios from 'axios';
 import { paths } from '@/constants/api';
 
 export const OrderDetailsService = {
-    getOrderDetail(id: number) {
-        return axios.get( paths.orderDetails + `/${id}`);
-    },
-
     createOrderDetail(orderDetail: OrderDetail) {
         return axios.post( paths.orderDetails, orderDetail);
     },
