@@ -8,24 +8,32 @@ import { Order, OrderDetail, Product } from '@/models';
 import { HandleApi } from '@/services/handleApi';
 import { classNames } from 'primereact/utils';
 import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
-import { DataTable, DataTableRowEditCompleteEvent } from 'primereact/datatable';
+import { DataTable, DataTableFilterMeta, DataTableRowEditCompleteEvent } from 'primereact/datatable';
 import { Column, ColumnEditorOptions } from 'primereact/column';
 import { ProductService } from '@/services/products.service';
 import { Button } from 'primereact/button';
+import { formatCurrency, formatNumber } from '@/utils/common';
+import { FilterMatchMode } from 'primereact/api';
 
 type PropType = {
     idOrder: number,
     visible: boolean,
+    isPending: boolean,
     onClose: () => void,
 };
 
 export default
-    function OrderDialog({ visible, onClose, idOrder }: PropType) {
+    function OrderDialog({ visible, onClose, idOrder, isPending }: PropType) {
     const toast = useRef<Toast>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [orderDetails, setOrderDetails] = useState<OrderDetail[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
     const [changeDetailOrder, setChangeDetailOrder] = useState<boolean>(false);
+    const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
+    const [filters, setFilters] = useState<DataTableFilterMeta>({
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        IDMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    });
 
     useEffect(() => {
         const fetchData = async () => {
@@ -69,22 +77,78 @@ export default
     };
 
     const textEditor = (options: ColumnEditorOptions) => {
-        let value = options.rowData[options.field as keyof OrderDetail] as string;
-        return <InputText type='number' value={value || ''}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => options.editorCallback!(e.target.value)} />;
+        const { value } = options;
+        return <InputText type='number' value={value || 0}
+            onBlur={(e: React.FocusEvent<HTMLInputElement>) => { onBlurEditor(e, options); }}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => { options.editorCallback!(e.target.value); }
+            } />;
+    };
+
+    const onBlurEditor = (e: React.FocusEvent<HTMLInputElement>, options: ColumnEditorOptions) => {
+        const { rowIndex, field } = options;
+        const updatedData = [...orderDetails];
+        const _updatedRow = orderDetails[rowIndex];
+        switch (field) {
+            case 'SoLuong':
+                _updatedRow.SoLuong = parseInt(e.target.value);
+                break;
+            case 'ChietKhau':
+                _updatedRow.ChietKhau = parseInt(e.target.value);
+                break;
+            default:
+                break;
+        }
+        const DonGiaBanLe = (_updatedRow.DonGia ?? 0);
+        const TienChuaCK = (_updatedRow.SoLuong ?? 0) * DonGiaBanLe;
+        const TienCK = (_updatedRow.ChietKhau ?? 0) * TienChuaCK / 100;
+        const TienSauCK = TienChuaCK - TienCK;
+        _updatedRow.TienChuaCK = TienChuaCK;
+        _updatedRow.TienCK = TienCK;
+        _updatedRow.TienSauCK = TienSauCK;
+        _updatedRow.DonGia = DonGiaBanLe;
+
+        updatedData[rowIndex] = _updatedRow;
+        setOrderDetails(updatedData);
     };
 
     const onRowEditComplete = (e: DataTableRowEditCompleteEvent) => {
+        let _orderDetails = [...orderDetails];
+        let { index } = e;
+
+        let targetUpdate = _orderDetails[index];
+        const { IDChiTietHD, IDMon, SoLuong, ChietKhau } = targetUpdate;
+        if (!IDMon) {
+            toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Chưa chọn món' });
+            return;
+        }
+
+        if (!SoLuong || SoLuong <= 0) {
+            toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Số lượng phải lớn hơn 0' });
+            return;
+        }
+
+        const _chietKhau = ChietKhau ?? 0;
+        if (_chietKhau < 0 || _chietKhau > 100) {
+            toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Chiết khấu phải từ 0 đến 100' });
+            return;
+        }
+
         setLoading(true);
-        // let _detailsDiscount = [...detailsDiscount];
-        // let { index, newData } = e;
-
-        // const updatedDiscount = { ...newData } as ExtendedDiscountDetails;
-        // updatedDiscount.PhanTramKM = parseInt(updatedDiscount.PhanTramKM as any) || 0;
-
-        // _detailsDiscount[index] = updatedDiscount;
-        // let idDiscount = updatedDiscount.IDChiTietKM;
-
+        if (IDChiTietHD) {//update
+            HandleApi(OrderDetailsService.updateOrderDetail(targetUpdate.IDChiTietHD, _orderDetails[index]), toast).then((res) => {
+                if (res.status === 200) {
+                    setChangeDetailOrder(!changeDetailOrder);
+                }
+                setLoading(false);
+            })
+        } else {
+            HandleApi(OrderDetailsService.createOrderDetail(targetUpdate), toast).then((res) => {
+                if (res.status === 201) {
+                    setChangeDetailOrder(!changeDetailOrder);
+                }
+                setLoading(false);
+            })
+        }
     };
 
     const bodyChonMon = (rowData: OrderDetail) => {
@@ -94,26 +158,32 @@ export default
     const productEditor = (options: ColumnEditorOptions) => {
         const { rowIndex, rowData } = options;
         return (
-            <Dropdown value={rowData.IDMon} options={products} optionLabel="TenMon" optionValue="IDMon"
+            <Dropdown value={rowData.IDMon}
+                options={products} optionLabel="TenMon" optionValue="IDMon"
                 onChange={(e: DropdownChangeEvent) => {
-                    const selectedProduct = e.value as Product;
+                    options.editorCallback!(e.value);
+                    const idMonChose = e.value as number;
+                    const choseProduct = products.find((x) => x.IDMon === idMonChose) as Product;
                     const updatedData = [...orderDetails] as OrderDetail[];
-                    const _updatedDataIndex = updatedData[rowIndex] as OrderDetail;
+                    const _updatedRow = updatedData[rowIndex] as OrderDetail;
 
-                    _updatedDataIndex.IDMon = selectedProduct.IDMon;
-                    _updatedDataIndex.DonGia = selectedProduct.DonGiaBanLe;
-                    _updatedDataIndex.SoLuong = 1;
-                    _updatedDataIndex.ChietKhau = 0;
-                    _updatedDataIndex.TienCK = 0;
-                    _updatedDataIndex.TienChuaCK = selectedProduct.DonGiaBanLe;
-                    _updatedDataIndex.TienSauCK = selectedProduct.DonGiaBanLe;
+                    const DonGiaBanLe = (choseProduct.DonGiaBanLe ?? 0);
+                    const TienChuaCK = (rowData.SoLuong ?? 0) * DonGiaBanLe;
+                    const TienCK = (rowData.ChietKhau ?? 0) * TienChuaCK / 100;
+                    const TienSauCK = TienChuaCK - TienCK;
+                    _updatedRow.IDMon = choseProduct.IDMon;
+                    _updatedRow.DonGia = DonGiaBanLe;
+                    _updatedRow.SoLuong = rowData.SoLuong || 1;
+                    _updatedRow.ChietKhau = rowData.ChietKhau || 0;
+                    _updatedRow.TienCK = TienCK;
+                    _updatedRow.TienChuaCK = TienChuaCK;
+                    _updatedRow.TienSauCK = TienSauCK;
 
-                    console.log(_updatedDataIndex);
+                    updatedData[rowIndex] = _updatedRow;
                     setOrderDetails(updatedData);
                 }}
             />
         );
-
     };
 
     const bodyTemplateButtonDeleted = (rowData: OrderDetail) => {
@@ -137,25 +207,80 @@ export default
         }
     };
 
+    const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        let _filters = { ...filters };
+        _filters['global'] = { value: value, matchMode: FilterMatchMode.CONTAINS };
+        setFilters(_filters);
+        setGlobalFilterValue(value);
+    };
+
+    const renderHeader = () => {
+        return (
+            <div className="flex flex-wrap gap-2 justify-content-between align-items-center">
+                <span className="p-input-icon-left">
+                    <i className="pi pi-search" />
+                    <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Nhập IDMon" />
+                </span>
+            </div>
+        );
+    };
+
+    const AddNewRow = (e: any) => {
+        let _orderDetails = [...orderDetails];
+        _orderDetails.push({
+            IDChiTietHD: 0,
+            IDHoaDon: idOrder,
+            IDMon: 0,
+            SoLuong: 1,
+            DonGia: 0,
+            TienChuaCK: 0,
+            ChietKhau: 0,
+            TienCK: 0,
+            TienSauCK: 0,
+        });
+        setOrderDetails(_orderDetails);
+    };
+
+    const headerElement = (
+        <div className="inline-flex align-items-center justify-content-center gap-2">
+            <span className="font-bold white-space-nowrap">
+                Cập nhật
+            </span>
+            {isPending && <Button label="Thêm món" icon="pi pi-fw pi-plus-circle"
+                className="p-button p-component p-button-success ml-3"
+                onClick={AddNewRow} />}
+        </div>
+    );
     return (
         <>
             <Toast ref={toast}></Toast>
-            <Dialog header={idOrder ? 'Cập nhật' : 'Thêm mới'} visible={visible} style={{ width: '95vw' }}
-                onHide={() => { if (!visible) return; HandClose(); }}>
+            <Dialog visible={visible} style={{ width: '95vw' }} header={headerElement}
+                onHide={() => { if (!visible) return; HandClose(); }} >
                 <DataTable value={orderDetails} editMode="row" loading={loading}
+                    filters={filters} header={renderHeader()}
+                    globalFilterFields={["IDMon"]} emptyMessage="No Order found."
+                    paginator rows={10} rowsPerPageOptions={[5, 10, 25, 50]}
                     onRowEditComplete={onRowEditComplete} tableStyle={{ minWidth: '50rem' }}>
                     <Column field="IDChiTietHD" header="Id" style={{ width: '10%' }}></Column>
                     <Column field="IDHoaDon" header="IDHoaDon" style={{ width: '5%' }}></Column>
                     <Column field="IDMon" body={bodyChonMon} header="Món"
                         editor={(options) => productEditor(options)} style={{ width: '20%', whiteSpace: 'wrap' }}></Column>
-                    <Column field="SoLuong" header="Số lượng" editor={(options) => textEditor(options)} style={{ width: '5%' }}></Column>
-                    <Column field="DonGia" header="Giá lẻ" style={{ width: '5%' }}></Column>
-                    <Column field="TienChuaCK" header="Tiền chưa CK" style={{ width: '10%' }}></Column>
-                    <Column field="ChietKhau" header="Chiết khấu" editor={(options) => textEditor(options)} style={{ width: '10%' }}></Column>
-                    <Column field="TienCK" header="Tiền CK" style={{ width: '10%' }}></Column>
-                    <Column field="TienSauCK" header="Tiền đã CK" style={{ width: '10%' }}></Column>
-                    <Column rowEditor headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
-                    <Column body={bodyTemplateButtonDeleted} headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
+                    <Column field="SoLuong" header="Số lượng" sortable
+                        body={(rowData: OrderDetail) => <>{formatNumber(rowData.SoLuong)}</>}
+                        editor={(options) => textEditor(options)} style={{ width: '5%' }}></Column>
+                    <Column field="DonGia" header="Giá lẻ" style={{ width: '5%' }} sortable
+                        body={(rowData: OrderDetail) => <>{formatCurrency(rowData.DonGia)}</>}></Column>
+                    <Column field="TienChuaCK" header="Tiền chưa CK" style={{ width: '10%' }} sortable
+                        body={(rowData: OrderDetail) => <>{formatCurrency(rowData.TienChuaCK)}</>} ></Column>
+                    <Column field="ChietKhau" header="Chiết khấu" sortable
+                        editor={(options) => textEditor(options)} style={{ width: '10%' }}></Column>
+                    <Column field="TienCK" header="Tiền CK" style={{ width: '10%' }} sortable
+                        body={(rowData: OrderDetail) => <>{formatCurrency(rowData.TienCK)}</>}></Column>
+                    <Column field="TienSauCK" header="Tiền đã CK" style={{ width: '10%' }} sortable
+                        body={(rowData: OrderDetail) => <>{formatCurrency(rowData.TienSauCK)}</>}></Column>
+                    <Column hidden={!isPending} rowEditor headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
+                    <Column hidden={!isPending} body={bodyTemplateButtonDeleted} headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
                 </DataTable>
             </Dialog>
         </>

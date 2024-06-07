@@ -14,6 +14,7 @@ import OrderDialog from './OrderDialog';
 import { HandleApi } from '@/services/handleApi';
 import { Button } from 'primereact/button';
 import { STATUS_ENUM } from '@/constants';
+import { IsPendingStatus } from '@/utils/common';
 
 export default function Orders() {
   const [categories, setOrders] = useState<Order[]>([]);
@@ -177,6 +178,7 @@ export default function Orders() {
         onClose={() => {
           setDialogVisible(false)
         }}
+        isPending={IsPendingStatus(selectedOrder?.TrangThai as number)}
         idOrder={selectedOrder?.IDHoaDon as number}
       />
     </div>

@@ -1,13 +1,25 @@
 import erroImage from '../assets/images/error.jpg';
 import useAuth from '@/hooks/useAuth';
 import { RouteArray } from '../routes/routes'
+import { STATUS_ENUM } from '@/constants';
 
-export function formatCurrency(value: number | string) {
+export function formatCurrency(value: number | string | undefined) {
     if (value) {
         return value.toLocaleString('vi-VN', {
             style: 'currency',
             currency: 'VND',
         });
+    } else {
+        return value;
+    }
+}
+
+export function formatNumber(value: number | string | undefined) {
+    if (value) {
+        return value.toLocaleString('vi-VN', {
+            style: 'currency',
+            currency: 'VND',
+        }).replace('₫', '').replace(/,/g, '');
     } else {
         return value;
     }
@@ -86,6 +98,10 @@ export const bodyDate = (rowData: any, options: { field: keyof any }) => {
     }
     return '';
 }
+
+export const IsPendingStatus = (status: number) => {
+    return status === STATUS_ENUM.PENDING;
+};
 
 // export const linkImageGG = 'https://drive.google.com/uc?export=view&id=';
 export const linkImageGG = 'https://lh3.google.com/u/0/d/';

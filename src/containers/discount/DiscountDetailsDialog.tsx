@@ -195,6 +195,7 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
         const arrayProducts = products.filter((item) => !item.Deleted);
         return (
             <Dropdown
+                optionLabel="TenMon" optionValue="IDMon"
                 value={selectedproduct ? selectedproduct.IDMon : rowData.IDMon}
                 options={arrayProducts} filter
                 onChange={(e: DropdownChangeEvent) => {
@@ -213,7 +214,6 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
                     ]);
                     setSelectedproduct(product as Product);
                 }}
-                optionLabel="TenMon" optionValue="IDMon"
             />
         );
     };
@@ -244,7 +244,7 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
     const bodyChonMon = (rowData: ExtendedDiscountDetails) => {
         return rowData.TenMon;
     };
-    
+
     return (
         <>
             <Toast ref={toast}></Toast>
