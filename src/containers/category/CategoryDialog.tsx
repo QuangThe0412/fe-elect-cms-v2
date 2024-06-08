@@ -92,8 +92,7 @@ export default
                     onCategoryChange();
                     HandClose();
                 }
-                setLoading(false);
-            });
+            }).finally(() => setLoading(false));
         } else { // create
             HandleApi(CategoryService.createCategory(category), toast).then((res) => {
                 if (res.status === 201) {
@@ -101,15 +100,14 @@ export default
                     onCategoryChange();
                     HandClose();
                 }
-                setLoading(false);
-            });
+            }).finally(() => setLoading(false));
         }
     };
 
     const onFinishFailed = (errorInfo: any) => {
         console.log('Failed:', errorInfo);
     };
-    
+
     return (
         <>
             <Toast ref={toast}></Toast>
@@ -138,7 +136,7 @@ export default
                                 }}
                                 options={categoryGroups} optionLabel={'TenNhom'}
                                 placeholder="Chọn nhóm món" className="w-full" />
-                            )}
+                        )}
                     </LabelField>
 
                     <Button loading={loading} type='submit' label={idCategory ? 'Cập nhật' : 'Tạo mới'} className="w-6" style={{ float: 'right' }} />

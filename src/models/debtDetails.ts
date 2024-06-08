@@ -1,5 +1,5 @@
 export interface DebtDetail {
-    idChiTietCongNoKH: number;
+    idChiTietCongNoKH?: number;
     idCongNoKH: number;
     SoTienTra?: number;
     Deleted?: boolean;

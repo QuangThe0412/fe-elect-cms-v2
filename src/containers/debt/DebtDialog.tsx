@@ -4,144 +4,208 @@ import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import Form from 'rc-field-form';
 import { Toast } from 'primereact/toast';
-import { CategoryService } from '@/services/category.service';
-import { CategoryGroupService } from '@/services/categoryGroup.service';
-import { Category, CategoryGroup } from '@/models';
+import { DebtService } from '@/services/debt.service';
+import { DebtDetail, Debt, Customer, Order } from '@/models';
 import { HandleApi } from '@/services/handleApi';
 import { LabelField } from '@/components';
 import { classNames } from 'primereact/utils';
 import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
+import { CustomerService } from '@/services/customer.service';
+import { OrderService } from '@/services/order.service';
 
 type PropType = {
-    idCategory: number,
+    idDebt: number,
     visible: boolean,
     onClose: () => void,
-    onCategoryChange: () => void,
+    onDebtChange: () => void,
 };
 
 type typeForm = {
-    idCategory: number;
-    nameCategory: string;
-    idGroupCategory: number;
+    idDebt: number;
+    idCustomer: number;
+    idBill: number;
+    debtStart: number;
 }
 
 const initialForm: typeForm = {
-    idCategory: 0,
-    nameCategory: '',
-    idGroupCategory: 0,
+    idDebt: 0,
+    idCustomer: 0,
+    idBill: 0,
+    debtStart: 0,
 };
 
-
 export default
-    function CategoryDialog({ visible, onClose, idCategory, onCategoryChange }: PropType) {
+    function DebtDialog({ visible, onClose, idDebt, onDebtChange }: PropType) {
     const [form] = Form.useForm();
     const toast = useRef<Toast>(null);
     const [loading, setLoading] = useState<boolean>(false);
-    const [categoryGroups, setCategoryGroups] = useState<CategoryGroup[]>([]);
-    const [selectedCategoryGroup, setSelectedCategoryGroup] = useState<CategoryGroup>();
+    const [customers, setCustomers] = useState<Customer[]>([]);
+    const [bills, setBills] = useState<Order[]>([]);
+    const [selectedCustomer, setSelectedCustomer] = useState<Customer>();
+    const [selectedBill, setSelectedBill] = useState<Order>();
 
     useEffect(() => {
-        getCategoryGroup();
-        if (visible && idCategory > 0) {
-            getCategory();
-        }
+        const fetchData = async () => {
+            let resCustomer = await getCustomers();
+            setCustomers(resCustomer);
+
+            let resOrder = await getOrders();
+            setBills(resOrder);
+        };
+
+        fetchData();
+    }, [form]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            if (visible && idDebt > 0) {
+                let resDebtDetail = await getDebt();
+                if (resDebtDetail) {
+                    const customer = customers.find((x) => x.IDKhachHang === resDebtDetail.IDKhachHang);
+                    setSelectedCustomer(customer);
+
+                    const bill = bills.find((x) => x.IDHoaDon === resDebtDetail.IDHoaDon);
+                    setSelectedBill(bill);
+
+                    form.setFieldsValue({
+                        idCustomer: customer?.IDKhachHang,
+                        idBill: bill?.IDHoaDon,
+                        debtStart: resDebtDetail.CongNoDau,
+                    });
+                }
+            }
+        };
+
+        fetchData();
     }, [visible]);
 
     const HandClose = () => {
         onClose();
         form.resetFields();
-        setSelectedCategoryGroup(undefined);
+        setSelectedCustomer(undefined);
+        setSelectedBill(undefined);
     };
 
-    const getCategory = () => {
-        HandleApi(CategoryService.getCategory(idCategory), null).then((res) => {
-            if (res && res.status === 200) {
-                const { IDLoaiMon, IDNhomMon, TenLoai } = res.data as Category;
-                const categoryGroup = categoryGroups.find((x) => x.IDNhomMon === IDNhomMon);
-                setSelectedCategoryGroup(categoryGroup);
-                form.setFieldsValue({
-                    idCategory: IDLoaiMon,
-                    nameCategory: TenLoai,
-                    idGroupCategory: IDNhomMon
-                });
-            }
-        });
+    const getCustomers = async () => {
+        setLoading(true);
+        let res = await HandleApi(CustomerService.getCustomers(), null);
+        let result = res.data as Customer[];
+        if (res && res.status === 200) {
+            result = res.data as Customer[];
+        }
+        setLoading(false);
+        return result;
     };
 
-    const getCategoryGroup = () => {
-        HandleApi(CategoryGroupService.getCategoryGroups(), toast).then((result) => {
-            if (result.status === 200) {
-                let data = result.data;
-                setCategoryGroups(data);
-            }
-            setLoading(false);
-        });
-    }
+    const getOrders = async () => {
+        setLoading(true);
+        let res = await HandleApi(OrderService.getOrders(), null);
+        let result = res.data as Order[];
+        if (res && res.status === 200) {
+            result = res.data as Order[];
+        }
+        setLoading(false);
+        return result;
+    };
+
+    const getDebt = async () => {
+        setLoading(true);
+        let res = await HandleApi(DebtService.getDebt(idDebt), null);
+        let result = res.data as Debt;
+        if (res && res.status === 200) {
+            result = res.data as Debt;
+        }
+        setLoading(false);
+        return result;
+    };
 
     const onFinish = (values: typeForm) => {
-        setLoading(true);
-        let category: Category = {
-            IDLoaiMon: idCategory,
-            IDNhomMon: selectedCategoryGroup?.IDNhomMon as number,
-            TenLoai: values.nameCategory,
+        let idCustomer = selectedCustomer?.IDKhachHang ?? 0;
+        let idBill = selectedBill?.IDHoaDon ?? 0;
+        if (idCustomer <= 0 || idBill <= 0 || values.debtStart === 0) {
+            toast.current?.show({ severity: 'error', summary: 'Thất bại', detail: 'Vui lòng nhập đầy đủ thông tin' });
+            return;
+        }
+
+        const debt: Debt = {
+            Id: values.idDebt,
+            IDKhachHang: idCustomer,
+            IDHoaDon: idBill,
+            CongNoDau: values.debtStart,
         };
 
-        if (idCategory) { // update
-            HandleApi(CategoryService.updateCategory(idCategory, category), toast).then((res) => {
-                if (res.status === 200) {
-                    onCategoryChange();
+        setLoading(true);
+        if (idDebt) {
+            HandleApi(DebtService.updateDebt(idDebt, debt), toast).then((res) => {
+                if (res && res.status === 200) {
+                    onDebtChange();
                     HandClose();
                 }
-                setLoading(false);
-            });
-        } else { // create
-            HandleApi(CategoryService.createCategory(category), toast).then((res) => {
-                if (res.status === 201) {
-                    console.log(res.data);
-                    onCategoryChange();
+            }).finally(() => setLoading(false));
+        } else {
+            HandleApi(DebtService.createDebt(debt), toast).then((res) => {
+                if (res && res.status === 201) {
+                    onDebtChange();
                     HandClose();
                 }
-                setLoading(false);
-            });
+            }).finally(() => setLoading(false));
         }
     };
 
     const onFinishFailed = (errorInfo: any) => {
         console.log('Failed:', errorInfo);
     };
-    
     return (
         <>
             <Toast ref={toast}></Toast>
-            <Dialog header={idCategory ? 'Cập nhật' : 'Thêm mới'} visible={visible} style={{ width: '35vw' }}
+            <Dialog header={idDebt ? 'Cập nhật' : 'Thêm mới'} visible={visible} style={{ width: '35vw' }}
                 onHide={() => { if (!visible) return; HandClose(); }}>
                 <Form form={form} onFinish={onFinish}
-                    onFinishFailed={onFinishFailed}
-                    initialValues={initialForm}
-                    className="p-fluid">
-                    <LabelField label="Tên loại" name="nameCategory"
+                    onFinishFailed={onFinishFailed} initialValues={initialForm} className="p-fluid">
+                    <LabelField name='idCustomer' label='Khách hàng'
                         rules={[
-                            { required: true, message: 'Tên loại không được bỏ trống.' },
-                        ]}>
-                        {(control, meta) => (<InputText {...control} id="nameCategory"
-                            className={classNames({ 'invalid': meta.errors.length })} />)}
-                    </LabelField>
-
-                    <LabelField label="Nhóm món" name="idGroupCategory"
-                        rules={[
-                            { required: true, message: 'Nhóm món không được bỏ trống.' },
+                            { required: true, message: 'Vui lòng chọn khách hàng.' },
                         ]}>
                         {(control, meta) => (
-                            <Dropdown value={selectedCategoryGroup}
+                            <Dropdown value={selectedCustomer} filter
                                 onChange={(e: DropdownChangeEvent) => {
-                                    setSelectedCategoryGroup(e.value);
+                                    setSelectedCustomer(e.value);
                                 }}
-                                options={categoryGroups} optionLabel={'TenNhom'}
-                                placeholder="Chọn nhóm món" className="w-full" />
-                            )}
+                                options={customers}
+                                optionLabel='TenKhachHang'
+                                placeholder='Chọn khách hàng'
+                                id='idCustomer'
+                                className={`w-full ${classNames({ 'invalid': meta.errors.length })}`} />
+                        )}
+                    </LabelField>
+                    <LabelField name='idBill' label='Hóa đơn'
+                        rules={[
+                            { required: true, message: 'Vui lòng chọn số hóa đơn .' },
+                        ]}>
+                        {(control, meta) => (
+                            <Dropdown value={selectedBill} filter
+                                onChange={(e: DropdownChangeEvent) => {
+                                    setSelectedBill(e.value);
+                                }}
+                                options={bills}
+                                optionLabel='IDHoaDon'
+                                placeholder='Chọn hóa đơn'
+                                id='idBill'
+                                className={`w-full ${classNames({ 'invalid': meta.errors.length })}`} />
+                        )}
+                    </LabelField>
+                    <LabelField name='debtStart' label='Nợ ban đầu'
+                        rules={[
+                            { required: true, message: 'Nợ không được bỏ trống.' },
+                        ]}>
+                        {(control, meta) => (
+                            <InputText {...control} id='debtStart'
+                                className={classNames({ 'invalid': meta.errors.length })} />
+                        )}
                     </LabelField>
 
-                    <Button loading={loading} type='submit' label={idCategory ? 'Cập nhật' : 'Tạo mới'} className="w-6" style={{ float: 'right' }} />
+                    <Button loading={loading} type='submit' label={idDebt ? 'Cập nhật' : 'Tạo mới'}
+                        className="w-6" style={{ float: 'right' }} />
                 </Form>
             </Dialog>
         </>

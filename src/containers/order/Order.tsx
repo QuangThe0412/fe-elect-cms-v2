@@ -59,6 +59,7 @@ export default function Orders() {
   }, [orderChange]);
 
   const getOrders = async () => {
+    setLoading(true);
     const res = await HandleApi(OrderService.getOrders(), null)
 
     let result = [] as Order[];
@@ -70,6 +71,7 @@ export default function Orders() {
   }
 
   const getCustomers = async () => {
+    setLoading(true);
     const res = await HandleApi(CustomerService.getCustomers(), null)
 
     let result = [] as Customer[];
