@@ -192,7 +192,7 @@ export default function Products() {
         onSelectionChange={(e: any) => { setSelectedProduct(e.value) }} dataKey="IDMon"
         resizableColumns showGridlines columnResizeMode="expand"
         filters={filters}
-        globalFilterFields={["TenMon", "DVTMon", "GhiChu"]} emptyMessage="No product found."
+        globalFilterFields={["TenMon", "DVTMon", "GhiChu"]} emptyMessage="Không có dữ liệu"
       >
         <Column field="IDMon" filter header="Id" ></Column>
         <Column field="IDLoaiMon" filter header="Loại" body={bodyLoaiMon} ></Column>

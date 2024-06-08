@@ -3,6 +3,10 @@ import { Dock } from 'primereact/dock';
 import { MenuItem } from 'primereact/menuitem';
 import { BrowserRouter as Link, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { paths } from '@/constants/api';
+import { checkRoleAccess } from '@/utils/common';
+import useAuth from '@/hooks/useAuth';
+import { Toast } from 'primereact/toast';
 import '@/styles/dock.css';
 import productImage from '@/images/product.png';
 import { Tooltip } from 'primereact/tooltip';
@@ -12,11 +16,12 @@ import customerImage from '@/images/customer.png';
 import billImage from '@/images/bill.png';
 import categoryImage from '@/images/category.png';
 import costImage from '@/images/cost.png';
-import discount from '@/images/discount.png';
-import { paths } from '@/constants/api';
-import { checkRoleAccess } from '@/utils/common';
-import useAuth from '@/hooks/useAuth';
-import { Toast } from 'primereact/toast';
+import discountImage from '@/images/discount.png';
+import debtImage from '@/images/debt.png';
+import importImage from '@/images/import.png';
+import exportImage from '@/images/export.png';
+import inventoryImage from '@/images/inventory.png';
+import { RoleEnum } from '@/constants';
 
 export default function DockMenu() {
     const navigate = useNavigate();
@@ -25,6 +30,10 @@ export default function DockMenu() {
 
     const HandleGoPath = (path: string) => {
         if (!checkRoleAccess(userRole, path)) {
+            if (userRole.includes(RoleEnum.ADMIN)) {
+                toast.current?.show({ severity: 'info', summary: 'Thông báo', detail: 'Tính năng đang phát triển!' });
+                return;
+            }
             toast.current?.show({ severity: 'error', summary: 'Thông báo', detail: 'Bạn không có quyền vào trang này!' });
         } else {
             navigate(path);
@@ -69,7 +78,7 @@ export default function DockMenu() {
         },
         {
             label: 'Khuyến mãi',
-            icon: () => <img alt="Discount" src={discount} width="100%" />,
+            icon: () => <img alt="Discount" src={discountImage} width="100%" />,
             command: () => {
                 HandleGoPath(paths.discount);
             },
@@ -82,8 +91,36 @@ export default function DockMenu() {
             },
         },
         {
-            label: 'costImage',
+            label: 'Công nợ',
+            icon: () => <img alt="Test" src={debtImage} width="100%" />,
+            command: () => {
+                HandleGoPath(paths.debt);
+            },
+        },
+        {
+            label: 'Báo giá',
             icon: () => <img alt="Test" src={costImage} width="100%" />,
+            command: () => {
+                HandleGoPath('/test');
+            },
+        },
+        {
+            label: 'Kiểm kê',
+            icon: () => <img alt="Test" src={inventoryImage} width="100%" />,
+            command: () => {
+                HandleGoPath('/test');
+            },
+        },
+        {
+            label: 'Phiếu nhập',
+            icon: () => <img alt="Test" src={importImage} width="100%" />,
+            command: () => {
+                HandleGoPath('/test');
+            },
+        },
+        {
+            label: 'Phiếu xuất',
+            icon: () => <img alt="Test" src={exportImage} width="100%" />,
             command: () => {
                 HandleGoPath('/test');
             },

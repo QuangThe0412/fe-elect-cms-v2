@@ -22,4 +22,6 @@ export const paths = {
     discountDetails:'/chiTietKhuyenMai',
     order:'/hoadon',
     orderDetails:'/chiTietHoaDon',
+    debt:'/congNo',
+    debtDetails:'/chiTietCongNo',
 };

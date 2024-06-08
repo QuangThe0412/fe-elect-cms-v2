@@ -9,6 +9,7 @@ import User from '@/containers/user/User';
 import CustomerComponent from '@/containers/customer/Customer';
 import DiscountComponent from '@/containers/discount/Discount';
 import Orders from '@/containers/order/Order';
+import DebtComponent from '@/containers/debt/Debt';
 
 export type RouteType = {
     path: string,
@@ -64,5 +65,10 @@ export const RouteArray: RouteType[] = [
         path: paths.order,
         component: Orders,
         roles: [RoleEnum.ADMIN]
-    }
+    },
+    {
+        path: paths.debt,
+        component: DebtComponent,
+        roles: [RoleEnum.ADMIN]
+    },
 ]

@@ -172,8 +172,7 @@ export default function DiscountComponent() {
         onSelectionChange={(e: any) => { setSelectedDiscount(e.value) }} dataKey="IDKhuyenMai"
         resizableColumns showGridlines columnResizeMode="expand"
         filters={filters}
-        globalFilterFields={["IDKhuyenMai", "TenKhuyenMai", "IdLoaiKH", "TuNgay", "DenNgay"]}
-        emptyMessage="No discount found."
+        globalFilterFields={["IDKhuyenMai", "TenKhuyenMai", "IdLoaiKH", "TuNgay", "DenNgay"]}emptyMessage="Không có dữ liệu"
       >
         <Column field="IDKhuyenMai" header="ID Khuyến Mãi"></Column>
         <Column field="TenKhuyenMai" header="Tên Khuyến Mãi"></Column>

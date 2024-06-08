@@ -163,7 +163,7 @@ export default function Orders() {
           "IDBaoGia",
           "IDKhachHang",
           "TrangThai",
-        ]} emptyMessage="No Order found."
+        ]} emptyMessage="Không có dữ liệu"
       >
         <Column field="IDHoaDon" header="Id" ></Column>
         <Column field="IDBaoGia" header="Id báo giá"></Column>

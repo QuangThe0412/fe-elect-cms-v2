@@ -167,7 +167,7 @@ export default function CustomerComponent() {
         onSelectionChange={(e: any) => { setSelectedCustomer(e.value) }} dataKey="IDKhachHang"
         resizableColumns showGridlines columnResizeMode="expand"
         filters={filters}
-        globalFilterFields={["username", "IDKhachHang", "IDLoaiKH", "DienThoai,", "TenKhachHang"]} emptyMessage="No Customer found."
+        globalFilterFields={["username", "IDKhachHang", "IDLoaiKH", "DienThoai,", "TenKhachHang"]} emptyMessage="Không có dữ liệu"
       >
         <Column field="IDKhachHang" header="Id" ></Column>
         <Column field="IDLoaiKH" header="Loại khách hàng" body={bodyTypeCustomer}></Column>

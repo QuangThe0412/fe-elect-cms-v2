@@ -155,7 +155,7 @@ export default function Users() {
         onSelectionChange={(e: any) => { setSelectedUser(e.value) }} dataKey="id"
         resizableColumns showGridlines columnResizeMode="expand"
         filters={filters}
-        globalFilterFields={["id", "username", "phone"]} emptyMessage="No User found."
+        globalFilterFields={["id", "username", "phone"]} emptyMessage="Không có dữ liệu"
       >
         <Column field="id" header="Id" ></Column>
         <Column field="username" header="Tên"></Column>

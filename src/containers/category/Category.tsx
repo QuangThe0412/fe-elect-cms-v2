@@ -88,7 +88,7 @@ export default function Categories() {
     });
   };
 
-  const rowClassName = (data: Category) => (!data.Deleted ? '' : 'bg-warning');
+  const rowClassName = (data: Category) => (!data.Deleted ? '' : 'bg-danger');
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -142,7 +142,7 @@ export default function Categories() {
         onSelectionChange={(e: any) => { setSelectedCategory(e.value) }} dataKey="IDLoaiMon"
         resizableColumns showGridlines columnResizeMode="expand"
         filters={filters}
-        globalFilterFields={["IDLoaiMon", "TenLoai"]} emptyMessage="No category found."
+        globalFilterFields={["IDLoaiMon", "TenLoai"]} emptyMessage="Không có dữ liệu"
       >
         <Column field="IDLoaiMon" header="Id" ></Column>
         <Column field="TenLoai" header="Tên loại"></Column>

@@ -222,6 +222,7 @@ export default
                     <i className="pi pi-search" />
                     <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Nhập IDMon" />
                 </span>
+                <h3 style={{ fontWeight: 'bold' }}>Tổng : {formatCurrency(orderDetails.reduce((total, item) => total + (item.TienSauCK ?? 0), 0))}</h3>
             </div>
         );
     };
@@ -259,7 +260,7 @@ export default
                 onHide={() => { if (!visible) return; HandClose(); }} >
                 <DataTable value={orderDetails} editMode="row" loading={loading}
                     filters={filters} header={renderHeader()}
-                    globalFilterFields={["IDMon"]} emptyMessage="No Order found."
+                    globalFilterFields={["IDMon"]} emptyMessage="Không có dữ liệu"
                     paginator rows={10} rowsPerPageOptions={[5, 10, 25, 50]}
                     onRowEditComplete={onRowEditComplete} tableStyle={{ minWidth: '50rem' }}>
                     <Column field="IDChiTietHD" header="Id" style={{ width: '10%' }}></Column>
