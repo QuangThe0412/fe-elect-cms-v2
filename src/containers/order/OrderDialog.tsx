@@ -6,7 +6,7 @@ import { OrderDetailsService } from '@/services/orderDetails.service';
 import { OrderService } from '@/services/order.service';
 import { OrderDetail, Product } from '@/models';
 import { HandleApi } from '@/services/handleApi';
-import { useReactToPrint } from "react-to-print";
+import ReactToPrint, { useReactToPrint } from "react-to-print";
 import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
 import { DataTable, DataTableFilterMeta, DataTableRowEditCompleteEvent } from 'primereact/datatable';
 import { Column, ColumnEditorOptions } from 'primereact/column';
@@ -14,6 +14,7 @@ import { ProductService } from '@/services/products.service';
 import { Button } from 'primereact/button';
 import { formatCurrency, formatNumber } from '@/utils/common';
 import { FilterMatchMode } from 'primereact/api';
+import OrderPrintComponent from './OrderPrint';
 
 type PropType = {
     idOrder: number,
@@ -244,51 +245,7 @@ export default
     };
 
     ///print
-    const componentRef = useRef(null);
-    const onBeforeGetContentResolve = useRef(null);
-
-    const handleAfterPrint = useCallback(() => {
-        console.log("`onAfterPrint` called");
-    }, []);
-
-    const handleBeforePrint = useCallback(() => {
-        console.log("`onBeforePrint` called");
-    }, []);
-
-    const handleOnBeforeGetContent = useCallback(() => {
-        console.log("`onBeforeGetContent` called");
-        setLoading(true);
-
-        // return new Promise((resolve) => {
-        //     onBeforeGetContentResolve.current = resolve;
-
-        //     setTimeout(() => {
-        //         setLoading(false);
-        //         resolve();
-        //     }, 2000);
-        // });
-    }, [setLoading]);
-
-    const reactToPrintContent = useCallback(() => {
-        return componentRef.current;
-    }, [componentRef.current]);
-
-    const OnClickPrint = useReactToPrint({
-        content: reactToPrintContent,
-        documentTitle: "AwesomeFileName",
-        onBeforeGetContent: handleOnBeforeGetContent,
-        onBeforePrint: handleBeforePrint,
-        onAfterPrint: handleAfterPrint,
-        removeAfterPrint: true
-    });
-
-    useEffect(() => {
-        if (typeof onBeforeGetContentResolve.current === "function") {
-            // onBeforeGetContentResolve.current();
-            console.log("onBeforeGetContentResolve.current");
-        }
-    }, [onBeforeGetContentResolve.current]);
-    //end print 
+    let contentToPrint = useRef(null);
     const headerElement = (
         <div className="inline-flex align-items-center justify-content-center gap-2">
             <span className="font-bold white-space-nowrap">
@@ -297,17 +254,22 @@ export default
             {isPending && <Button label="Thêm món" icon="pi pi-fw pi-plus-circle"
                 className="p-button p-component p-button-success ml-3"
                 onClick={AddNewRow} />}
-            <Button label="In hóa đơn" icon="pi pi-fw pi-print"
-                className="p-button p-component p-button-primary ml-3"
-                onClick={OnClickPrint} />
+            {
+                <ReactToPrint
+                    trigger={() => <Button>Print this out!</Button>}
+                    content={() => contentToPrint.current}
+                />
+            }
         </div>
     );
+
     return (
         <>
             <Toast ref={toast}></Toast>
+            <OrderPrintComponent data={orderDetails} ref={(el: any) => (contentToPrint = el)} />
             <Dialog visible={visible} style={{ width: '95vw' }} header={headerElement}
                 onHide={() => { if (!visible) return; HandClose(); }} >
-                <DataTable value={orderDetails} editMode="row" loading={loading} ref={componentRef}
+                <DataTable value={orderDetails} editMode="row" loading={loading}
                     filters={filters} header={renderHeader()}
                     globalFilterFields={["IDMon"]} emptyMessage="Không có dữ liệu"
                     paginator rows={10} rowsPerPageOptions={[5, 10, 25, 50]}
