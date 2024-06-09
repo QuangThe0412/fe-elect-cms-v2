@@ -9,7 +9,7 @@ import { paths } from '@/constants/api';
 export const HandleApi = async (request: Promise<any>, toast: React.RefObject<Toast> | null) => {
     try {
         return HandleResponse(await request, toast);
-    } catch (error: any) {
+        } catch (error: any) {
         console.error(error);
         return HandleResponse(error?.response, toast);
     }

@@ -15,10 +15,16 @@ import DebtDialog from './DebtDialog';
 import { HandleApi } from '@/services/handleApi';
 import { Button } from 'primereact/button';
 import { bodyDate, formatCurrency } from '@/utils/common';
+import DebtDetailsDialog from './DebtDetailsDialog';
 
-const emptydebt: Debt = {
+interface NewDebt extends Debt {
+  TenKhachHang: string | null | undefined;
+}
+
+const emptydebt: NewDebt = {
   Id: 0,
   IDKhachHang: 0,
+  TenKhachHang: '',
   IDHoaDon: 0,
   CongNoDau: 0,
   createDate: null,
@@ -28,28 +34,30 @@ const emptydebt: Debt = {
 };
 
 export default function DebtComponent() {
-  const [debts, setDebts] = useState<Debt[]>([]);
+  const [debts, setDebts] = useState<NewDebt[]>([]);
   const [debtDetails, setDebtDetails] = useState<DebtDetail[]>([]);
-  const [selectedDebt, setselectedDebt] = useState<Debt>(emptydebt);
+  const [selectedDebt, setselectedDebt] = useState<NewDebt>(emptydebt);
   const [debtChange, setdebtChange] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [customers, setCustomers] = useState<Customer[]>([]);
+  const [dialogDtailsVisible, setDialogDtailsVisible] = useState<boolean>(false);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
   const [filters, setFilters] = useState<DataTableFilterMeta>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     IDKhachHang: { value: null, matchMode: FilterMatchMode.CONTAINS },
     IDHoaDon: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    TenKhachHang: { value: null, matchMode: FilterMatchMode.CONTAINS },
   });
 
   const toast = useRef<Toast>(null);
   const cm = useRef<ContextMenu>(null);
   const menuModel = [
-    { label: 'Thêm', icon: 'pi pi-fw pi-plus-circle', command: () => addDebt(selectedDebt as Debt) },
-    { label: 'Sửa', icon: 'pi pi-fw pi-pencil', command: () => editDebt(selectedDebt as Debt) },
+    { label: 'Thêm', icon: 'pi pi-fw pi-plus-circle', command: () => addDebt(selectedDebt) },
+    { label: 'Sửa', icon: 'pi pi-fw pi-pencil', command: () => editDebt(selectedDebt) },
     {
       label: 'Chi tiết Công nợ',
       icon: 'pi pi-fw pi-sitemap',
-      command: () => console.log('Chi tiết Công nợ')
+      command: () => setDialogDtailsVisible(true)
     },
   ];
 
@@ -58,13 +66,21 @@ export default function DebtComponent() {
   useEffect(() => {
     const fetchData = async () => {
       const resCustomer: Customer[] = await getCustomer();
-      setCustomers(resCustomer);
-
       const resDebt: Debt[] = await getDebts();
-      setDebts(resDebt);
+      const _resDebt: NewDebt[] = resDebt.map((item) => {
+        return {
+          ...item,
+          TenKhachHang: resCustomer.find((x) => x.IDKhachHang === item.IDKhachHang)?.TenKhachHang
+        }
+      })
 
-      const resDebtDetail: DebtDetail[] = await getDebtDetails();
-      setDebtDetails(resDebtDetail);
+      setCustomers(resCustomer);
+      setDebts(_resDebt);
+
+      if (_resDebt.length > 0) {
+        const resDebtDetail: DebtDetail[] = await getDebtDetails();
+        setDebtDetails(resDebtDetail.filter((x) => !x.Deleted));
+      }
     };
 
     fetchData();
@@ -114,7 +130,7 @@ export default function DebtComponent() {
     setDialogVisible(true);
   };
 
-  const editDebt = (debt: Debt) => {
+  const editDebt = (debt: NewDebt) => {
     setselectedDebt(debt);
     setDialogVisible(true);
   };
@@ -146,10 +162,6 @@ export default function DebtComponent() {
       </div>
     );
   };
-
-  const bodyKhachHang = (data: Debt) => {
-    return customers.find((x) => x.IDKhachHang === data.IDKhachHang)?.TenKhachHang;
-  }
 
   const bodySoTienTra = (data: Debt) => {
     const detail = debtDetails.filter((x) => x.idCongNoKH === data.Id);
@@ -184,11 +196,12 @@ export default function DebtComponent() {
         onSelectionChange={(e: any) => { setselectedDebt(e.value) }} dataKey="Id"
         resizableColumns showGridlines columnResizeMode="expand"
         filters={filters}
-        globalFilterFields={["IDKhachHang", "IDHoaDon"]} emptyMessage="Không có dữ liệu"
+        globalFilterFields={["IDKhachHang", "IDHoaDon", "TenKhachHang"]} emptyMessage="Không có dữ liệu"
       >
         <Column field="Id" header="Id" ></Column>
         <Column field="IDHoaDon" header="IDHoaDon" ></Column>
-        <Column field="IDKhachHang" header="Khách hàng" body={bodyKhachHang}></Column>
+        <Column field="IDKhachHang" header="IDKhachHang" hidden></Column>
+        <Column field="TenKhachHang" header="Khách hàng"></Column>
         <Column field="CongNoDau" header="Công nợ đầu" body={bodyCongNoDau}></Column>
         <Column field="SoTienTra" header="Số tiền trả" body={bodySoTienTra}></Column>
         <Column field="CongNoCuoi" header="Công nợ cuối" body={bodyCongNoCuoi}></Column>
@@ -201,6 +214,16 @@ export default function DebtComponent() {
         visible={dialogVisible}
         onClose={() => {
           setDialogVisible(false)
+        }}
+        idDebt={selectedDebt.Id}
+        onDebtChange={() => {
+          setdebtChange(!debtChange)
+        }} // refresh data
+      />
+      <DebtDetailsDialog
+        visible={dialogDtailsVisible}
+        onClose={() => {
+          setDialogDtailsVisible(false)
         }}
         idDebt={selectedDebt.Id}
         onDebtChange={() => {

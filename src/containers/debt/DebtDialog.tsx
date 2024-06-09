@@ -5,7 +5,7 @@ import { InputText } from 'primereact/inputtext';
 import Form from 'rc-field-form';
 import { Toast } from 'primereact/toast';
 import { DebtService } from '@/services/debt.service';
-import { DebtDetail, Debt, Customer, Order } from '@/models';
+import { Debt, Customer, Order } from '@/models';
 import { HandleApi } from '@/services/handleApi';
 import { LabelField } from '@/components';
 import { classNames } from 'primereact/utils';

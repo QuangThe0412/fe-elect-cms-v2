@@ -2,17 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
-import Form from 'rc-field-form';
 import { Toast } from 'primereact/toast';
 import { DiscountDetailsService } from '@/services/discountDetails.service';
 import { DiscountService } from '@/services/discount.service';
-import { TypeCustomerService } from '@/services/typecustomer.service';
-import { Discount, DiscountDetails, Product, TypeCustomer } from '@/models';
+import { DiscountDetails, Product, TypeCustomer } from '@/models';
 import { HandleApi } from '@/services/handleApi';
-import { LabelField } from '@/components';
-import { classNames } from 'primereact/utils';
 import { DataTable, DataTableRowEditCompleteEvent } from 'primereact/datatable';
-import { Column, ColumnBodyOptions, ColumnEditorOptions } from 'primereact/column';
+import { Column, ColumnEditorOptions } from 'primereact/column';
 import { ProductService } from '@/services/products.service';
 import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
 
@@ -169,24 +165,20 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
                     if (res.status === 200) {
                         setChangeDetailDiscount(!changeDetailDiscount);
                     }
-                })
-                .catch((error) => {
-                    toast.current?.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể cập nhật chi tiết giảm giá' });
+                }).finally(() => {
+                    setLoading(false);
+                    setSelectedproduct(null);
                 });
-            setLoading(false);
-            setSelectedproduct(null);
         } else { // create
             HandleApi(DiscountDetailsService.createDiscountDetail(updatedDiscount), toast)
                 .then((res) => {
                     if (res.status === 201) {
                         setChangeDetailDiscount(!changeDetailDiscount);
                     }
-                })
-                .catch((error) => {
-                    toast.current?.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tạo chi tiết giảm giá mới' });
+                }).finally(() => {
+                    setLoading(false);
+                    setSelectedproduct(null);
                 });
-            setLoading(false);
-            setSelectedproduct(null);
         }
     };
 
