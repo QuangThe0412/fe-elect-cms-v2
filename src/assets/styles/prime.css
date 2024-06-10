@@ -29617,6 +29617,11 @@ pre[class*=language-] code {
     user-select: none
 }
 
+.p-column-title {
+    width: 100%;
+    text-align: center;
+}
+
 .p-datatable .p-sortable-column .p-column-title,
 .p-datatable .p-sortable-column .p-sortable-column-badge,
 .p-datatable .p-sortable-column .p-sortable-column-icon {

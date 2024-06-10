@@ -6,7 +6,6 @@ import { OrderDetailsService } from '@/services/orderDetails.service';
 import { OrderService } from '@/services/order.service';
 import { OrderDetail, Product } from '@/models';
 import { HandleApi } from '@/services/handleApi';
-import ReactToPrint, { useReactToPrint } from "react-to-print";
 import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
 import { DataTable, DataTableFilterMeta, DataTableRowEditCompleteEvent } from 'primereact/datatable';
 import { Column, ColumnEditorOptions } from 'primereact/column';
@@ -245,7 +244,18 @@ export default
     };
 
     ///print
-    let contentToPrint = useRef(null);
+    const handlePrint = () => {
+        var content = document.getElementById("divcontents");
+        var pri = (document.getElementById("ifmcontentstoprint") as HTMLIFrameElement)?.contentWindow;
+        if (content && pri) {
+            pri.document.open();
+            pri.document.write(content.innerHTML);
+            pri.document.close();
+            pri.focus();
+            pri.print();
+        }
+    }
+
     const headerElement = (
         <div className="inline-flex align-items-center justify-content-center gap-2">
             <span className="font-bold white-space-nowrap">
@@ -254,19 +264,25 @@ export default
             {isPending && <Button label="Thêm món" icon="pi pi-fw pi-plus-circle"
                 className="p-button p-component p-button-success ml-3"
                 onClick={AddNewRow} />}
-            {
-                <ReactToPrint
-                    trigger={() => <Button>Print this out!</Button>}
-                    content={() => contentToPrint.current}
-                />
-            }
+
+            <Button label="In" icon="pi pi-fw pi-print"
+                className="p-button p-component p-button-primary ml-3"
+                onClick={handlePrint} />
         </div>
     );
+
 
     return (
         <>
             <Toast ref={toast}></Toast>
-            <OrderPrintComponent data={orderDetails} ref={(el: any) => (contentToPrint = el)} />
+            <OrderPrintComponent id='divcontents'
+                dataOrderDetails={orderDetails}
+                dataProducts={products}
+            />
+            <iframe id="ifmcontentstoprint"
+                style={{ display: 'none', height: '0px', width: '0px', position: 'absolute' }}>
+            </iframe>
+
             <Dialog visible={visible} style={{ width: '95vw' }} header={headerElement}
                 onHide={() => { if (!visible) return; HandClose(); }} >
                 <DataTable value={orderDetails} editMode="row" loading={loading}
