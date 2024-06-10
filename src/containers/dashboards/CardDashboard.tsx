@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { typeRes } from "./Dashboard";
 import { STATUS_ENUM } from "@/constants";
 import { useState } from "react";
-import LoadingComponent from "@/components/loading/LoadingComponent";
 
 type PropTypes = {
     title: string,
@@ -12,7 +11,6 @@ type PropTypes = {
 }
 
 export default function CardDashboard({ data, title }: PropTypes) {
-    const [loading, setLoading] = useState<boolean>(true);
     const _data = data.filter(item => item.TrangThai === STATUS_ENUM.PENDING);
     const navigate = useNavigate();
     const totalMoney = _data.reduce((total, item) => total + (item.TienSauCK ?? 0), 0);
@@ -23,8 +21,6 @@ export default function CardDashboard({ data, title }: PropTypes) {
 
     return (
         <>
-            <LoadingComponent loading={loading} />
-
             <div className="col-12 md:col-6 lg:col-3">
                 <div className="surface-0 shadow-2 p-3 border-1 border-50 border-round">
                     <div className="flex justify-content-between mb-3">
