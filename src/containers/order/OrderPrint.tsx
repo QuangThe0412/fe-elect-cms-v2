@@ -1,8 +1,6 @@
-import React, { useRef } from "react";
-import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { Order, OrderDetail, Product } from "@/models";
+import { OrderDetail, Product } from "@/models";
 import { formatCurrency, formatNumber } from "@/utils/common";
 import { Divider } from "primereact/divider";
 
@@ -13,8 +11,12 @@ type typeProps = {
 }
 
 export default function OrderPrintComponent({ id, dataOrderDetails, dataProducts }: typeProps) {
+    const _orderDetails = dataOrderDetails;
+    const _products = dataProducts;
+    const numberOrder = _orderDetails.length > 0 ? _orderDetails[0].IDHoaDon : 0;
+
     const bodyTenMon = (rowData: any) => {
-        const product = dataProducts.find((p) => p.IDMon === rowData.IDMon);
+        const product = _products.find((p) => p.IDMon === rowData.IDMon);
         return product?.TenMon || "";
     };
 
@@ -26,8 +28,8 @@ export default function OrderPrintComponent({ id, dataOrderDetails, dataProducts
 
     return (
         <>
-            <div className="card" id={id} style={{display:'none'}}>
-                <DataTable value={dataOrderDetails} tableStyle={{ minWidth: '50rem' }}> stripedRows 
+            <div className="card" id={id} style={{ display: 'none' }}>
+                <DataTable value={_orderDetails} tableStyle={{ minWidth: '50rem' }} stripedRows>
                     <Column field="Index" header="STT" body={(rowData, { rowIndex }) => rowIndex + 1} ></Column>
                     <Column field="IDMon" header="Món" body={bodyTenMon}
                         style={{ width: '20%', whiteSpace: 'normal' }} ></Column>
@@ -40,6 +42,7 @@ export default function OrderPrintComponent({ id, dataOrderDetails, dataProducts
 
                 </DataTable>
                 <div className="p-d-flex p-jc-between">
+                    <h3>Hóa đơn số {numberOrder}</h3>
                     <div>
                         <p>Ngày in: {datePrint}</p>
                     </div>

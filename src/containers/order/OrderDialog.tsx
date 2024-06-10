@@ -253,6 +253,16 @@ export default
             pri.document.close();
             pri.focus();
             pri.print();
+
+            pri.onbeforeprint = () => {
+                // Đặt hành động cần thực hiện trước khi mở hộp thoại in ở đây
+                console.log("Print dialog opened");
+            };
+
+            pri.onafterprint = () => {
+                // Đặt hành động cần thực hiện sau khi đóng hộp thoại in ở đây
+                console.log("Print dialog closed");
+            };
         }
     }
 
@@ -267,7 +277,8 @@ export default
 
             <Button label="In" icon="pi pi-fw pi-print"
                 className="p-button p-component p-button-primary ml-3"
-                onClick={handlePrint} />
+                onClick={handlePrint}
+                 />
         </div>
     );
 
