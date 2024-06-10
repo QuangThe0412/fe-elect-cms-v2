@@ -14,7 +14,7 @@ import OrderDialog from './OrderDialog';
 import { HandleApi } from '@/services/handleApi';
 import { Button } from 'primereact/button';
 import { STATUS_ENUM } from '@/constants';
-import { IsPendingStatus } from '@/utils/common';
+import { IsPendingStatus, bodyDate } from '@/utils/common';
 
 export default function Orders() {
   const [categories, setOrders] = useState<Order[]>([]);
@@ -169,10 +169,11 @@ export default function Orders() {
       >
         <Column field="IDHoaDon" header="Id" ></Column>
         <Column field="IDBaoGia" header="Id báo giá"></Column>
-        <Column field="IDKhachHang" header="Id khách hàng"  body={bodyKhachHang}></Column>
+        <Column field="IDKhachHang" header="Id khách hàng" body={bodyKhachHang}></Column>
         <Column field="TrangThai" header="Trạng thái" body={bodyStatus} ></Column>
-        <Column field="CongNo" header="Công nợ"  ></Column>
-        <Column field="GhiChu" header="Ghi chú"  ></Column>
+        <Column field="createDate" header="Ngày lập" body={bodyDate as (data: any, options: any) => React.ReactNode}></Column>
+        <Column field="CongNo" header="Công nợ"></Column>
+        <Column field="GhiChu" header="Ghi chú"></Column>
 
       </DataTable>
       <OrderDialog
