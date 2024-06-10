@@ -39,8 +39,8 @@ export default function OrderPrintComponent({ id, dataOrderDetails, dataProducts
                     <Column field="ChietKhau" header="%" ></Column>
                     <Column field="TienSauCK" header="Tổng"
                         body={(rowData: OrderDetail) => <>{formatCurrency(rowData.TienSauCK)}</>}></Column>
-
                 </DataTable>
+                <Divider type="solid" className='bg-danger' />
                 <div className="p-d-flex p-jc-between">
                     <h3>Hóa đơn số {numberOrder}</h3>
                     <div>
