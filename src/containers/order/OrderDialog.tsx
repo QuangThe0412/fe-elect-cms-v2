@@ -275,10 +275,11 @@ export default
                 className="p-button p-component p-button-success ml-3"
                 onClick={AddNewRow} />}
 
-            <Button label="In" icon="pi pi-fw pi-print"
+            {orderDetails.length > 0 && < Button label="In" icon="pi pi-fw pi-print"
                 className="p-button p-component p-button-primary ml-3"
                 onClick={handlePrint}
-                 />
+            />
+            }
         </div>
     );
 

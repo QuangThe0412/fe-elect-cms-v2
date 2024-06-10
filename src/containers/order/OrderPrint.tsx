@@ -11,7 +11,7 @@ type typeProps = {
 }
 
 export default function OrderPrintComponent({ id, dataOrderDetails, dataProducts }: typeProps) {
-    const _orderDetails = dataOrderDetails;
+    const _orderDetails = dataOrderDetails.filter((item) => !item.Deleted);
     const _products = dataProducts;
     const numberOrder = _orderDetails.length > 0 ? _orderDetails[0].IDHoaDon : 0;
 
