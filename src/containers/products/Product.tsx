@@ -133,7 +133,7 @@ export default function Products() {
     )
   };
 
-  const rowClassName = (data: Product) => (!data.Deleted ? '' : 'bg-warning');
+  const rowClassName = (data: Product) => (!data.Deleted ? '' : 'bg-danger');
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;

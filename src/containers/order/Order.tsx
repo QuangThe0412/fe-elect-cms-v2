@@ -83,6 +83,8 @@ export default function Orders() {
   }
 
   const HandleStatus = (status: number) => {
+    if (selectedOrder?.TrangThai === status) return;
+
     setLoading(true);
     HandleApi(OrderService.updateStatusOrder(selectedOrder?.IDHoaDon as number, status), toast).then((res) => {
       if (res.status === 200) {
@@ -95,7 +97,7 @@ export default function Orders() {
     let enumData = data.TrangThai;
     switch (enumData) {
       case STATUS_ENUM.PENDING:
-        return 'bg-help';
+        return 'bg-success';
       case STATUS_ENUM.CANCEL:
         return 'bg-danger';
       case STATUS_ENUM.FINISH:

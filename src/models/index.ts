@@ -10,6 +10,8 @@ import { Order } from './order';
 import { OrderDetail } from './orderDetails';
 import { Debt } from './debt';
 import { DebtDetail } from './debtDetails';
+import { Import } from './import';
+import { ImportDetails } from './importDetails';
 
 interface FileUploadState {
   files: File[];
@@ -30,4 +32,6 @@ export type {
   OrderDetail,
   Debt,
   DebtDetail,
+  Import,
+  ImportDetails,
 };

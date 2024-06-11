@@ -24,4 +24,8 @@ export const paths = {
     orderDetails:'/chiTietHoaDon',
     debt:'/congNo',
     debtDetails:'/chiTietCongNo',
+    import:'/phieuNhap',
+    importDetails:'/chiTietPhieuNhap',
+    export:'/phieuXuat',
+    exportDetails:'/chiTietPhieuXuat',
 };
