@@ -107,7 +107,7 @@ export default function DiscountComponent() {
     setDialogDetailsVisible(true);
   };
 
-  const rowClassName = (data: Discount) => (!data.Deleted ? '' : 'bg-warning');
+  const rowClassName = (data: Discount) => (!data.Deleted ? '' : 'bg-danger');
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -128,18 +128,6 @@ export default function DiscountComponent() {
           />
         </span>
       </div>
-    );
-  };
-
-  const bodyNhomMon = (rowData: Discount) => {
-    return (
-      <>
-        {/* {discountGroups?.map((discountGroups: DiscountGroup) => {
-          if (discountGroups.IDNhomMon === rowData.IDNhomMon) {
-            return discountGroups.TenNhom;
-          }
-        })} */}
-      </>
     );
   };
 
