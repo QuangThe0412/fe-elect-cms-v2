@@ -112,6 +112,7 @@ export default
     };
 
     const onRowEditComplete = (e: DataTableRowEditCompleteEvent) => {
+        setLoading(true);
         let _orderDetails = [...orderDetails];
         let { index } = e;
 
@@ -133,7 +134,6 @@ export default
             return;
         }
 
-        setLoading(true);
         if (IDChiTietHD) {//update
             HandleApi(OrderDetailsService.updateOrderDetail(targetUpdate.IDChiTietHD, _orderDetails[index]), toast).then((res) => {
                 if (res.status === 200) {
@@ -280,7 +280,8 @@ export default
         </div>
     );
 
-
+    const rowClassName = (data: OrderDetail) => (!data.IDChiTietHD ? 'bg-danger' : '');
+    
     return (
         <>
             <Toast ref={toast}></Toast>
@@ -295,6 +296,7 @@ export default
             <Dialog visible={visible} style={{ width: '95vw' }} header={headerElement}
                 onHide={() => { if (!visible) return; HandClose(); }} >
                 <DataTable value={orderDetails} editMode="row" loading={loading}
+                    rowClassName={rowClassName}
                     filters={filters} header={renderHeader()}
                     globalFilterFields={["IDMon"]} emptyMessage="Không có dữ liệu"
                     paginator rows={10} rowsPerPageOptions={[5, 10, 25, 50]}

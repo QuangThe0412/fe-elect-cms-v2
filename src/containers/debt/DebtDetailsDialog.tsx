@@ -127,12 +127,15 @@ export default
         return formatCurrency(rowData.SoTienTra ?? 0);
     }
 
+    const rowClassName = (data: DebtDetail) => (!data.idChiTietCongNoKH ? 'bg-danger' : '');
+
     return (
         <>
             <Toast ref={toast}></Toast>
             <Dialog visible={visible} style={{ width: '60vw' }} header={headerElement}
                 onHide={() => { if (!visible) return; HandClose(); }} >
                 <DataTable value={debtDetails} editMode="row" loading={loading}
+                    rowClassName={rowClassName}
                     emptyMessage="Không có dữ liệu"
                     paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
                     onRowEditComplete={onRowEditComplete} tableStyle={{ minWidth: '30rem' }}>

@@ -9029,36 +9029,6 @@ svg.DocSearch-Hit-Select-Icon {
     background-color: #fff !important
 }
 
-.bg-danger {
-    color: #ffffff !important;
-    background: #ef4444 !important;
-    border: 1px solid #ef4444 !important;
-}
-
-.bg-success {
-    color: #ffffff !important;
-    background: #22c55e !important;
-    border: 1px solid #22c55e !important;
-}
-
-.bg-warning {
-    color: #ffffff !important;
-    background: #22c55e !important;
-    border: 1px solid #22c55e !important;
-}
-
-.bg-info {
-    color: #ffffff !important;
-    background: #0ea5e9 !important;
-    border: 1px solid #0ea5e9 !important;
-}
-
-.bg-help {
-    color: #ffffff !important;
-    background: #a855f7 !important;
-    border: 1px solid #a855f7 !important;
-}
-
 .border-primary {
     border-color: var(--primary-color) !important
 }

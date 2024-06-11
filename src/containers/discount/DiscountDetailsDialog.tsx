@@ -236,12 +236,15 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
         return rowData.TenMon;
     };
 
+    const rowClassName = (data: DiscountDetails) => (!data.IDChiTietKM ? 'bg-danger' : '');
+
     return (
         <>
             <Toast ref={toast}></Toast>
             <Dialog header={headerElement} visible={visibleDiscountDetails} style={{ width: '90vw' }}
                 onHide={() => { if (!visibleDiscountDetails) return; HandClose(); }} >
                 <DataTable value={detailsDiscount} editMode="row" loading={loading}
+                    rowClassName={rowClassName}
                     onRowEditComplete={onRowEditComplete} tableStyle={{ minWidth: '50rem' }}>
                     <Column field="IDChiTietKM" header="Id" style={{ width: '10%' }}></Column>
                     <Column field="IDMon" body={bodyChonMon} header="Món" editor={(options) => productEditor(options)} style={{ width: '20%' }}></Column>
