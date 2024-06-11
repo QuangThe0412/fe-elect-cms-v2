@@ -67,22 +67,22 @@ export default function DiscountComponent() {
   }, [discountChange]);
 
   const getDiscount = () => {
+    setLoading(true);
     HandleApi(DiscountService.getDiscounts(), null).then((result) => {
       if (result.status === 200) {
         setDiscount(result.data)
       }
-      setLoading(false);
-    });
+    }).finally(() => { setLoading(false); });
   }
 
   const getTypeCustomers = () => {
+    setLoading(true);
     HandleApi(TypeCustomerService.getTypeCustomers(), null).then((result) => {
       if (result.status === 200) {
         let data = result.data;
         setTypeCustomers(data);
       }
-      setLoading(false);
-    });
+    }).finally(() => { setLoading(false); });
   }
 
   const addDiscount = (discount: Discount) => {
@@ -96,9 +96,10 @@ export default function DiscountComponent() {
   };
 
   const toggleActiveDiscount = (discount: Discount) => {
+    setLoading(true);
     HandleApi(DiscountService.toggleActiveDiscount(discount?.IDKhuyenMai), toast).then(() => {
       getDiscount();
-    });
+    }).finally(() => { setLoading(false); });
   };
 
   const detailsDiscount = (discount: Discount) => {

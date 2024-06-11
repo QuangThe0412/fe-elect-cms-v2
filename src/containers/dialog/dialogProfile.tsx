@@ -51,6 +51,7 @@ export default function DialogProfile({ visible, onClose, idUser }: PropType) {
     }, [visible]);
 
     const getProfile = () => {
+        setLoading(true);
         HandleApi(AuthService.getProfile(idUser), null).then((res) => {
             if (res && res.status === 200) {
                 const { phone, ngaySinh, admin, saler, inventory, cashier, guest } = res.data as User;
@@ -68,7 +69,7 @@ export default function DialogProfile({ visible, onClose, idUser }: PropType) {
                     ngaySinh: ngaySinh ? new Date(ngaySinh) : null,
                 });
             }
-        });
+        }).finally(() => { setLoading(false); });
     };
 
     const onFinish = (values: typeForm) => {
@@ -83,8 +84,7 @@ export default function DialogProfile({ visible, onClose, idUser }: PropType) {
             if (res && res.status === 200) {
                 onClose();
             }
-            setLoading(false);
-        });
+        }).finally(() => { setLoading(false); });
     };
 
     const onFinishFailed = (errorInfo: any) => {

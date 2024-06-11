@@ -86,8 +86,7 @@ export default function Products() {
       if (result.status === 200) {
         setProducts(result.data);
       }
-      setLoading(false)
-    });
+    }).finally(() => { setLoading(false); });
   }
 
   const getCategory = () => {
@@ -95,8 +94,7 @@ export default function Products() {
       if (result.status === 200) {
         setCategories(result.data);
       }
-      setLoading(false)
-    });
+    }).finally(() => { setLoading(false); });
   }
 
   const addProduct = (product: Product) => {
@@ -110,9 +108,10 @@ export default function Products() {
   };
 
   const toggleActiveProduct = (product: Product) => {
+    setLoading(true);
     HandleApi(ProductService.toggleActiveProduct(product.IDMon), toast).then(() => {
       getProducts();
-    });
+    }).finally(() => { setLoading(false); });
   };
 
   const bodyTonKho = (rowData: Product) => {

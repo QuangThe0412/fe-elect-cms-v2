@@ -54,6 +54,7 @@ export default
     };
 
     const getCategory = () => {
+        setLoading(true);
         HandleApi(CategoryService.getCategory(idCategory), null).then((res) => {
             if (res && res.status === 200) {
                 const { IDLoaiMon, IDNhomMon, TenLoai } = res.data as Category;
@@ -65,17 +66,17 @@ export default
                     idGroupCategory: IDNhomMon
                 });
             }
-        });
+        }).finally(() => { setLoading(false); });
     };
 
     const getCategoryGroup = () => {
+        setLoading(true);
         HandleApi(CategoryGroupService.getCategoryGroups(), toast).then((result) => {
             if (result.status === 200) {
                 let data = result.data;
                 setCategoryGroups(data);
             }
-            setLoading(false);
-        });
+        }).finally(() => { setLoading(false); });
     }
 
     const onFinish = (values: typeForm) => {

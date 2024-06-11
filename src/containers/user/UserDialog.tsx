@@ -69,6 +69,7 @@ export default function UserDialog({ visible, onClose, idUser, onUserChange }: P
     }, [visible]);
 
     const getProfile = () => {
+        setLoading(true);
         HandleApi(UserService.getUser(idUser), null).then((res) => {
             if (res && res.status === 200) {
                 const { phone, ngaySinh, username, admin, saler, inventory, cashier, guest } = res.data as User;
@@ -88,7 +89,7 @@ export default function UserDialog({ visible, onClose, idUser, onUserChange }: P
                     ngaySinh: ngaySinh ? new Date(ngaySinh) : null,
                 });
             }
-        });
+        }).finally(() => { setLoading(false); });
     };
 
     const onFinish = (values: typeForm) => {
@@ -112,16 +113,14 @@ export default function UserDialog({ visible, onClose, idUser, onUserChange }: P
                     onUserChange();
                     HandClose();
                 }
-                setLoading(false);
-            });
+            }).finally(() => { setLoading(false); });
         } else {
             HandleApi(UserService.createUser(user), toast).then((res) => {
                 if (res && res.status === 201) {
                     onUserChange();
                     HandClose();
                 }
-                setLoading(false);
-            });
+            }).finally(() => { setLoading(false); });
         }
     };
 

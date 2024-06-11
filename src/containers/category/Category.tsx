@@ -55,21 +55,21 @@ export default function Categories() {
   }, [categoryChange]);
 
   const getCategories = () => {
+    setLoading(true);
     HandleApi(CategoryService.getCategories(), null).then((result) => {
       if (result.status === 200) {
         setCategories(result.data)
       }
-      setLoading(false);
-    });
+    }).finally(() => { setLoading(false); });
   }
 
   const getCategoryGroup = () => {
+    setLoading(true);
     HandleApi(CategoryGroupService.getCategoryGroups(), null).then((result) => {
       if (result.status === 200) {
         setCategoryGroups(result.data)
       }
-      setLoading(false);
-    });
+    }).finally(() => { setLoading(false); });
   }
 
   const addCategory = (category: Category) => {
@@ -83,9 +83,10 @@ export default function Categories() {
   };
 
   const toggleActiveCategory = (category: Category) => {
+    setLoading(true);
     HandleApi(CategoryService.toggleActiveCategory(category.IDLoaiMon), toast).then(() => {
       getCategories();
-    });
+    }).finally(() => { setLoading(false); });
   };
 
   const rowClassName = (data: Category) => (!data.Deleted ? '' : 'bg-danger');

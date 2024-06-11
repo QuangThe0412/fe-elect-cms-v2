@@ -23,7 +23,7 @@ const emptyTypeCustomer: TypeCustomer = {
     MoTa: '',
 };
 
-export default function TypeCustomerDialog({ visible, onClose,onTypeCustomerChange }: PropType) {
+export default function TypeCustomerDialog({ visible, onClose, onTypeCustomerChange }: PropType) {
     const [typeCustomers, setTypeCustomers] = useState<TypeCustomer[]>([]);
     const [onChangeTypeCustomer, setOnChangeTypeCustomer] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
@@ -38,12 +38,12 @@ export default function TypeCustomerDialog({ visible, onClose,onTypeCustomerChan
     };
 
     const getTypesTypeCustomer = () => {
+        setLoading(true);
         HandleApi(TypeCustomerService.getTypeCustomers(), null).then((res) => {
             if (res && res.status === 200) {
                 setTypeCustomers(res.data);
             }
-            setLoading(false);
-        });
+        }).finally(() => { setLoading(false); });
     };
 
     const onRowEditComplete = (e: DataTableRowEditCompleteEvent) => {
@@ -64,6 +64,7 @@ export default function TypeCustomerDialog({ visible, onClose,onTypeCustomerChan
                 if (res && res.status === 200) {
                     setOnChangeTypeCustomer(!onChangeTypeCustomer);
                 }
+            }).finally(() => {
                 setLoading(false);
                 onTypeCustomerChange();
             });
@@ -72,6 +73,7 @@ export default function TypeCustomerDialog({ visible, onClose,onTypeCustomerChan
                 if (res && res.status === 201) {
                     setOnChangeTypeCustomer(!onChangeTypeCustomer);
                 }
+            }).finally(() => {
                 setLoading(false);
                 onTypeCustomerChange();
             });
@@ -89,8 +91,8 @@ export default function TypeCustomerDialog({ visible, onClose,onTypeCustomerChan
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => options.editorCallback!(e.target.value)} />;
     };
 
-    const AddNewRow = (e:any) => {
-        e.target.disable =  true;
+    const AddNewRow = (e: any) => {
+        e.target.disable = true;
         let _typeCustomers = [...typeCustomers];
         _typeCustomers.push(emptyTypeCustomer);
         setTypeCustomers(_typeCustomers);

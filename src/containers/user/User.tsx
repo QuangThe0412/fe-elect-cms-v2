@@ -68,14 +68,14 @@ export default function Users() {
   }, [userChange]);
 
   const getUsers = () => {
+    setLoading(true);
     HandleApi(UserService.getUsers(), null).then((result) => {
       if (result.status === 200) {
         let idMe = profile.userId || 0;
         let resultData = result.data.filter((item: User) => item.id !== idMe);
         setUsers(resultData)
       }
-      setLoading(false);
-    });
+    }).finally(() => { setLoading(false); });
   }
 
   const addUser = (User: User) => {
@@ -89,10 +89,11 @@ export default function Users() {
   };
 
   const toggleActiveUser = (User: User) => {
+    setLoading(true);
     let id = User.id || 0;
     HandleApi(UserService.toggleActiveUser(id), toast).then(() => {
       getUsers();
-    });
+    }).finally(() => { setLoading(false); });
   };
 
   const rowClassName = (data: User) => (!data.Deleted ? '' : 'bg-danger');

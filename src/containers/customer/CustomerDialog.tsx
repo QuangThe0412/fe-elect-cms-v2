@@ -59,6 +59,7 @@ export default function CustomerDialog({ visible, onClose, idCustomer, onCustome
     };
 
     const getCustomer = () => {
+        setLoading(true);
         HandleApi(CustomerService.getCustomer(idCustomer), null).then((res) => {
             if (res && res.status === 200) {
                 const customer = res.data as Customer;
@@ -72,15 +73,16 @@ export default function CustomerDialog({ visible, onClose, idCustomer, onCustome
                     username: customer.username,
                 });
             }
-        });
+        }).finally(() => { setLoading(false); });
     };
 
     const getTypesCustomer = () => {
+        setLoading(true);
         HandleApi(TypeCustomerService.getTypeCustomers() , null).then((res) => {
             if (res && res.status === 200) {
                 setTypesCustomer(res.data);
             }
-        });
+        }).finally(() => { setLoading(false); });
     };
 
     const onFinish = (values: typeForm) => {
@@ -100,16 +102,14 @@ export default function CustomerDialog({ visible, onClose, idCustomer, onCustome
                     onCustomerChange();
                     HandClose();
                 }
-                setLoading(false);
-            });
+            }).finally(() => { setLoading(false); });
         } else { // create
             HandleApi(CustomerService.createCustomer(customer), toast).then((res) => {
                 if (res && res.status === 201) {
                     onCustomerChange();
                     HandClose();
                 }
-                setLoading(false);
-            });
+            }).finally(() => { setLoading(false); });
         }
     };
 

@@ -83,11 +83,12 @@ export default function Orders() {
   }
 
   const HandleStatus = (status: number) => {
+    setLoading(true);
     HandleApi(OrderService.updateStatusOrder(selectedOrder?.IDHoaDon as number, status), toast).then((res) => {
       if (res.status === 200) {
         setOrderChange(!orderChange);
       }
-    });
+    }).finally(() => { setLoading(false); });
   };
 
   const rowClassName = (data: Order) => {

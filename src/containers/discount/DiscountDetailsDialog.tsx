@@ -228,8 +228,7 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
                 if (res.status === 200) {
                     setChangeDetailDiscount(!changeDetailDiscount);
                 }
-                setLoading(false);
-            });
+            }).finally(() => { setLoading(false); });
         };
     };
 

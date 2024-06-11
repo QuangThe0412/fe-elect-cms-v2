@@ -60,8 +60,7 @@ export default function DialogChangePassword({ visible, onClose, idUser }: PropT
                         }
                     ]);
             }
-            setLoading(false);
-        });
+        }).finally(() => { setLoading(false); });
     };
 
     const onFinishFailed = (errorInfo: any) => {

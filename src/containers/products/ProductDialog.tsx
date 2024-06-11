@@ -81,6 +81,7 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
     };
 
     const getProduct = () => {
+        setLoading(true);
         HandleApi(ProductService.getProduct(idProduct), null).then((res) => {
             if (res && res.status === 200) {
                 let product = res.data as Product;
@@ -101,20 +102,19 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
                     nameProduct: product.TenMon,
                     timeWarranty: product.ThoiGianBH,
                 });
-
                 setObjectURL(linkImageGG + product.Image);
             }
-        });
+        }).finally(() => { setLoading(false); });
     };
 
     const getCategories = () => {
+        setLoading(true);
         HandleApi(CategoryService.getCategories(), null).then((result) => {
             if (result.status === 200) {
                 let data = result.data as Category[];
                 setCategories(data);
             }
-            setLoading(false);
-        });
+        }).finally(() => { setLoading(false); });
     }
 
     const onFinish = async (values: typeForm) => {
@@ -146,16 +146,14 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
                     onProductChange();
                     HandClose();
                 }
-                setLoading(false);
-            });
+            }).finally(() => { setLoading(false); });
         } else { // create
             HandleApi(ProductService.createProduct(formData), toast).then((res) => {
                 if (res.status === 201) {
                     onProductChange();
                     HandClose();
                 }
-                setLoading(false);
-            });
+            }).finally(() => { setLoading(false); });
         }
     };
 

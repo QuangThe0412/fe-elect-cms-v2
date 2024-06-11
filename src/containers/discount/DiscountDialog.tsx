@@ -63,6 +63,7 @@ export default
     };
 
     const getDiscount = () => {
+        setLoading(true);
         HandleApi(DiscountService.getDiscount(idDiscount), null).then((res) => {
             if (res && res.status === 200) {
                 const { IdLoaiKH, TenKhuyenMai, TuNgay, DenNgay } = res.data as Discount;
@@ -78,17 +79,17 @@ export default
                     toDate: new Date(DenNgay),
                 });
             }
-        });
+        }).finally(() => { setLoading(false); });
     };
 
     const getTypeCustomers = () => {
+        setLoading(true);
         HandleApi(TypeCustomerService.getTypeCustomers(), null).then((result) => {
             if (result.status === 200) {
                 let data = result.data;
                 setTypeCustomers(data);
             }
-            setLoading(false);
-        });
+        }).finally(() => { setLoading(false); });
     }
 
     const onFinish = (values: typeForm) => {
@@ -106,22 +107,20 @@ export default
             Deleted: false,
         };
 
-        if (idDiscount) { // update
+        if (idDiscount) { // update            
             HandleApi(DiscountService.updateDiscount(idDiscount, discount), toast).then((res) => {
                 if (res.status === 200) {
                     onDiscountChange();
                     HandClose();
                 }
-                setLoading(false);
-            });
+            }).finally(() => { setLoading(false); });
         } else { // create
             HandleApi(DiscountService.createDiscount(discount), toast).then((res) => {
                 if (res.status === 201) {
                     onDiscountChange();
                     HandClose();
                 }
-                setLoading(false);
-            });
+            }).finally(() => { setLoading(false); });
         }
     };
 

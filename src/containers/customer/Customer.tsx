@@ -76,20 +76,21 @@ export default function CustomerComponent() {
   }, [customerChange, typeCustomerChange]);
 
   const getCustomer = () => {
+    setLoading(true);
     HandleApi(CustomerService.getCustomers(), null).then((result) => {
       if (result.status === 200) {
         setCustomers(result.data)
       }
-      setLoading(false);
-    });
+    }).finally(() => { setLoading(false); });
   }
 
   const getTypesCustomer = () => {
+    setLoading(true);
     HandleApi(TypeCustomerService.getTypeCustomers(), null).then((res) => {
       if (res && res.status === 200) {
         setTypesCustomer(res.data);
       }
-    });
+    }).finally(() => { setLoading(false); });
   };
 
   const addTypeCustomers = () => {
@@ -107,9 +108,10 @@ export default function CustomerComponent() {
   };
 
   const toggleActiveCustomer = (customer: Customer) => {
+    setLoading(true);
     HandleApi(CustomerService.toggleActiveCustomer(customer.IDKhachHang), toast).then(() => {
       getCustomer();
-    });
+    }).finally(() => { setLoading(false); });
   };
 
   const rowClassName = (data: Customer) => (!data.Deleted ? '' : 'bg-danger');

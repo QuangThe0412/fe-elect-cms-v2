@@ -139,15 +139,13 @@ export default
                 if (res.status === 200) {
                     setChangeDetailOrder(!changeDetailOrder);
                 }
-                setLoading(false);
-            })
+            }).finally(() => { setLoading(false); });
         } else {
             HandleApi(OrderDetailsService.createOrderDetail(targetUpdate), toast).then((res) => {
                 if (res.status === 201) {
                     setChangeDetailOrder(!changeDetailOrder);
                 }
-                setLoading(false);
-            })
+            }).finally(() => { setLoading(false); });
         }
     };
 
@@ -202,8 +200,7 @@ export default
                 if (res.status === 200) {
                     setChangeDetailOrder(!changeDetailOrder);
                 }
-            });
-            setLoading(false);
+            }).finally(() => { setLoading(false); });
         }
     };
 
