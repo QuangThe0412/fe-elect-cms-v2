@@ -11,6 +11,7 @@ import { ContextMenu } from 'primereact/contextmenu';
 import { FilterMatchMode } from 'primereact/api';
 import { HandleApi } from '@/services/handleApi';
 import { Button } from 'primereact/button';
+import ImportDialog from './ImportDialog';
 
 let emptyImport: Import = {
   IDPhieuNhap: 0,
@@ -88,6 +89,11 @@ export default function ImportComponent() {
             onClick={() => addImport(selectedImport as Import)}
           />
         </span>
+        <Button label="Nhập Excel" icon="pi pi-file-import" className="p-button-help"
+          onClick={() => {
+            toast.current?.show({ severity: 'info', summary: 'Thông báo', detail: 'Tính năng đang phát triển' });
+          }}
+        />
       </div>
     );
   };
@@ -102,31 +108,33 @@ export default function ImportComponent() {
         onContextMenu={(e) => cm.current?.show(e.originalEvent)}
         contextMenuSelection={selectedImport ? selectedImport : undefined}
         onContextMenuSelectionChange={(e: any) => { setSelectedImport(e.value) }}
-        paginator rows={15} rowsPerPageOptions={[5, 10, 25, 50]}
+        paginator rows={10} rowsPerPageOptions={[5, 10, 25, 50]}
         stripedRows sortMode="multiple" removableSort
         tableStyle={{ width: '100%' }}
         loading={loading} scrollable scrollHeight="75.5vh"
         selectionMode="single" selection={selectedImport}
-        onSelectionChange={(e: any) => { setSelectedImport(e.value) }} dataKey="IDLoaiMon"
+        onSelectionChange={(e: any) => { setSelectedImport(e.value) }} dataKey="IDPhieuNhap"
         resizableColumns showGridlines columnResizeMode="expand"
         filters={filters}
         globalFilterFields={["IDLoaiMon", "TenLoai"]} emptyMessage="Không có dữ liệu"
       >
-        <Column field="IDLoaiMon" header="Id" ></Column>
-        <Column field="TenLoai" header="Tên loại"></Column>
-        <Column field="IDNhomMon" header="Nhóm" ></Column>
+        <Column field="IDPhieuNhap" header="IDPhieuNhap"></Column>
+        <Column field="NhaCungCap" header="Nhà cung cấp" ></Column>
+        <Column field="GhiChu" header="Ghi chú" ></Column>
+        <Column field="createDate" header="Ngày lập" ></Column>
+        <Column field="createBy" header="Người lập" ></Column>
 
       </DataTable>
-      {/* <ImportDialog
+      <ImportDialog
         visible={dialogVisible}
         onClose={() => {
           setDialogVisible(false)
         }}
-        idImport={selectedImport.IDLoaiMon}
+        idImport={selectedImport.IDPhieuNhap ?? 0}
         onImportChange={() => {
-          setImportChange(!phieuNhapChange)
+          setImportChange(!importChange)
         }} // refresh data
-      /> */}
+      />
     </div>
   );
 }

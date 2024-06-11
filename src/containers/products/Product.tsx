@@ -151,12 +151,7 @@ export default function Products() {
           <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Tìm kiếm" />
           <Button label="Thêm" icon="pi pi-plus" className="p-button-success ml-3"
             onClick={() => addProduct(selectedProduct as Product)} />
-        </span>
-        <Button label="Nhập Excel" icon="pi pi-file-import" className="p-button-help"
-          onClick={() => {
-            toast.current?.show({ severity: 'info', summary: 'Thông báo', detail: 'Tính năng đang phát triển' });
-          }}
-        />
+        </span>       
       </div>
     );
   };
