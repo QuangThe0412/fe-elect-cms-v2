@@ -12,6 +12,8 @@ import { FilterMatchMode } from 'primereact/api';
 import { HandleApi } from '@/services/handleApi';
 import { Button } from 'primereact/button';
 import ImportDialog from './ImportDialog';
+import ImportDetailsDialog from './ImportDetailsDialog';
+import { bodyDate } from '@/utils/common';
 
 let emptyImport: Import = {
   IDPhieuNhap: 0,
@@ -24,6 +26,7 @@ export default function ImportComponent() {
   const [loading, setLoading] = useState<boolean>(true);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
   const [dialogVisible, setDialogVisible] = useState<boolean>(false);
+  const [dialogDetailsVisible, setDialogDetailsVisible] = useState<boolean>(false);
   const [importChange, setImportChange] = useState<boolean>(false);
   const [selectedImport, setSelectedImport] = useState<Import>(emptyImport);
   const [filters, setFilters] = useState<DataTableFilterMeta>({
@@ -42,7 +45,7 @@ export default function ImportComponent() {
     {
       label: 'Chi tiết phiếu nhập',
       icon: 'pi pi-fw pi-external-link',
-      command: () => { setDialogVisible(true); }
+      command: () => { setDialogDetailsVisible(true); }
     }
   ];
 
@@ -132,7 +135,8 @@ export default function ImportComponent() {
         <Column field="IDPhieuNhap" header="IDPhieuNhap"></Column>
         <Column field="NhaCungCap" header="Nhà cung cấp" ></Column>
         <Column field="GhiChu" header="Ghi chú" ></Column>
-        <Column field="createDate" header="Ngày lập" ></Column>
+        <Column field="createDate" header="Ngày lập"
+          body={bodyDate as (data: any, options: any) => React.ReactNode}></Column>
         <Column field="createBy" header="Người lập" ></Column>
 
       </DataTable>
@@ -140,6 +144,16 @@ export default function ImportComponent() {
         visible={dialogVisible}
         onClose={() => {
           setDialogVisible(false)
+        }}
+        idImport={selectedImport.IDPhieuNhap ?? 0}
+        onImportChange={() => {
+          setImportChange(!importChange)
+        }} // refresh data
+      />
+      <ImportDetailsDialog
+        visible={dialogDetailsVisible}
+        onClose={() => {
+          setDialogDetailsVisible(false)
         }}
         idImport={selectedImport.IDPhieuNhap ?? 0}
         onImportChange={() => {

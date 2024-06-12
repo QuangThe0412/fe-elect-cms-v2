@@ -21,5 +21,9 @@ export const ImportService = {
 
     deleteImport(id: number) {
         return axios.delete(paths.import + `/${id}`);
+    },
+
+    getAllImportDetailsById(id: number) {
+        return axios.get(paths.import + `/${id}` + paths.importDetails);
     }
 }

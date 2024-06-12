@@ -1,9 +1,9 @@
 export interface ImportDetails {
-    IDChiTietPhieuXuat?: number;
-    IDPhieuXuat?: number;
+    IDChiTietPhieuNhap?: number;
+    IDPhieuNhap?: number;
     IDMon?: number;
-    SoLuongXuat?: number;
-    DonGiaXuat?: number;
+    SoLuongNhap?: number;
+    DonGiaNhap?: number;
     ChietKhau?: number;
     ThanhTien?: number;
     createDate?: Date;
