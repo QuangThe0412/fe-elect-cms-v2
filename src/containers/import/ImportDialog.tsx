@@ -9,7 +9,7 @@ import { Import } from '@/models';
 import { HandleApi } from '@/services/handleApi';
 import { LabelField } from '@/components';
 import { classNames } from 'primereact/utils';
-import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
+import { InputTextarea } from 'primereact/inputtextarea';
 
 type PropType = {
     idImport: number,
@@ -21,7 +21,7 @@ type PropType = {
 type typeForm = {
     idImport: number;
     ProviderName: string;
-    Note : string;
+    Note: string;
 }
 
 const initialForm: typeForm = {
@@ -29,7 +29,6 @@ const initialForm: typeForm = {
     ProviderName: '',
     Note: '',
 };
-
 
 export default
     function ImportDialog({ visible, onClose, idImport, onImportChange }: PropType) {
@@ -51,6 +50,7 @@ export default
     const getImport = () => {
         setLoading(true);
         HandleApi(ImportService.getImport(idImport), null).then((res) => {
+            console.log(res);
             if (res && res.status === 200) {
                 let data = res.data as Import;
                 form.setFieldsValue({
@@ -62,32 +62,29 @@ export default
         }).finally(() => { setLoading(false); });
     };
 
-    
-
     const onFinish = (values: typeForm) => {
         setLoading(true);
-        // let category: Import = {
-        //     IDLoaiMon: idImport,
-        //     IDNhomMon: selectedImportGroup?.IDNhomMon as number,
-        //     TenLoai: values.nameImport,
-        // };
+        let importData: Import = {
+            IDPhieuNhap: idImport,
+            NhaCungCap: values.ProviderName,
+            GhiChu: values.Note,
+        };
 
-        // if (idImport) { // update
-        //     HandleApi(ImportService.updateImport(idImport, category), toast).then((res) => {
-        //         if (res.status === 200) {
-        //             onImportChange();
-        //             HandClose();
-        //         }
-        //     }).finally(() => setLoading(false));
-        // } else { // create
-        //     HandleApi(ImportService.createImport(category), toast).then((res) => {
-        //         if (res.status === 201) {
-        //             console.log(res.data);
-        //             onImportChange();
-        //             HandClose();
-        //         }
-        //     }).finally(() => setLoading(false));
-        // }
+        if (idImport > 0) {
+            HandleApi(ImportService.updateImport(idImport, importData), toast).then((res) => {
+                if (res && res.status === 200) {
+                    onImportChange();
+                    HandClose();
+                }
+            }).finally(() => { setLoading(false); });
+        } else {
+            HandleApi(ImportService.createImport(importData), toast).then((res) => {
+                if (res && res.status === 201) {
+                    onImportChange();
+                    HandClose();
+                }
+            }).finally(() => { setLoading(false); });
+        }
     };
 
     const onFinishFailed = (errorInfo: any) => {
@@ -108,6 +105,11 @@ export default
                             { required: true, message: 'Nhà cung cấp không được bỏ trống.' },
                         ]}>
                         {(control, meta) => (<InputText {...control} id="ProviderName"
+                            className={classNames({ 'invalid': meta.errors.length })} />)}
+                    </LabelField>
+
+                    <LabelField label="Ghi chú" name="Note">
+                        {(control, meta) => (<InputTextarea {...control} id="Note"
                             className={classNames({ 'invalid': meta.errors.length })} />)}
                     </LabelField>
 

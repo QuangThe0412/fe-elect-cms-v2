@@ -38,10 +38,11 @@ export default function ImportComponent() {
   const menuModel = [
     { label: 'Thêm', icon: 'pi pi-fw pi-plus-circle', command: () => addImport(selectedImport as Import) },
     { label: 'Sửa', icon: 'pi pi-fw pi-pencil', command: () => editImport(selectedImport as Import) },
+    { label: 'Xóa', icon: 'pi pi-fw pi-times', command: () => deletedImport(selectedImport as Import) },
     {
       label: 'Chi tiết phiếu nhập',
       icon: 'pi pi-fw pi-external-link',
-      command: () => { }
+      command: () => { setDialogVisible(true); }
     }
   ];
 
@@ -52,9 +53,10 @@ export default function ImportComponent() {
   const getCategories = () => {
     setLoading(true);
     HandleApi(ImportService.getImports(), null).then((result) => {
-      console.log(result);
       if (result.status === 200) {
-        setImports(result.data)
+        const data = result.data as Import[];
+        const _data = data.filter((x) => !x.Deleted);
+        setImports(_data)
       }
     }).finally(() => { setLoading(false); });
   }
@@ -67,6 +69,15 @@ export default function ImportComponent() {
   const editImport = (phieuNhap: Import) => {
     setSelectedImport(phieuNhap);
     setDialogVisible(true);
+  };
+
+  const deletedImport = (phieuNhap: Import) => {
+    setLoading(true);
+    HandleApi(ImportService.deleteImport(phieuNhap.IDPhieuNhap ?? 0), toast).then((res) => {
+      if (res && res.status === 200) {
+        setImportChange(!importChange);
+      }
+    }).finally(() => { setLoading(false); });
   };
 
   const rowClassName = (data: Import) => (!data.Deleted ? '' : 'bg-danger');
