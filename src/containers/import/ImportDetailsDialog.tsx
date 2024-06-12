@@ -6,7 +6,7 @@ import { HandleApi } from "@/services/handleApi";
 import { ImportService } from "@/services/import.service";
 import { ImportDetailsService } from "@/services/importDetails.service";
 import { ImportDetails, Product } from "@/models";
-import { DataTable, DataTableRowEditCompleteEvent } from "primereact/datatable";
+import { DataTable, DataTableRowEditCompleteEvent, DataTableValue } from "primereact/datatable";
 import { Column, ColumnEditorOptions } from "primereact/column";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
@@ -42,7 +42,7 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
     const [onChangeImportDetails, setOnChangeImportDetails] = useState<boolean>(false);
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
-    const [selectedImportDetails, setSelectedImportDetails] = useState<ImportDetails>();
+    const [selected, setSelected] = useState<ImportDetails>();
     const toast = useRef<Toast>(null);
 
     useEffect(() => {
@@ -83,76 +83,73 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
         }).finally(() => { setLoading(false); });
     };
 
-    const onRowEditComplete = (e: DataTableRowEditCompleteEvent) => {
-        // setLoading(true);
-        let _importDetails = [...importDetails];
-        let { newData, index } = e;
-
-        _importDetails[index] = newData as ImportDetails;
-
-        let importDetailsValue: ImportDetails = {
-            IDChiTietPhieuNhap: newData.IDChiTietPhieuNhap,
+    const onRowEditComplete = (options: DataTableRowEditCompleteEvent) => {
+        const { newData, data, field } = options;
+        console.log({ newData, data, field });
+        return
+        setLoading(true);
+        let importDetails: ImportDetails = {
+            IDChiTietPhieuNhap: selected?.IDChiTietPhieuNhap,
             IDPhieuNhap: idImport,
-            IDMon: newData.IDMon,
-            SoLuongNhap: newData.SoLuongNhap,
-            DonGiaNhap: newData.DonGiaNhap,
-            ChietKhau: newData.ChietKhau,
-            ThanhTien: newData.ThanhTien,
+            IDMon: selected?.IDMon,
+            SoLuongNhap: selected?.SoLuongNhap,
+            DonGiaNhap: selected?.DonGiaNhap,
+            ChietKhau: selected?.ChietKhau,
+            ThanhTien: selected?.ThanhTien,
         };
 
-        console.log(importDetailsValue);
-        setSelectedImportDetails(undefined);
+        console.log(importDetails);
 
-        // if (importDetails.IDLoaiKH) { // update
-        //     HandleApi(ImportDetailsService.updateImportDetails(importDetails.IDLoaiKH, importDetails), toast).then((res) => {
+        // if (selected?.IDChiTietPhieuNhap) { // update
+        //     HandleApi(ImportDetailsService.updateImportDetail(selected?.IDChiTietPhieuNhap, importDetails), toast).then((res) => {
         //         if (res && res.status === 200) {
         //             setOnChangeImportDetails(!onChangeImportDetails);
         //         }
         //     }).finally(() => {
+        //         setSelected(undefined);
         //         setLoading(false);
-        //         onImportDetailsChange();
+        //         onImportChange();
         //     });
         // } else { // create
-        //     HandleApi(ImportDetailsService.createImportDetails(importDetails), toast).then((res) => {
+        //     HandleApi(ImportDetailsService.createImportDetail(importDetails), toast).then((res) => {
         //         if (res && res.status === 201) {
         //             setOnChangeImportDetails(!onChangeImportDetails);
         //         }
         //     }).finally(() => {
+        //         setSelected(undefined);
         //         setLoading(false);
-        //         onImportDetailsChange();
+        //         onImportChange();
         //     });
         // }
     };
 
     const textEditor = (options: ColumnEditorOptions) => {
-        console.log('textEditor', { selectedImportDetails });
-        
+        const { rowData, field } = options;
         let value;
-        if(!selectedImportDetails) {
-            value = options.rowData[options.field as keyof ImportDetails] as string;
-        }else {
-            value = selectedImportDetails[options.field as keyof ImportDetails] as string;
+        if (selected) {
+            console.log({ selected });
+            value = selected[field as keyof ImportDetails] as string;
+        } else {
+            value = rowData[field as keyof ImportDetails] as string;
         }
-        
-        
-        return <InputText type="text" value={value || ''}
-            onBlur={(e: React.FocusEvent<HTMLInputElement>) => { onBlurEditor(e, options); }}
+
+        return <InputText type="number" value={value || ''}
+            // onBlur={(e: React.FocusEvent<HTMLInputElement>) => { onBlurEditor(e, options); }}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => options.editorCallback!(e.target.value)} />;
     };
 
     const onBlurEditor = (e: React.FocusEvent<HTMLInputElement>, options: ColumnEditorOptions) => {
-        const { rowIndex, field } = options;
-        const updatedData = [...importDetails];
-        const _updatedRow = importDetails[rowIndex];
+        const { field } = options;
+        const _updatedRow = selected as ImportDetails || {};
         switch (field) {
             case 'DonGiaNhap':
-                _updatedRow.DonGiaNhap = parseInt(e.target.value) ?? 0;
+                _updatedRow.DonGiaNhap = parseInt(e.target?.value) ?? 0;
                 break;
             case 'SoLuongNhap':
-                _updatedRow.SoLuongNhap = parseInt(e.target.value) ?? 0;
+                _updatedRow.SoLuongNhap = parseInt(e.target?.value) ?? 0;
                 break;
             case 'ChietKhau':
-                _updatedRow.ChietKhau = parseInt(e.target.value) ?? 0;
+                _updatedRow.ChietKhau = parseInt(e.target?.value) ?? 0;
                 break;
             default:
                 break;
@@ -163,8 +160,7 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
         const thanhTien = donGiaNhap * soLuongNhap * (1 - chietKhau / 100);
 
         _updatedRow.ThanhTien = thanhTien;
-        updatedData[rowIndex] = _updatedRow;
-        setImportDetails(updatedData);
+        // setSelected(_updatedRow);
     };
 
     const AddNewRow = (e: any) => {
@@ -191,7 +187,7 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
     };
 
     const productEditor = (options: ColumnEditorOptions) => {
-        const { rowIndex, rowData } = options;
+        const { rowData } = options;
         return (
             <Dropdown value={rowData.IDMon}
                 options={products} optionLabel="TenMon" optionValue="IDMon"
@@ -199,8 +195,7 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
                     options.editorCallback!(e.value);
                     const idMonChose = e.value as number;
                     const choseProduct = products.find((x) => x.IDMon === idMonChose) as Product;
-                    const updatedData = [...importDetails] as ImportDetails[];
-                    const _updatedRow = updatedData[rowIndex] as ImportDetails;
+                    let _updatedRow: ImportDetails = emptyImportDetails;
 
                     _updatedRow.IDMon = choseProduct.IDMon;
                     _updatedRow.DonGiaNhap = choseProduct.DonGiaVon;
@@ -208,13 +203,12 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
                     _updatedRow.ChietKhau = 0;
                     _updatedRow.ThanhTien = choseProduct.DonGiaVon * _updatedRow.SoLuongNhap * (1 - _updatedRow.ChietKhau / 100);
 
-                    updatedData[rowIndex] = _updatedRow;
-                    setSelectedImportDetails(_updatedRow)
-                    setImportDetails(updatedData);
+                    // setSelected(_updatedRow)
                 }}
             />
         );
     };
+
     return (
         <div className="card flex justify-content-center">
             <Toast ref={toast} />
@@ -223,6 +217,7 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
                 onHide={() => { if (!visible) return; HandClose() }}>
                 <DataTable value={importDetails} editMode="row" dataKey="IDChiTietPhieuNhap" loading={loading}
                     onRowEditComplete={onRowEditComplete}
+                    onRowEditCancel={() => setSelected(undefined)}
                     tableStyle={{ minWidth: '70rem' }}>
                     <Column field="IDChiTietPhieuNhap" header="id" style={{ width: '10%' }}></Column>
                     <Column field="IDMon" header="Món" body={bodyMon} className="white-space-normal"
