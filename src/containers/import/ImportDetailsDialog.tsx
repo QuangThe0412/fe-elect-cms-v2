@@ -14,6 +14,7 @@ import { Toast } from "primereact/toast";
 import { bodyDate, formatCurrency, formatNumber } from "@/utils/common";
 import { ProductService } from "@/services/products.service";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
+import { InputNumber, InputNumberValueChangeEvent } from "primereact/inputnumber";
 
 type PropType = {
     visible: boolean,
@@ -37,12 +38,18 @@ const emptyImportDetails: ImportDetails = {
     Deleted: false,
 };
 
+type selectedType = {
+    index: number,
+    dataSelected: ImportDetails,
+}
+
 export default function ImportDetailsDialog({ visible, onClose, onImportChange, idImport }: PropType) {
     const [importDetails, setImportDetails] = useState<ImportDetails[]>([]);
     const [onChangeImportDetails, setOnChangeImportDetails] = useState<boolean>(false);
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
-    const [selected, setSelected] = useState<ImportDetails>();
+    const [selected, setSelected] = useState<selectedType>();
+    const [canEdit, setCanEdit] = useState<boolean>(false);
     const toast = useRef<Toast>(null);
 
     useEffect(() => {
@@ -58,8 +65,14 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
         fetchData();
     }, [visible, onChangeImportDetails]);
 
+    useEffect(() => {
+        // setCanEdit(!!selected);
+        ///---------------fuckckckcufckckckkckc
+    }, [selected]);
+
     const HandClose = () => {
         onClose();
+        setSelected(undefined);
     };
 
     const getProduct = async () => {
@@ -84,62 +97,57 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
     };
 
     const onRowEditComplete = (options: DataTableRowEditCompleteEvent) => {
-        const { newData, data, field } = options;
-        console.log({ newData, data, field });
-        return
         setLoading(true);
+        const { dataSelected } = selected as selectedType;
         let importDetails: ImportDetails = {
-            IDChiTietPhieuNhap: selected?.IDChiTietPhieuNhap,
+            IDChiTietPhieuNhap: dataSelected?.IDChiTietPhieuNhap,
             IDPhieuNhap: idImport,
-            IDMon: selected?.IDMon,
-            SoLuongNhap: selected?.SoLuongNhap,
-            DonGiaNhap: selected?.DonGiaNhap,
-            ChietKhau: selected?.ChietKhau,
-            ThanhTien: selected?.ThanhTien,
+            IDMon: dataSelected?.IDMon,
+            SoLuongNhap: dataSelected?.SoLuongNhap,
+            DonGiaNhap: dataSelected?.DonGiaNhap,
+            ChietKhau: dataSelected?.ChietKhau,
+            ThanhTien: dataSelected?.ThanhTien,
         };
 
-        console.log(importDetails);
-
-        // if (selected?.IDChiTietPhieuNhap) { // update
-        //     HandleApi(ImportDetailsService.updateImportDetail(selected?.IDChiTietPhieuNhap, importDetails), toast).then((res) => {
-        //         if (res && res.status === 200) {
-        //             setOnChangeImportDetails(!onChangeImportDetails);
-        //         }
-        //     }).finally(() => {
-        //         setSelected(undefined);
-        //         setLoading(false);
-        //         onImportChange();
-        //     });
-        // } else { // create
-        //     HandleApi(ImportDetailsService.createImportDetail(importDetails), toast).then((res) => {
-        //         if (res && res.status === 201) {
-        //             setOnChangeImportDetails(!onChangeImportDetails);
-        //         }
-        //     }).finally(() => {
-        //         setSelected(undefined);
-        //         setLoading(false);
-        //         onImportChange();
-        //     });
-        // }
+        if (dataSelected?.IDChiTietPhieuNhap) { // update
+            HandleApi(ImportDetailsService.updateImportDetail(dataSelected?.IDChiTietPhieuNhap, importDetails), toast).then((res) => {
+                if (res && res.status === 200) {
+                    setOnChangeImportDetails(!onChangeImportDetails);
+                }
+            }).finally(() => {
+                setSelected(undefined);
+                setLoading(false);
+                onImportChange();
+            });
+        } else { // create
+            HandleApi(ImportDetailsService.createImportDetail(importDetails), toast).then((res) => {
+                if (res && res.status === 201) {
+                    setOnChangeImportDetails(!onChangeImportDetails);
+                }
+            }).finally(() => {
+                setSelected(undefined);
+                setLoading(false);
+                onImportChange();
+            });
+        }
     };
 
-    const textEditor = (options: ColumnEditorOptions) => {
-        const { rowData, field } = options;
-        let value;
-        if (selected) {
-            console.log({ selected });
-            value = selected[field as keyof ImportDetails] as string;
-        } else {
-            value = rowData[field as keyof ImportDetails] as string;
-        }
+    const currencyEditor = (options: ColumnEditorOptions) => {
+        return <InputNumber value={options.value}
+            onBlur={(e: React.FocusEvent<HTMLInputElement>) => onBlurEditor(e, options)}
+            onValueChange={(e: InputNumberValueChangeEvent) =>
+                options.editorCallback!(e.value)} mode="currency" currency="VND" locale="vn-VN" />;
+    };
 
-        return <InputText type="number" value={value || ''}
-            // onBlur={(e: React.FocusEvent<HTMLInputElement>) => { onBlurEditor(e, options); }}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => options.editorCallback!(e.target.value)} />;
+    const numberEditor = (options: ColumnEditorOptions) => {
+        return <InputNumber value={options.value}
+            // onBlur={(e: React.FocusEvent<HTMLInputElement>) => onBlurEditor(e, options)}
+            onValueChange={(e: InputNumberValueChangeEvent) =>
+                options.editorCallback!(e.value)} />;
     };
 
     const onBlurEditor = (e: React.FocusEvent<HTMLInputElement>, options: ColumnEditorOptions) => {
-        const { field } = options;
+        const { field, rowIndex } = options;
         const _updatedRow = selected as ImportDetails || {};
         switch (field) {
             case 'DonGiaNhap':
@@ -152,7 +160,7 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
                 _updatedRow.ChietKhau = parseInt(e.target?.value) ?? 0;
                 break;
             default:
-                break;
+                return;
         }
         const donGiaNhap = _updatedRow.DonGiaNhap || 0;
         const soLuongNhap = _updatedRow.SoLuongNhap || 0;
@@ -160,7 +168,10 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
         const thanhTien = donGiaNhap * soLuongNhap * (1 - chietKhau / 100);
 
         _updatedRow.ThanhTien = thanhTien;
-        // setSelected(_updatedRow);
+        setSelected({
+            index: rowIndex,
+            dataSelected: _updatedRow,
+        });
     };
 
     const AddNewRow = (e: any) => {
@@ -187,14 +198,17 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
     };
 
     const productEditor = (options: ColumnEditorOptions) => {
-        const { rowData } = options;
+
+        const { rowData, rowIndex } = options;
+        const oldData = importDetails[rowIndex];
+        const value = selected?.index === rowIndex ? selected?.dataSelected.IDMon : oldData.IDMon;
         return (
-            <Dropdown value={rowData.IDMon}
+            <Dropdown value={value} filter
                 options={products} optionLabel="TenMon" optionValue="IDMon"
                 onChange={(e: any) => {
                     options.editorCallback!(e.value);
-                    const idMonChose = e.value as number;
-                    const choseProduct = products.find((x) => x.IDMon === idMonChose) as Product;
+                    const idMonChosse = e.value as number;
+                    const choseProduct = products.find((x) => x.IDMon === idMonChosse) as Product;
                     let _updatedRow: ImportDetails = emptyImportDetails;
 
                     _updatedRow.IDMon = choseProduct.IDMon;
@@ -203,7 +217,10 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
                     _updatedRow.ChietKhau = 0;
                     _updatedRow.ThanhTien = choseProduct.DonGiaVon * _updatedRow.SoLuongNhap * (1 - _updatedRow.ChietKhau / 100);
 
-                    // setSelected(_updatedRow)
+                    setSelected({
+                        index: rowIndex,
+                        dataSelected: _updatedRow,
+                    })
                 }}
             />
         );
@@ -225,18 +242,19 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
                         style={{ width: '20%', whiteSpace: 'wrap' }}></Column>
                     <Column field="DonGiaNhap" header="Đơn giá nhập"
                         body={(rowData: ImportDetails) => <>{formatCurrency(rowData.DonGiaNhap)}</>}
-                        editor={(options) => textEditor(options)} style={{ width: '5%' }}></Column>
+                        editor={(options) => currencyEditor(options)} style={{ width: '5%' }}></Column>
                     <Column field="SoLuongNhap" header="Số lượng nhập"
                         body={(rowData: ImportDetails) => <>{formatNumber(rowData.SoLuongNhap)}</>}
-                        editor={(options) => textEditor(options)} style={{ width: '5%' }}></Column>
+                        editor={(options) => numberEditor(options)} style={{ width: '5%' }}></Column>
                     <Column field="ChietKhau" header="Chiết khấu"
-                        editor={(options) => textEditor(options)} style={{ width: '5%' }}></Column>
+                        editor={(options) => currencyEditor(options)} style={{ width: '5%' }}></Column>
                     <Column field="ThanhTien" header="Thành tiền"
+                        editor={(options) => currencyEditor(options)} style={{ width: '5%' }}
                         body={(rowData: ImportDetails) => <>{formatCurrency(rowData.ThanhTien)}</>}></Column>
                     <Column field="createDate" header="Ngày lập"
                         body={bodyDate as (data: any, options: any) => React.ReactNode}></Column>
                     <Column field="createBy" header="Người lập"></Column>
-                    <Column rowEditor headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
+                    <Column rowEditor={canEdit} headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
                 </DataTable>
             </Dialog>
         </div>
