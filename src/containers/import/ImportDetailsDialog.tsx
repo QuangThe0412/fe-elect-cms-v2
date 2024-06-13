@@ -6,7 +6,7 @@ import { HandleApi } from "@/services/handleApi";
 import { ImportService } from "@/services/import.service";
 import { ImportDetailsService } from "@/services/importDetails.service";
 import { ImportDetails, Product } from "@/models";
-import { DataTable, DataTableRowEditCompleteEvent, DataTableValue } from "primereact/datatable";
+import { DataTable, DataTableRowEditCompleteEvent, DataTableRowEditEvent, DataTableValue } from "primereact/datatable";
 import { Column, ColumnEditorOptions } from "primereact/column";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
@@ -38,9 +38,14 @@ const emptyImportDetails: ImportDetails = {
     Deleted: false,
 };
 
-type selectedType = {
+type selectedRowType = {
     index: number,
     dataSelected: ImportDetails,
+}
+
+type changeProductType = {
+    index: number,
+    dataSelected: Product,
 }
 
 export default function ImportDetailsDialog({ visible, onClose, onImportChange, idImport }: PropType) {
@@ -48,8 +53,9 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
     const [onChangeImportDetails, setOnChangeImportDetails] = useState<boolean>(false);
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
-    const [selected, setSelected] = useState<selectedType>();
-    const [canEdit, setCanEdit] = useState<boolean>(false);
+    const [selectedRow, setSelectedRow] = useState<selectedRowType>();
+    const [canEdit, setCanEdit] = useState<boolean>(true);
+    const [onChangeProduct, setOnChangeProduct] = useState<changeProductType>();
     const toast = useRef<Toast>(null);
 
     useEffect(() => {
@@ -65,14 +71,9 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
         fetchData();
     }, [visible, onChangeImportDetails]);
 
-    useEffect(() => {
-        // setCanEdit(!!selected);
-        ///---------------fuckckckcufckckckkckc
-    }, [selected]);
-
     const HandClose = () => {
         onClose();
-        setSelected(undefined);
+        setSelectedRow(undefined);
     };
 
     const getProduct = async () => {
@@ -97,58 +98,70 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
     };
 
     const onRowEditComplete = (options: DataTableRowEditCompleteEvent) => {
-        setLoading(true);
-        const { dataSelected } = selected as selectedType;
-        let importDetails: ImportDetails = {
-            IDChiTietPhieuNhap: dataSelected?.IDChiTietPhieuNhap,
-            IDPhieuNhap: idImport,
-            IDMon: dataSelected?.IDMon,
-            SoLuongNhap: dataSelected?.SoLuongNhap,
-            DonGiaNhap: dataSelected?.DonGiaNhap,
-            ChietKhau: dataSelected?.ChietKhau,
-            ThanhTien: dataSelected?.ThanhTien,
-        };
+        // setLoading(true);
+        // const { dataSelected } = selected as selectedType;
+        // let importDetails: ImportDetails = {
+        //     IDChiTietPhieuNhap: dataSelected?.IDChiTietPhieuNhap,
+        //     IDPhieuNhap: idImport,
+        //     IDMon: dataSelected?.IDMon,
+        //     SoLuongNhap: dataSelected?.SoLuongNhap,
+        //     DonGiaNhap: dataSelected?.DonGiaNhap,
+        //     ChietKhau: dataSelected?.ChietKhau,
+        //     ThanhTien: dataSelected?.ThanhTien,
+        // };
 
-        if (dataSelected?.IDChiTietPhieuNhap) { // update
-            HandleApi(ImportDetailsService.updateImportDetail(dataSelected?.IDChiTietPhieuNhap, importDetails), toast).then((res) => {
-                if (res && res.status === 200) {
-                    setOnChangeImportDetails(!onChangeImportDetails);
-                }
-            }).finally(() => {
-                setSelected(undefined);
-                setLoading(false);
-                onImportChange();
-            });
-        } else { // create
-            HandleApi(ImportDetailsService.createImportDetail(importDetails), toast).then((res) => {
-                if (res && res.status === 201) {
-                    setOnChangeImportDetails(!onChangeImportDetails);
-                }
-            }).finally(() => {
-                setSelected(undefined);
-                setLoading(false);
-                onImportChange();
-            });
-        }
+        // if (dataSelected?.IDChiTietPhieuNhap) { // update
+        //     HandleApi(ImportDetailsService.updateImportDetail(dataSelected?.IDChiTietPhieuNhap, importDetails), toast).then((res) => {
+        //         if (res && res.status === 200) {
+        //             setOnChangeImportDetails(!onChangeImportDetails);
+        //         }
+        //     }).finally(() => {
+        //         setSelected(undefined);
+        //         setLoading(false);
+        //         onImportChange();
+        //     });
+        // } else { // create
+        //     HandleApi(ImportDetailsService.createImportDetail(importDetails), toast).then((res) => {
+        //         if (res && res.status === 201) {
+        //             setOnChangeImportDetails(!onChangeImportDetails);
+        //         }
+        //     }).finally(() => {
+        //         setSelected(undefined);
+        //         setLoading(false);
+        //         onImportChange();
+        //     });
+        // }
     };
 
     const currencyEditor = (options: ColumnEditorOptions) => {
-        return <InputNumber value={options.value}
+        let { field, rowIndex, value } = options;
+        if (onChangeProduct?.index === rowIndex) {
+            const _updatedRow = onChangeProduct.dataSelected;
+            if (field === 'DonGiaNhap')
+                value = _updatedRow.DonGiaVon;
+        }
+
+        return <InputNumber value={value}
             onBlur={(e: React.FocusEvent<HTMLInputElement>) => onBlurEditor(e, options)}
             onValueChange={(e: InputNumberValueChangeEvent) =>
                 options.editorCallback!(e.value)} mode="currency" currency="VND" locale="vn-VN" />;
     };
 
     const numberEditor = (options: ColumnEditorOptions) => {
-        return <InputNumber value={options.value}
-            // onBlur={(e: React.FocusEvent<HTMLInputElement>) => onBlurEditor(e, options)}
+        let { field, rowIndex, value } = options;
+        if (onChangeProduct?.index === rowIndex) {
+            const _updatedRow = onChangeProduct.dataSelected;
+            value = 0;
+        }
+        return <InputNumber value={value}
+            onBlur={(e: React.FocusEvent<HTMLInputElement>) => onBlurEditor(e, options)}
             onValueChange={(e: InputNumberValueChangeEvent) =>
                 options.editorCallback!(e.value)} />;
     };
 
     const onBlurEditor = (e: React.FocusEvent<HTMLInputElement>, options: ColumnEditorOptions) => {
         const { field, rowIndex } = options;
-        const _updatedRow = selected as ImportDetails || {};
+        const _updatedRow = selectedRow as ImportDetails || {};
         switch (field) {
             case 'DonGiaNhap':
                 _updatedRow.DonGiaNhap = parseInt(e.target?.value) ?? 0;
@@ -168,7 +181,7 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
         const thanhTien = donGiaNhap * soLuongNhap * (1 - chietKhau / 100);
 
         _updatedRow.ThanhTien = thanhTien;
-        setSelected({
+        setSelectedRow({
             index: rowIndex,
             dataSelected: _updatedRow,
         });
@@ -198,10 +211,9 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
     };
 
     const productEditor = (options: ColumnEditorOptions) => {
-
         const { rowData, rowIndex } = options;
         const oldData = importDetails[rowIndex];
-        const value = selected?.index === rowIndex ? selected?.dataSelected.IDMon : oldData.IDMon;
+        const value = onChangeProduct?.index === rowIndex ? onChangeProduct?.dataSelected.IDMon : oldData.IDMon;
         return (
             <Dropdown value={value} filter
                 options={products} optionLabel="TenMon" optionValue="IDMon"
@@ -209,21 +221,28 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
                     options.editorCallback!(e.value);
                     const idMonChosse = e.value as number;
                     const choseProduct = products.find((x) => x.IDMon === idMonChosse) as Product;
-                    let _updatedRow: ImportDetails = emptyImportDetails;
+                    setOnChangeProduct({ index: rowIndex, dataSelected: choseProduct });
 
-                    _updatedRow.IDMon = choseProduct.IDMon;
-                    _updatedRow.DonGiaNhap = choseProduct.DonGiaVon;
-                    _updatedRow.SoLuongNhap = 1;
-                    _updatedRow.ChietKhau = 0;
-                    _updatedRow.ThanhTien = choseProduct.DonGiaVon * _updatedRow.SoLuongNhap * (1 - _updatedRow.ChietKhau / 100);
+                    // let _updatedRow: ImportDetails = emptyImportDetails;
 
-                    setSelected({
-                        index: rowIndex,
-                        dataSelected: _updatedRow,
-                    })
+                    // _updatedRow.IDMon = choseProduct.IDMon;
+                    // _updatedRow.DonGiaNhap = choseProduct.DonGiaVon;
+                    // _updatedRow.SoLuongNhap = 1;
+                    // _updatedRow.ChietKhau = 0;
+                    // _updatedRow.ThanhTien = choseProduct.DonGiaVon * _updatedRow.SoLuongNhap * (1 - _updatedRow.ChietKhau / 100);
+
                 }}
             />
         );
+    };
+
+    const onRowEditInit = (options: DataTableRowEditEvent) => {
+        const { data, index } = options;
+        setSelectedRow({ index: index, dataSelected: data })
+        console.log('index', index);
+        // if ( ) {
+        //     setCanEdit(false);
+        // }
     };
 
     return (
@@ -234,7 +253,9 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
                 onHide={() => { if (!visible) return; HandClose() }}>
                 <DataTable value={importDetails} editMode="row" dataKey="IDChiTietPhieuNhap" loading={loading}
                     onRowEditComplete={onRowEditComplete}
-                    onRowEditCancel={() => setSelected(undefined)}
+                    onRowEditCancel={() => setSelectedRow(undefined)}
+                    onRowEditInit={onRowEditInit}
+
                     tableStyle={{ minWidth: '70rem' }}>
                     <Column field="IDChiTietPhieuNhap" header="id" style={{ width: '10%' }}></Column>
                     <Column field="IDMon" header="Món" body={bodyMon} className="white-space-normal"
@@ -247,14 +268,15 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
                         body={(rowData: ImportDetails) => <>{formatNumber(rowData.SoLuongNhap)}</>}
                         editor={(options) => numberEditor(options)} style={{ width: '5%' }}></Column>
                     <Column field="ChietKhau" header="Chiết khấu"
-                        editor={(options) => currencyEditor(options)} style={{ width: '5%' }}></Column>
+                        editor={(options) => numberEditor(options)} style={{ width: '5%' }}></Column>
                     <Column field="ThanhTien" header="Thành tiền"
-                        editor={(options) => currencyEditor(options)} style={{ width: '5%' }}
                         body={(rowData: ImportDetails) => <>{formatCurrency(rowData.ThanhTien)}</>}></Column>
                     <Column field="createDate" header="Ngày lập"
                         body={bodyDate as (data: any, options: any) => React.ReactNode}></Column>
                     <Column field="createBy" header="Người lập"></Column>
-                    <Column rowEditor={canEdit} headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
+                    <Column rowEditor={(...args) => {
+                        return true;
+                    }} headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
                 </DataTable>
             </Dialog>
         </div>
