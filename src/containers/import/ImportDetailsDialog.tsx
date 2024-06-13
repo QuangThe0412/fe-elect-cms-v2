@@ -49,7 +49,6 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [selectedRow, setSelectedRow] = useState<selectedRowType>();
-    const [changeProduct, setChangeProduct] = useState<Product>();
     const toast = useRef<Toast>(null);
 
     useEffect(() => {
@@ -94,6 +93,9 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
     const onRowEditComplete = (options: DataTableRowEditCompleteEvent) => {
         setLoading(true);
         const { dataSelected } = selectedRow as selectedRowType;
+        const IDChiTietPhieuNhap = dataSelected?.IDChiTietPhieuNhap ?? 0;
+        console.log({dataSelected})
+
         let importDetails: ImportDetails = {
             IDChiTietPhieuNhap: dataSelected?.IDChiTietPhieuNhap,
             IDPhieuNhap: idImport,
@@ -104,14 +106,13 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
             ThanhTien: dataSelected?.ThanhTien,
         };
 
-        if (dataSelected?.IDChiTietPhieuNhap) { // update
-            HandleApi(ImportDetailsService.updateImportDetail(dataSelected?.IDChiTietPhieuNhap, importDetails), toast).then((res) => {
+        if (IDChiTietPhieuNhap > 0) { // update
+            HandleApi(ImportDetailsService.updateImportDetail(IDChiTietPhieuNhap, importDetails), toast).then((res) => {
                 if (res && res.status === 200) {
                     setOnChangeImportDetails(!onChangeImportDetails);
                 }
             }).finally(() => {
                 setSelectedRow(undefined)
-                setChangeProduct(undefined)
                 setLoading(false);
                 onImportChange();
             });
@@ -122,7 +123,6 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
                 }
             }).finally(() => {
                 setSelectedRow(undefined)
-                setChangeProduct(undefined)
                 setLoading(false);
                 onImportChange();
             });
@@ -132,19 +132,20 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
     const numberEditor = (options: ColumnEditorOptions) => {
         let { field, value } = options;
         let disable = false;
-        if (changeProduct) {
+        if (selectedRow) {
+            const { dataSelected } = selectedRow;
             switch (field) {
                 case 'DonGiaNhap':
-                    value = changeProduct.DonGiaVon ?? 0;
+                    value = dataSelected?.DonGiaNhap ?? 0;
                     break;
                 case 'SoLuongNhap':
-                    value = 1;
+                    value = dataSelected?.SoLuongNhap ?? 0;
                     break;
                 case 'ChietKhau':
-                    value = 0;
+                    value = dataSelected?.ChietKhau ?? 0;
                     break;
                 case 'ThanhTien':
-                    value = changeProduct.DonGiaVon ?? 0;
+                    value = dataSelected?.ThanhTien ?? 0;
                     disable = true;
                     break;
                 default:
@@ -159,28 +160,28 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
 
     const onBlurEditor = (e: React.FocusEvent<HTMLInputElement>, options: ColumnEditorOptions) => {
         const { field, rowIndex } = options;
-        const _updatedRow = selectedRow as ImportDetails || {};
-        // console.log(_updatedRow);
+        const { dataSelected } = selectedRow as selectedRowType || {};
+        const value = (e.target?.value).replace(/,/g, '');
         switch (field) {
             case 'DonGiaNhap':
-                _updatedRow.DonGiaNhap = parseInt(e.target?.value) ?? 0;
+                dataSelected.DonGiaNhap = parseInt(value) ?? 0;
                 break;
             case 'SoLuongNhap':
-                _updatedRow.SoLuongNhap = parseInt(e.target?.value) ?? 0;
+                dataSelected.SoLuongNhap = parseInt(value) ?? 0;
                 break;
             case 'ChietKhau':
-                _updatedRow.ChietKhau = parseInt(e.target?.value) ?? 0;
+                dataSelected.ChietKhau = parseInt(value) ?? 0;
                 break;
             default:
                 break;
         }
-        const donGiaNhap = _updatedRow.DonGiaNhap || 0;
-        const soLuongNhap = _updatedRow.SoLuongNhap || 0;
-        const chietKhau = _updatedRow.ChietKhau || 0;
+        const donGiaNhap = dataSelected.DonGiaNhap || 0;
+        const soLuongNhap = dataSelected.SoLuongNhap || 0;
+        const chietKhau = dataSelected.ChietKhau || 0;
         const thanhTien = donGiaNhap * soLuongNhap * (1 - chietKhau / 100);
 
-        _updatedRow.ThanhTien = thanhTien;
-        setSelectedRow({ index: rowIndex, dataSelected: _updatedRow });
+        dataSelected.ThanhTien = thanhTien;
+        setSelectedRow({ index: rowIndex, dataSelected: dataSelected });
     };
 
     const AddNewRow = (e: any) => {
@@ -215,10 +216,10 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
                     options.editorCallback!(e.value);
                     const idMonChosse = e.value as number;
                     const choseProduct = products.find((x) => x.IDMon === idMonChosse) as Product;
-                    setChangeProduct(choseProduct);
-
                     let _updatedRow: ImportDetails = emptyImportDetails;
 
+                    _updatedRow.IDPhieuNhap = idImport;
+                    _updatedRow.IDChiTietPhieuNhap = rowData.IDChiTietPhieuNhap;
                     _updatedRow.IDMon = choseProduct.IDMon;
                     _updatedRow.DonGiaNhap = choseProduct.DonGiaVon;
                     _updatedRow.SoLuongNhap = 1;
@@ -245,7 +246,6 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
                     onRowEditComplete={onRowEditComplete}
                     onRowEditCancel={() => {
                         setSelectedRow(undefined)
-                        setChangeProduct(undefined)
                     }}
                     onRowEditInit={onRowEditInit}
                     tableStyle={{ minWidth: '70rem' }}>
