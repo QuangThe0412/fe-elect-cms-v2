@@ -156,7 +156,7 @@ export default
                         )}
                     </LabelField>
 
-                    <LabelField label="Từ ngày" name="fromDate">
+                    {/* <LabelField label="Từ ngày" name="fromDate">
                         <Calendar id="fromDate" dateFormat="dd/mm/yy" mask="99/99/9999" showIcon
                             showButtonBar
                             value={idDiscount && fromDate || ''}
@@ -173,7 +173,7 @@ export default
                             minDate={fromDate || new Date('01/01/1970')}
                             onSelect={(e) => { setToDate(e.value as Date) }}
                             style={{ width: '100%' }} />
-                    </LabelField>
+                    </LabelField> */}
 
                     <Button loading={loading} type='submit' label={idDiscount ? 'Cập nhật' : 'Tạo mới'} className="w-6" style={{ float: 'right' }} />
                 </Form>
