@@ -50,7 +50,6 @@ export default
     const getImport = () => {
         setLoading(true);
         HandleApi(ImportService.getImport(idImport), null).then((res) => {
-            console.log(res);
             if (res && res.status === 200) {
                 let data = res.data as Import;
                 form.setFieldsValue({

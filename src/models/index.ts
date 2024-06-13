@@ -17,6 +17,11 @@ interface FileUploadState {
   files: File[];
 }
 
+type selectedRowType = {
+  index: number,
+  dataSelected: any,
+}
+
 export type {
   FileUploadState,
   Product,
@@ -34,4 +39,5 @@ export type {
   DebtDetail,
   Import,
   ImportDetails,
+  selectedRowType,
 };

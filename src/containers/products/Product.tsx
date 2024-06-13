@@ -205,7 +205,7 @@ export default function Products() {
         onClose={() => {
           setDialogVisible(false)
         }}
-        idProduct={selectedProduct.IDMon}
+        idProduct={selectedProduct?.IDMon}
         onProductChange={() => {
           setProductChange(!productChange)
         }} // refresh data

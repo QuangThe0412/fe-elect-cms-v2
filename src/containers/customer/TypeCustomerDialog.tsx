@@ -30,7 +30,9 @@ export default function TypeCustomerDialog({ visible, onClose, onTypeCustomerCha
     const toast = useRef<Toast>(null);
 
     useEffect(() => {
-        getTypesTypeCustomer();
+        if(visible){
+            getTypesTypeCustomer();
+        }
     }, [visible, onChangeTypeCustomer]);
 
     const HandClose = () => {

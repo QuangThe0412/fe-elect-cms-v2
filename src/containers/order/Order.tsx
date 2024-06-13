@@ -16,19 +16,23 @@ import { Button } from 'primereact/button';
 import { STATUS_ENUM } from '@/constants';
 import { IsPendingStatus, bodyDate } from '@/utils/common';
 
+interface OrderType extends Order {
+  TenKhachHang?: string;
+}
+
 export default function Orders() {
-  const [categories, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<OrderType[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order>();
   const [orderChange, setOrderChange] = useState<boolean>(false);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
   const [filters, setFilters] = useState<DataTableFilterMeta>({
-    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    IDHoaDon: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    IDBaoGia: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    IDKhachHang: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    TrangThai: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    global: { value: '', matchMode: FilterMatchMode.CONTAINS },
+    IDHoaDon: { value: '', matchMode: FilterMatchMode.CONTAINS },
+    IDBaoGia: { value: '', matchMode: FilterMatchMode.CONTAINS },
+    IDKhachHang: { value: '', matchMode: FilterMatchMode.CONTAINS },
+    TrangThai: { value: '', matchMode: FilterMatchMode.CONTAINS },
   });
 
   const [dialogVisible, setDialogVisible] = useState<boolean>(false);
@@ -52,6 +56,13 @@ export default function Orders() {
       setCustomers(customerRes);
 
       const ordersRes = await getOrders();
+      const _ordersRes = ordersRes as OrderType[];
+      _ordersRes.forEach((x) => {
+        const customer = customerRes.find((y) => y.IDKhachHang === x.IDKhachHang);
+        if (customer) {
+          x.TenKhachHang = customer.TenKhachHang as string;
+        }
+      });
       setOrders(ordersRes);
     };
 
@@ -129,11 +140,6 @@ export default function Orders() {
     setGlobalFilterValue(value);
   };
 
-  const bodyKhachHang = (data: Order) => {
-    let customer = customers.find((x) => x.IDKhachHang === data.IDKhachHang);
-    return customer?.TenKhachHang;
-  };
-
   const renderHeader = () => {
     return (
       <div className="flex flex-wrap gap-2 justify-content-between align-items-center">
@@ -149,7 +155,7 @@ export default function Orders() {
     <div className="card">
       <Toast ref={toast} />
       <ContextMenu model={menuModel} ref={cm} />
-      <DataTable value={categories}
+      <DataTable value={orders}
         header={renderHeader()}
         rowClassName={rowClassName}
         onContextMenu={(e) => cm.current?.show(e.originalEvent)}
@@ -167,12 +173,14 @@ export default function Orders() {
           "IDHoaDon",
           "IDBaoGia",
           "IDKhachHang",
+          "TenKhachHang",
           "TrangThai",
         ]} emptyMessage="Không có dữ liệu"
       >
         <Column field="IDHoaDon" header="Id" ></Column>
         <Column field="IDBaoGia" header="Id báo giá"></Column>
-        <Column field="IDKhachHang" header="Id khách hàng" body={bodyKhachHang}></Column>
+        <Column field="IDKhachHang" header="IDKhachHang" hidden></Column>
+        <Column field="TenKhachHang" header="Tên khách hàng" ></Column>
         <Column field="TrangThai" header="Trạng thái" body={bodyStatus} ></Column>
         <Column field="createDate" header="Ngày lập" body={bodyDate as (data: any, options: any) => React.ReactNode}></Column>
         <Column field="CongNo" header="Công nợ"></Column>

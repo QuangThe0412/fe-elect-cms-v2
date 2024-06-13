@@ -67,8 +67,8 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
     });
 
     useEffect(() => {
-        getCategories();
         if (visible && idProduct > 0) {
+            getCategories();
             getProduct();
         }
     }, [visible]);

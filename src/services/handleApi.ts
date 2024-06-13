@@ -9,7 +9,7 @@ import { paths } from '@/constants/api';
 export const HandleApi = async (request: Promise<any>, toast: React.RefObject<Toast> | null) => {
     try {
         return HandleResponse(await request, toast);
-        } catch (error: any) {
+    } catch (error: any) {
         console.error(error);
         return HandleResponse(error?.response, toast);
     }
@@ -51,11 +51,13 @@ const HandleResponse = (response: Response | any, toast: React.RefObject<Toast> 
     let code = response?.data?.code;
     let mess = response?.data?.mess || "Có lỗi xảy ra";
     let url = response?.config?.url;
+    let timeLife = 10000;
     let summaryTitle = 'Thất bại';
     let severityType: "success" | "info" | "warn" | "error";
     switch (status) {
         case 200: // success
         case 201: // created
+            timeLife = 3000;
             severityType = 'success';
             summaryTitle = 'Thành công';
             break;
@@ -84,7 +86,7 @@ const HandleResponse = (response: Response | any, toast: React.RefObject<Toast> 
             mess = "ERR_NETWORK";
             break;
     };
-    toast?.current?.show({ severity: severityType, summary: summaryTitle, detail: mess, life: 3000 });
+    toast?.current?.show({ severity: severityType, summary: summaryTitle, detail: mess, life: timeLife });
     return {
         data: data,
         status: status,

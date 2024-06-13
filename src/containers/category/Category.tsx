@@ -155,7 +155,7 @@ export default function Categories() {
         onClose={() => {
           setDialogVisible(false)
         }}
-        idCategory={selectedCategory.IDLoaiMon}
+        idCategory={selectedCategory?.IDLoaiMon}
         onCategoryChange={() => {
           setCategoryChange(!categoryChange)
         }} // refresh data

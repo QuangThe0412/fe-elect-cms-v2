@@ -4,16 +4,17 @@ import { InputText } from 'primereact/inputtext';
 import { Toast } from 'primereact/toast';
 import { OrderDetailsService } from '@/services/orderDetails.service';
 import { OrderService } from '@/services/order.service';
-import { OrderDetail, Product } from '@/models';
+import { OrderDetail, Product, selectedRowType } from '@/models';
 import { HandleApi } from '@/services/handleApi';
 import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
-import { DataTable, DataTableFilterMeta, DataTableRowEditCompleteEvent } from 'primereact/datatable';
+import { DataTable, DataTableFilterMeta, DataTableRowEditCompleteEvent, DataTableRowEditEvent } from 'primereact/datatable';
 import { Column, ColumnEditorOptions } from 'primereact/column';
 import { ProductService } from '@/services/products.service';
 import { Button } from 'primereact/button';
 import { formatCurrency, formatNumber } from '@/utils/common';
 import { FilterMatchMode } from 'primereact/api';
 import OrderPrintComponent from './OrderPrint';
+import { InputNumber, InputNumberValueChangeEvent } from 'primereact/inputnumber';
 
 type PropType = {
     idOrder: number,
@@ -22,39 +23,62 @@ type PropType = {
     onClose: () => void,
 };
 
+interface TypeOrderDetail extends OrderDetail {
+    TenMon?: string;
+}
+
+const emptyDetails: OrderDetail = {
+    IDChiTietHD: 0,
+    IDHoaDon: 0,
+    IDMon: 0,
+    SoLuong: 0,
+    DonGia: 0,
+    ChietKhau: 0,
+    TienChuaCK: 0,
+    TienCK: 0,
+    TienSauCK: 0,
+};
+
 export default
     function OrderDialog({ visible, onClose, idOrder, isPending }: PropType) {
     const toast = useRef<Toast>(null);
     const [loading, setLoading] = useState<boolean>(false);
-    const [orderDetails, setOrderDetails] = useState<OrderDetail[]>([]);
+    const [details, setDetails] = useState<TypeOrderDetail[]>([]);
+    const [onChangetDetails, setOnChangeDetails] = useState<boolean>(false);
+    const [selectedRow, setSelectedRow] = useState<selectedRowType>();
     const [products, setProducts] = useState<Product[]>([]);
-    const [changeDetailOrder, setChangeDetailOrder] = useState<boolean>(false);
     const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
     const [filters, setFilters] = useState<DataTableFilterMeta>({
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
         IDMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        TenMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
     });
 
     useEffect(() => {
         const fetchData = async () => {
-            const productRes: Product[] = await getProducts();
-            let _products = productRes.filter((x) => !x.Deleted);
-            setProducts(_products);
+            if (visible && idOrder) {
+                const productRes: Product[] = await getProducts();
+                let _products = productRes.filter((x) => !x.Deleted);
+                setProducts(_products);
 
-            if (visible && idOrder > 0) {
-                getOrderDetails().then((res) => {
-                    let _orderDetails = res.filter((x) => !x.Deleted);
-                    setOrderDetails(_orderDetails);
+                const resOrders = await getOrderDetails();
+                let _details = resOrders.filter((x) => !x.Deleted);
+                const detailsData = _details.map((x) => {
+                    return {
+                        ...x,
+                        TenMon: productRes.find((y) => y.IDMon === x.IDMon)?.TenMon
+                    }
                 });
-            }
+                setDetails(detailsData);
+            };
         };
 
         fetchData();
-    }, [visible, changeDetailOrder]);
+    }, [visible, onChangetDetails]);
 
     const HandClose = () => {
         onClose();
-
+        setSelectedRow(undefined);
     };
 
     const getOrderDetails = async () => {
@@ -76,48 +100,89 @@ export default
         return result;
     };
 
-    const textEditor = (options: ColumnEditorOptions) => {
-        const { value } = options;
-        return <InputText type='number' value={value || 0}
-            onBlur={(e: React.FocusEvent<HTMLInputElement>) => { onBlurEditor(e, options); }}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => { options.editorCallback!(e.target.value); }
-            } />;
+    const numberEditor = (options: ColumnEditorOptions) => {
+        let { field, value } = options;
+        let disable = false;
+        if (selectedRow) {
+            const { dataSelected } = selectedRow;
+            switch (field) {
+                case 'SoLuong':
+                    value = dataSelected?.SoLuong ?? 0;
+                    break;
+                case 'DonGia':
+                    value = dataSelected?.DonGia ?? 0;
+                    disable = true;
+                    break;
+                case 'TienChuaCK':
+                    value = dataSelected?.TienChuaCK ?? 0;
+                    disable = true;
+                    break;
+                case 'ChietKhau':
+                    value = dataSelected?.ChietKhau ?? 0;
+                    break;
+                case 'TienCK':
+                    value = dataSelected?.TienCK ?? 0;
+                    disable = true;
+                    break;
+                case 'TienSauCK':
+                    value = dataSelected?.TienSauCK ?? 0;
+                    disable = true;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return <InputNumber value={value} disabled={disable}
+            onBlur={(e: React.FocusEvent<HTMLInputElement>) => onBlurEditor(e, options)}
+            onValueChange={(e: InputNumberValueChangeEvent) => options.editorCallback!(e.value)} />;
     };
 
     const onBlurEditor = (e: React.FocusEvent<HTMLInputElement>, options: ColumnEditorOptions) => {
-        const { rowIndex, field } = options;
-        const updatedData = [...orderDetails];
-        const _updatedRow = orderDetails[rowIndex];
+        const { field, rowIndex } = options;
+        const { dataSelected } = selectedRow as selectedRowType || {};
+        const value = (e.target?.value).replace(/,/g, '');
         switch (field) {
             case 'SoLuong':
-                _updatedRow.SoLuong = parseInt(e.target.value);
+                dataSelected.SoLuong = parseInt(value) ?? 0;
                 break;
             case 'ChietKhau':
-                _updatedRow.ChietKhau = parseInt(e.target.value);
+                dataSelected.ChietKhau = parseInt(value) ?? 0;
                 break;
             default:
                 break;
         }
-        const DonGiaBanLe = (_updatedRow.DonGia ?? 0);
-        const TienChuaCK = (_updatedRow.SoLuong ?? 0) * DonGiaBanLe;
-        const TienCK = (_updatedRow.ChietKhau ?? 0) * TienChuaCK / 100;
-        const TienSauCK = TienChuaCK - TienCK;
-        _updatedRow.TienChuaCK = TienChuaCK;
-        _updatedRow.TienCK = TienCK;
-        _updatedRow.TienSauCK = TienSauCK;
-        _updatedRow.DonGia = DonGiaBanLe;
 
-        updatedData[rowIndex] = _updatedRow;
-        setOrderDetails(updatedData);
+        const DonGiaBanLe = (dataSelected.DonGia ?? 0);
+        const TienChuaCK = (dataSelected.SoLuong ?? 0) * DonGiaBanLe;
+        const TienCK = (dataSelected.ChietKhau ?? 0) * TienChuaCK / 100;
+        const TienSauCK = TienChuaCK - TienCK;
+        dataSelected.TienChuaCK = TienChuaCK;
+        dataSelected.TienCK = TienCK;
+        dataSelected.TienSauCK = TienSauCK;
+        dataSelected.DonGia = DonGiaBanLe;
+
+        setSelectedRow({ index: rowIndex, dataSelected: dataSelected });
     };
 
     const onRowEditComplete = (e: DataTableRowEditCompleteEvent) => {
-        setLoading(true);
-        let _orderDetails = [...orderDetails];
-        let { index } = e;
+        const { dataSelected } = selectedRow as selectedRowType;
+        const IDChiTietHD = dataSelected?.IDChiTietHD ?? 0;
 
-        let targetUpdate = _orderDetails[index];
-        const { IDChiTietHD, IDMon, SoLuong, ChietKhau } = targetUpdate;
+        const { IDMon, SoLuong, DonGia, ChietKhau, TienChuaCK, TienCK, TienSauCK } = dataSelected;
+
+        let details: OrderDetail = {
+            IDChiTietHD: IDChiTietHD,
+            IDHoaDon: idOrder,
+            IDMon: IDMon,
+            SoLuong: SoLuong,
+            DonGia: DonGia,
+            ChietKhau: ChietKhau,
+            TienChuaCK: TienChuaCK,
+            TienCK: TienCK,
+            TienSauCK: TienSauCK,
+        };
+
         if (!IDMon) {
             toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Chưa chọn món' });
             return;
@@ -134,18 +199,25 @@ export default
             return;
         }
 
+        setLoading(true);
         if (IDChiTietHD) {//update
-            HandleApi(OrderDetailsService.updateOrderDetail(targetUpdate.IDChiTietHD, _orderDetails[index]), toast).then((res) => {
+            HandleApi(OrderDetailsService.updateOrderDetail(IDChiTietHD, details), toast).then((res) => {
                 if (res.status === 200) {
-                    setChangeDetailOrder(!changeDetailOrder);
+                    setOnChangeDetails(!onChangetDetails);
                 }
-            }).finally(() => { setLoading(false); });
+            }).finally(() => {
+                setSelectedRow(undefined);
+                setLoading(false);
+            });
         } else {
-            HandleApi(OrderDetailsService.createOrderDetail(targetUpdate), toast).then((res) => {
+            HandleApi(OrderDetailsService.createOrderDetail(details), toast).then((res) => {
                 if (res.status === 201) {
-                    setChangeDetailOrder(!changeDetailOrder);
+                    setOnChangeDetails(!onChangetDetails);
                 }
-            }).finally(() => { setLoading(false); });
+            }).finally(() => {
+                setSelectedRow(undefined);
+                setLoading(false);
+            });
         }
     };
 
@@ -162,7 +234,7 @@ export default
                     options.editorCallback!(e.value);
                     const idMonChose = e.value as number;
                     const choseProduct = products.find((x) => x.IDMon === idMonChose) as Product;
-                    const updatedData = [...orderDetails] as OrderDetail[];
+                    const updatedData = [...details] as OrderDetail[];
                     const _updatedRow = updatedData[rowIndex] as OrderDetail;
 
                     const DonGiaBanLe = (choseProduct.DonGiaBanLe ?? 0);
@@ -177,28 +249,30 @@ export default
                     _updatedRow.TienChuaCK = TienChuaCK;
                     _updatedRow.TienSauCK = TienSauCK;
 
-                    updatedData[rowIndex] = _updatedRow;
-                    setOrderDetails(updatedData);
+                    setSelectedRow({ index: rowIndex, dataSelected: _updatedRow });
                 }}
             />
         );
     };
 
     const bodyTemplateButtonDeleted = (rowData: OrderDetail) => {
-        return <Button icon='pi pi-trash' onClick={() => deleteRow(rowData?.IDChiTietHD)} />
+        return <Button icon='pi pi-trash' onClick={deleteRow(rowData.IDChiTietHD)} />
     };
 
-    const deleteRow = (IDChiTietHD: number) => {
-        if (!IDChiTietHD) {
-            let _orderDetails = [...orderDetails];
-            _orderDetails.pop();
-            setOrderDetails(_orderDetails);
-        } else {
+    const deleteRow = (id: number | undefined) => {
+        if (!id) {
+            return () => {
+                let _data = [...details];
+                _data.pop();
+                setDetails(_data);
+            }
+        }
+
+        return () => {
             setLoading(true);
-            HandleApi(OrderDetailsService.toggleActiveOrderDetail(IDChiTietHD), toast).then((res) => {
-                console.log(res);
+            HandleApi(OrderDetailsService.deleteOrderDetail(id), toast).then((res) => {
                 if (res.status === 200) {
-                    setChangeDetailOrder(!changeDetailOrder);
+                    setOnChangeDetails(!onChangetDetails);
                 }
             }).finally(() => { setLoading(false); });
         }
@@ -217,27 +291,18 @@ export default
             <div className="flex flex-wrap gap-2 justify-content-between align-items-center">
                 <span className="p-input-icon-left">
                     <i className="pi pi-search" />
-                    <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Nhập IDMon" />
+                    <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Tìm kiếm" />
                 </span>
-                <h3 style={{ fontWeight: 'bold' }}>Tổng : {formatCurrency(orderDetails.reduce((total, item) => total + (item.TienSauCK ?? 0), 0))}</h3>
+                <h3 style={{ fontWeight: 'bold' }}>Tổng : {formatCurrency(details.reduce((total, item) => total + (item.TienSauCK ?? 0), 0))}</h3>
             </div>
         );
     };
 
     const AddNewRow = (e: any) => {
-        let _orderDetails = [...orderDetails];
-        _orderDetails.push({
-            IDChiTietHD: 0,
-            IDHoaDon: idOrder,
-            IDMon: 0,
-            SoLuong: 1,
-            DonGia: 0,
-            TienChuaCK: 0,
-            ChietKhau: 0,
-            TienCK: 0,
-            TienSauCK: 0,
-        });
-        setOrderDetails(_orderDetails);
+        let _details = [...details];
+        emptyDetails.SoLuong = 1;
+        _details.push(emptyDetails);
+        setDetails(_details);
     };
 
     ///print
@@ -272,7 +337,7 @@ export default
                 className="p-button p-component p-button-success ml-3"
                 onClick={AddNewRow} />}
 
-            {orderDetails.length > 0 && < Button label="In" icon="pi pi-fw pi-print"
+            {details.length > 0 && < Button label="In" icon="pi pi-fw pi-print"
                 className="p-button p-component p-button-primary ml-3"
                 onClick={handlePrint}
             />
@@ -281,12 +346,17 @@ export default
     );
 
     const rowClassName = (data: OrderDetail) => (!data.IDChiTietHD ? 'bg-danger' : '');
-    
+
+    const onRowEditInit = (options: DataTableRowEditEvent) => {
+        const { data, index } = options;
+        setSelectedRow({ index: index, dataSelected: data })
+    };
+
     return (
         <>
             <Toast ref={toast}></Toast>
             <OrderPrintComponent id='divcontents'
-                dataOrderDetails={orderDetails}
+                dataOrderDetails={details}
                 dataProducts={products}
             />
             <iframe id="ifmcontentstoprint"
@@ -295,29 +365,36 @@ export default
 
             <Dialog visible={visible} style={{ width: '95vw' }} header={headerElement}
                 onHide={() => { if (!visible) return; HandClose(); }} >
-                <DataTable value={orderDetails} editMode="row" loading={loading}
+                <DataTable value={details} editMode="row" loading={loading}
                     rowClassName={rowClassName}
+                    onRowEditComplete={onRowEditComplete}
+                    onRowEditCancel={() => { setSelectedRow(undefined) }}
+                    onRowEditInit={onRowEditInit}
                     filters={filters} header={renderHeader()}
-                    globalFilterFields={["IDMon"]} emptyMessage="Không có dữ liệu"
-                    paginator rows={10} rowsPerPageOptions={[5, 10, 25, 50]}
-                    onRowEditComplete={onRowEditComplete} tableStyle={{ minWidth: '50rem' }}>
+                    globalFilterFields={["IDMon", "TenMon"]} emptyMessage="Không có dữ liệu"
+                    paginator rows={10} rowsPerPageOptions={[5, 10, 25, 50]} tableStyle={{ minWidth: '50rem' }}>
                     <Column field="IDChiTietHD" header="Id" style={{ width: '10%' }}></Column>
                     <Column field="IDHoaDon" header="IDHoaDon" style={{ width: '5%' }}></Column>
+                    <Column field="TenMon" header="TenMon" hidden style={{ width: '5%' }}></Column>
                     <Column field="IDMon" body={bodyChonMon} header="Món"
                         editor={(options) => productEditor(options)} style={{ width: '20%', whiteSpace: 'wrap' }}></Column>
                     <Column field="SoLuong" header="Số lượng" sortable
                         body={(rowData: OrderDetail) => <>{formatNumber(rowData.SoLuong)}</>}
-                        editor={(options) => textEditor(options)} style={{ width: '5%' }}></Column>
+                        editor={(options) => numberEditor(options)} style={{ width: '5%' }}></Column>
                     <Column field="DonGia" header="Giá lẻ" style={{ width: '5%' }} sortable
-                        body={(rowData: OrderDetail) => <>{formatCurrency(rowData.DonGia)}</>}></Column>
+                        body={(rowData: OrderDetail) => <>{formatCurrency(rowData.DonGia)}</>}
+                        editor={(options) => numberEditor(options)}></Column>
                     <Column field="TienChuaCK" header="Tiền chưa CK" style={{ width: '10%' }} sortable
-                        body={(rowData: OrderDetail) => <>{formatCurrency(rowData.TienChuaCK)}</>} ></Column>
+                        body={(rowData: OrderDetail) => <>{formatCurrency(rowData.TienChuaCK)}</>}
+                        editor={(options) => numberEditor(options)}></Column>
                     <Column field="ChietKhau" header="Chiết khấu" sortable
-                        editor={(options) => textEditor(options)} style={{ width: '10%' }}></Column>
+                        editor={(options) => numberEditor(options)} style={{ width: '5%' }}></Column>
                     <Column field="TienCK" header="Tiền CK" style={{ width: '10%' }} sortable
-                        body={(rowData: OrderDetail) => <>{formatCurrency(rowData.TienCK)}</>}></Column>
+                        body={(rowData: OrderDetail) => <>{formatCurrency(rowData.TienCK)}</>}
+                        editor={(options) => numberEditor(options)}></Column>
                     <Column field="TienSauCK" header="Tiền đã CK" style={{ width: '10%' }} sortable
-                        body={(rowData: OrderDetail) => <>{formatCurrency(rowData.TienSauCK)}</>}></Column>
+                        body={(rowData: OrderDetail) => <>{formatCurrency(rowData.TienSauCK)}</>}
+                        editor={(options) => numberEditor(options)}></Column>
                     <Column hidden={!isPending} rowEditor headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
                     <Column hidden={!isPending} body={bodyTemplateButtonDeleted} headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
                 </DataTable>

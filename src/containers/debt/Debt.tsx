@@ -215,7 +215,7 @@ export default function DebtComponent() {
         onClose={() => {
           setDialogVisible(false)
         }}
-        idDebt={selectedDebt.Id}
+        idDebt={selectedDebt?.Id}
         onDebtChange={() => {
           setdebtChange(!debtChange)
         }} // refresh data
@@ -225,7 +225,7 @@ export default function DebtComponent() {
         onClose={() => {
           setDialogDtailsVisible(false)
         }}
-        idDebt={selectedDebt.Id}
+        idDebt={selectedDebt?.Id}
         onDebtChange={() => {
           setdebtChange(!debtChange)
         }} // refresh data

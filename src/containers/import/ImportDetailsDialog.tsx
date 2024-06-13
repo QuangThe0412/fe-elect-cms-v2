@@ -5,7 +5,7 @@ import { Dialog } from 'primereact/dialog';
 import { HandleApi } from "@/services/handleApi";
 import { ImportService } from "@/services/import.service";
 import { ImportDetailsService } from "@/services/importDetails.service";
-import { ImportDetails, Product } from "@/models";
+import { ImportDetails, Product, selectedRowType } from "@/models";
 import { DataTable, DataTableRowEditCompleteEvent, DataTableRowEditEvent, DataTableValue } from "primereact/datatable";
 import { Column, ColumnEditorOptions } from "primereact/column";
 import { InputText } from "primereact/inputtext";
@@ -23,7 +23,7 @@ type PropType = {
     onImportChange: () => void,
 };
 
-const emptyImportDetails: ImportDetails = {
+const emptyDetails: ImportDetails = {
     IDChiTietPhieuNhap: 0,
     IDPhieuNhap: 0,
     IDMon: 0,
@@ -38,31 +38,26 @@ const emptyImportDetails: ImportDetails = {
     Deleted: false,
 };
 
-type selectedRowType = {
-    index: number,
-    dataSelected: ImportDetails,
-}
-
 export default function ImportDetailsDialog({ visible, onClose, onImportChange, idImport }: PropType) {
-    const [importDetails, setImportDetails] = useState<ImportDetails[]>([]);
-    const [onChangeImportDetails, setOnChangeImportDetails] = useState<boolean>(false);
+    const [details, setDetails] = useState<ImportDetails[]>([]);
+    const [onChangetDetails, setOnChangeDetails] = useState<boolean>(false);
+    const [selectedRow, setSelectedRow] = useState<selectedRowType>();
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
-    const [selectedRow, setSelectedRow] = useState<selectedRowType>();
     const toast = useRef<Toast>(null);
 
     useEffect(() => {
         const fetchData = async () => {
-            const resPro = await getProduct();
-            setProducts(resPro);
+            if (visible && idImport) {
+                const resPro = await getProduct();
+                setProducts(resPro);
 
-            if (idImport) {
                 getImportDetails();
             }
         };
 
         fetchData();
-    }, [visible, onChangeImportDetails]);
+    }, [visible, onChangetDetails]);
 
     const HandClose = () => {
         onClose();
@@ -85,7 +80,9 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
         setLoading(true);
         HandleApi(ImportService.getAllImportDetailsById(idImport), null).then((res) => {
             if (res && res.status === 200) {
-                setImportDetails(res.data);
+                const data = res.data as ImportDetails[];
+                const _data = data.filter((x) => !x.Deleted);
+                setDetails(_data);
             }
         }).finally(() => { setLoading(false); });
     };
@@ -94,9 +91,8 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
         setLoading(true);
         const { dataSelected } = selectedRow as selectedRowType;
         const IDChiTietPhieuNhap = dataSelected?.IDChiTietPhieuNhap ?? 0;
-        console.log({dataSelected})
 
-        let importDetails: ImportDetails = {
+        let details: ImportDetails = {
             IDChiTietPhieuNhap: dataSelected?.IDChiTietPhieuNhap,
             IDPhieuNhap: idImport,
             IDMon: dataSelected?.IDMon,
@@ -106,23 +102,23 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
             ThanhTien: dataSelected?.ThanhTien,
         };
 
-        if (IDChiTietPhieuNhap > 0) { // update
-            HandleApi(ImportDetailsService.updateImportDetail(IDChiTietPhieuNhap, importDetails), toast).then((res) => {
+        if (IDChiTietPhieuNhap) { // update
+            HandleApi(ImportDetailsService.updateImportDetail(IDChiTietPhieuNhap, details), toast).then((res) => {
                 if (res && res.status === 200) {
-                    setOnChangeImportDetails(!onChangeImportDetails);
+                    setOnChangeDetails(!onChangetDetails);
                 }
             }).finally(() => {
-                setSelectedRow(undefined)
+                setSelectedRow(undefined);
                 setLoading(false);
                 onImportChange();
             });
         } else { // create
-            HandleApi(ImportDetailsService.createImportDetail(importDetails), toast).then((res) => {
+            HandleApi(ImportDetailsService.createImportDetail(details), toast).then((res) => {
                 if (res && res.status === 201) {
-                    setOnChangeImportDetails(!onChangeImportDetails);
+                    setOnChangeDetails(!onChangetDetails);
                 }
             }).finally(() => {
-                setSelectedRow(undefined)
+                setSelectedRow(undefined);
                 setLoading(false);
                 onImportChange();
             });
@@ -186,9 +182,9 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
 
     const AddNewRow = (e: any) => {
         e.target.disable = true;
-        let _importDetailss = [...importDetails];
-        _importDetailss.push(emptyImportDetails);
-        setImportDetails(_importDetailss);
+        let _detailss = [...details];
+        _detailss.push(emptyDetails);
+        setDetails(_detailss);
     };
 
     const headerElement = (
@@ -207,6 +203,8 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
         return products.find((x) => x.IDMon === rowData.IDMon)?.TenMon;
     };
 
+    const rowClassName = (data: ImportDetails) => (!data.IDChiTietPhieuNhap ? 'bg-danger' : '');
+
     const productEditor = (options: ColumnEditorOptions) => {
         const { rowData, rowIndex } = options;
         return (
@@ -216,7 +214,7 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
                     options.editorCallback!(e.value);
                     const idMonChosse = e.value as number;
                     const choseProduct = products.find((x) => x.IDMon === idMonChosse) as Product;
-                    let _updatedRow: ImportDetails = emptyImportDetails;
+                    let _updatedRow: ImportDetails = emptyDetails;
 
                     _updatedRow.IDPhieuNhap = idImport;
                     _updatedRow.IDChiTietPhieuNhap = rowData.IDChiTietPhieuNhap;
@@ -236,17 +234,38 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
         setSelectedRow({ index: index, dataSelected: data })
     };
 
+    const bodyTemplateButtonDeleted = (rowData: ImportDetails) => {
+        return <Button icon='pi pi-trash' onClick={deleteRow(rowData.IDChiTietPhieuNhap)} />
+    };
+
+    const deleteRow = (id: number | undefined) => {
+        if (!id) {
+            return () => {
+                let _data = [...details];
+                _data.pop();
+                setDetails(_data);
+            };
+        }
+        return () => {
+            setLoading(true);
+            HandleApi(ImportDetailsService.deleteImportDetail(id), toast).then((res) => {
+                if (res.status === 200) {
+                    setOnChangeDetails(!onChangetDetails);
+                }
+            }).finally(() => { setLoading(false); });
+        };
+    };
+
     return (
         <div className="card flex justify-content-center">
             <Toast ref={toast} />
             <Dialog visible={visible}
                 modal header={headerElement}
                 onHide={() => { if (!visible) return; HandClose() }}>
-                <DataTable value={importDetails} editMode="row" dataKey="IDChiTietPhieuNhap" loading={loading}
+                <DataTable value={details} editMode="row" loading={loading}
+                    rowClassName={rowClassName}
                     onRowEditComplete={onRowEditComplete}
-                    onRowEditCancel={() => {
-                        setSelectedRow(undefined)
-                    }}
+                    onRowEditCancel={() => { setSelectedRow(undefined) }}
                     onRowEditInit={onRowEditInit}
                     tableStyle={{ minWidth: '70rem' }}>
                     <Column field="IDChiTietPhieuNhap" header="id" style={{ width: '10%' }}></Column>
@@ -270,6 +289,8 @@ export default function ImportDetailsDialog({ visible, onClose, onImportChange, 
                     <Column rowEditor={(dataRow, rowProps) =>
                         selectedRow ? selectedRow?.index === rowProps.rowIndex : true}
                         headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
+                    <Column body={bodyTemplateButtonDeleted} headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
+
                 </DataTable>
             </Dialog>
         </div>

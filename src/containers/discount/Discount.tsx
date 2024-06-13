@@ -50,12 +50,12 @@ export default function DiscountComponent() {
   const menuModel = [
     { label: 'Thêm', icon: 'pi pi-fw pi-plus-circle', command: () => addDiscount(selectedDiscount as Discount) },
     { label: 'Sửa', icon: 'pi pi-fw pi-pencil', command: () => editDiscount(selectedDiscount as Discount) },
-    { label: 'Chi tiết KM', icon: 'pi pi-fw pi-sitemap', command: () => detailsDiscount(selectedDiscount as Discount) },
     {
       label: !selectedDiscount?.Deleted ? 'Tắt' : 'Bật',
       icon: 'pi pi-fw pi-power-off',
       command: () => toggleActiveDiscount(selectedDiscount as Discount)
-    }
+    },
+    { label: 'Chi tiết Khuyến mãi', icon: 'pi pi-fw pi-sitemap', command: () => detailsDiscount(selectedDiscount as Discount) },
   ];
 
   const [dialogVisible, setDialogVisible] = useState<boolean>(false);
@@ -179,16 +179,16 @@ export default function DiscountComponent() {
         onClose={() => {
           setDialogVisible(false)
         }}
-        idDiscount={selectedDiscount.IDKhuyenMai}
+        idDiscount={selectedDiscount?.IDKhuyenMai}
         onDiscountChange={() => {
           setDiscountChange(!discountChange)
         }} // refresh data
       />
       <DiscountDetailsDialog
-        nameDiscount={selectedDiscount.TenKhuyenMai}
+        nameDiscount={selectedDiscount?.TenKhuyenMai}
         visibleDiscountDetails={dialogDetailsVisible}
         onClose={() => { setDialogDetailsVisible(false) }}
-        idDiscount={selectedDiscount.IDKhuyenMai}
+        idDiscount={selectedDiscount?.IDKhuyenMai}
       />
     </div>
   );

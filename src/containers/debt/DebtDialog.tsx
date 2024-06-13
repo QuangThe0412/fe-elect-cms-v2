@@ -46,11 +46,13 @@ export default
 
     useEffect(() => {
         const fetchData = async () => {
-            let resCustomer = await getCustomers();
-            setCustomers(resCustomer);
+            if (visible && idDebt) {
+                let resCustomer = await getCustomers();
+                setCustomers(resCustomer);
 
-            let resOrder = await getOrders();
-            setBills(resOrder);
+                let resOrder = await getOrders();
+                setBills(resOrder);
+            }
         };
 
         fetchData();

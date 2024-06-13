@@ -11,7 +11,7 @@ export const OrderDetailsService = {
         return axios.put(paths.orderDetails + `/${id}`, updatedOrderDetail);
     },
 
-    toggleActiveOrderDetail(id: number) {
+    deleteOrderDetail(id: number) {
         return axios.delete( paths.orderDetails + `/${id}`);
     },
 }

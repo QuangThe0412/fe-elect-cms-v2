@@ -41,7 +41,7 @@ export default function ImportComponent() {
   const menuModel = [
     { label: 'Thêm', icon: 'pi pi-fw pi-plus-circle', command: () => addImport(selectedImport as Import) },
     { label: 'Sửa', icon: 'pi pi-fw pi-pencil', command: () => editImport(selectedImport as Import) },
-    { label: 'Xóa', icon: 'pi pi-fw pi-times', command: () => deletedImport(selectedImport as Import) },
+    { label: 'Xóa', icon: 'pi pi-fw pi-trash', command: () => deletedImport(selectedImport as Import) },
     {
       label: 'Chi tiết phiếu nhập',
       icon: 'pi pi-fw pi-external-link',
@@ -130,7 +130,7 @@ export default function ImportComponent() {
         onSelectionChange={(e: any) => { setSelectedImport(e.value) }} dataKey="IDPhieuNhap"
         resizableColumns showGridlines columnResizeMode="expand"
         filters={filters}
-        globalFilterFields={["IDLoaiMon", "TenLoai"]} emptyMessage="Không có dữ liệu"
+        globalFilterFields={["IDLoaiMon", "TenLoai","NhaCungCap"]} emptyMessage="Không có dữ liệu"
       >
         <Column field="IDPhieuNhap" header="IDPhieuNhap"></Column>
         <Column field="NhaCungCap" header="Nhà cung cấp" ></Column>
@@ -145,7 +145,7 @@ export default function ImportComponent() {
         onClose={() => {
           setDialogVisible(false)
         }}
-        idImport={selectedImport.IDPhieuNhap ?? 0}
+        idImport={selectedImport?.IDPhieuNhap ?? 0}
         onImportChange={() => {
           setImportChange(!importChange)
         }} // refresh data
@@ -155,7 +155,7 @@ export default function ImportComponent() {
         onClose={() => {
           setDialogDetailsVisible(false)
         }}
-        idImport={selectedImport.IDPhieuNhap ?? 0}
+        idImport={selectedImport?.IDPhieuNhap ?? 0}
         onImportChange={() => {
           setImportChange(!importChange)
         }} // refresh data

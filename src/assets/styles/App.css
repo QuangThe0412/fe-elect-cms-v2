@@ -91,3 +91,24 @@
 .invalid {
   border-color: red !important;
 }
+
+.p-dropdown-label {
+  white-space: normal !important;
+}
+
+.p-datatable .p-datatable-tbody>tr>td {
+  white-space: normal !important;
+}
+
+.p-inputnumber .p-inputtext {
+  max-width: 100px !important;
+}
+
+.p-input-icon-left > i {
+  margin-left: 1.5rem;
+}
+
+.p-input-icon-left > input {
+  padding-left: 3.5rem;
+}
+
