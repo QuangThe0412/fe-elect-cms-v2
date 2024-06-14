@@ -41,8 +41,8 @@ export default
     const [selectedCategoryGroup, setSelectedCategoryGroup] = useState<CategoryGroup>();
 
     useEffect(() => {
-        getCategoryGroup();
         if (visible && idCategory > 0) {
+            getCategoryGroup();
             getCategory();
         }
     }, [visible]);

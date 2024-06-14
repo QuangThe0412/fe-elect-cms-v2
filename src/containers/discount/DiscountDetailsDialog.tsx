@@ -68,7 +68,7 @@ export default function DiscountDetailsDialog({ visibleDiscountDetails, onClose,
 
     useEffect(() => {
         const fetchDetails = async () => {
-            if (products) {
+            if (products.length > 0) {
                 await getDetailsDiscount();
             }
         };
