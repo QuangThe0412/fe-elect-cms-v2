@@ -1,4 +1,5 @@
-export const apiUrl = 'http://localhost:3002/admin';
+import { apiUrlApi } from '@/config';
+export const apiUrl = apiUrlApi
 
 export const paths = {
     //auth
@@ -16,16 +17,16 @@ export const paths = {
     //======
     dashboard: '/thongke',
     user: '/nguoiDung',
-    customer:'/khachHang',
-    customerType:'/loaiKhachHang',
-    discount:'/khuyenMai',
-    discountDetails:'/chiTietKhuyenMai',
-    order:'/hoadon',
-    orderDetails:'/chiTietHoaDon',
-    debt:'/congNo',
-    debtDetails:'/chiTietCongNo',
-    import:'/phieuNhap',
-    importDetails:'/chiTietPhieuNhap',
-    export:'/phieuXuat',
-    exportDetails:'/chiTietPhieuXuat',
+    customer: '/khachHang',
+    customerType: '/loaiKhachHang',
+    discount: '/khuyenMai',
+    discountDetails: '/chiTietKhuyenMai',
+    order: '/hoadon',
+    orderDetails: '/chiTietHoaDon',
+    debt: '/congNo',
+    debtDetails: '/chiTietCongNo',
+    import: '/phieuNhap',
+    importDetails: '/chiTietPhieuNhap',
+    export: '/phieuXuat',
+    exportDetails: '/chiTietPhieuXuat',
 };
