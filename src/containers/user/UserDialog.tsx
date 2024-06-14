@@ -106,7 +106,7 @@ export default function UserDialog({ visible, onClose, idUser, onUserChange }: P
             cashier: cashier,
             guest: guest,
         };
-        
+
         if (idUser) { // update
             HandleApi(UserService.updateUser(idUser, user), toast).then((res) => {
                 if (res && res.status === 200) {
@@ -139,6 +139,7 @@ export default function UserDialog({ visible, onClose, idUser, onUserChange }: P
     };
 
     const onClickAdmin = (e: any) => {
+        console.log(e);
         setAdmin(e.checked);
     };
 
@@ -209,21 +210,26 @@ export default function UserDialog({ visible, onClose, idUser, onUserChange }: P
 
                     <LabelField label="Roles" name="role">
                         <div className={styles.groupCheckBox}>
-                            <LabelField label="ADMIN" name="admin">
-                                <Checkbox inputId="admin" value={RoleEnum.ADMIN} checked={admin} onClick={onClickAdmin} />
-                            </LabelField>
-                            <LabelField label="SALER" name="saler">
-                                <Checkbox inputId="saler" value={RoleEnum.SALER} checked={saler} onClick={onClickSaler} />
-                            </LabelField>
-                            <LabelField label="INVENTORY" name="inventory">
-                                <Checkbox inputId="inventory" value={RoleEnum.INVENTORY} checked={inventory} onClick={onClickInventory} />
-                            </LabelField>
-                            <LabelField label="CASHIER" name="cashier">
-                                <Checkbox inputId="cashier" value={RoleEnum.CASHIER} checked={cashier} onClick={onClickCashier} />
-                            </LabelField>
-                            <LabelField label="GUEST" name="guest">
-                                <Checkbox inputId="guest" value={RoleEnum.GUEST} checked={guest} disabled onClick={onClickGuest} />
-                            </LabelField>
+                            <div className={styles.wraperItemCheckbox}>
+                                <Checkbox inputId="admin" value={RoleEnum.ADMIN} checked={admin} onChange={onClickAdmin} />
+                                <label htmlFor="admin" className="ml-2">Admin</label>
+                            </div>
+                            <div className={styles.wraperItemCheckbox}>
+                                <Checkbox inputId="saler" value={RoleEnum.SALER} checked={saler} onChange={onClickSaler} />
+                                <label htmlFor="saler" className="ml-2">Saler</label>
+                            </div>
+                            <div className={styles.wraperItemCheckbox}>
+                                <Checkbox inputId="inventory" value={RoleEnum.INVENTORY} checked={inventory} onChange={onClickInventory} />
+                                <label htmlFor="inventory" className="ml-2">Inventory</label>
+                            </div>
+                            <div className={styles.wraperItemCheckbox}>
+                                <Checkbox inputId="cashier" value={RoleEnum.CASHIER} checked={cashier} onChange={onClickCashier} />
+                                <label htmlFor="cashier" className="ml-2">Cashier</label>
+                            </div>
+                            <div className={styles.wraperItemCheckbox}>
+                                <Checkbox inputId="guest" value={RoleEnum.GUEST} checked={guest} disabled onChange={onClickGuest} />
+                                <label htmlFor="guest" className="ml-2">Guest</label>
+                            </div>
                         </div>
                     </LabelField>
                     <Button loading={loading} type='submit' label={idUser ? 'Cập nhật' : 'Tạo mới'} className="w-6" style={{ float: 'right' }} />

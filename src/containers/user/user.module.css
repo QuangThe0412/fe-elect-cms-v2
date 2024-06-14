@@ -10,3 +10,10 @@
     flex: 1 !important;
     margin-right: 6px !important;
 }
+
+.wraperItemCheckbox {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5px;
+}
