@@ -13,6 +13,7 @@ module.exports = function override(config) {
     '@/assets': 'src/assets',
     '@/constants': 'src/constants',
     '@/hooks': 'src/hooks',
+    '@/config': 'src/config',
   })(config);
 
   return config;

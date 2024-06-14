@@ -1,5 +1,5 @@
+import { linkImageGGEndpoint } from '@/config';
 import erroImage from '../assets/images/error.jpg';
-import useAuth from '@/hooks/useAuth';
 import { RouteArray } from '../routes/routes'
 import { STATUS_ENUM } from '@/constants';
 
@@ -104,4 +104,4 @@ export const IsPendingStatus = (status: number) => {
 };
 
 // export const linkImageGG = 'https://drive.google.com/uc?export=view&id=';
-export const linkImageGG = 'https://lh3.google.com/u/0/d/';
+export const linkImageGG = linkImageGGEndpoint;

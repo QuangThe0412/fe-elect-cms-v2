@@ -67,14 +67,6 @@ export default function Products() {
 
   const [dialogVisible, setDialogVisible] = useState<boolean>(false);
 
-  const emptyImage: FileUploadState = {
-    files: [new File([], "")],
-  }
-
-  const [fileImage, setFileImage] = useState<FileUploadState>({
-    files: [],
-  });
-
   useEffect(() => {
     getProducts();
     getCategory();
