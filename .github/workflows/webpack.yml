@@ -51,7 +51,7 @@ jobs:
 
     - name: Start or Restart PM2 Application
       run: |
-        pm2 list  # Hiển thị danh sách các ứng dụng hiện đang được quản lý bởi PM2 (để kiểm tra/debug)
+        pm2 list
         if pm2 describe cms-smart-shop > /dev/null; then
           pm2 restart cms-smart-shop
         else
