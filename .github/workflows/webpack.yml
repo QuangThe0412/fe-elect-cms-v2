@@ -42,5 +42,5 @@ jobs:
         if pm2 describe api-smart-shop > /dev/null; then
           pm2 restart api-smart-shop
         else
-          pm2 start yarn --interpreter bash --name "api-smart-shop" -- build:production
+          pm2 start yarn --interpreter bash --name "api-smart-shop" -- build
         fi
