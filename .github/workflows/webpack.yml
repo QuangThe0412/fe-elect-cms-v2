@@ -39,8 +39,8 @@ jobs:
     - name: Start or Restart PM2 Application
       run: |
         pm2 list  # Hiển thị danh sách các ứng dụng hiện đang được quản lý bởi PM2 (để kiểm tra/debug)
-        if pm2 describe api-smart-shop > /dev/null; then
-          pm2 restart api-smart-shop
+        if pm2 describe cms-smart-shop > /dev/null; then
+          pm2 restart cms-smart-shop
         else
-          pm2 start yarn --interpreter bash --name "api-smart-shop" -- build
+          pm2 start yarn --interpreter bash --name "cms-smart-shop" -- build
         fi
