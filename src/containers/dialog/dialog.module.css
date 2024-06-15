@@ -1,3 +1,7 @@
 .invalid {
     border-color: red !important;
 }
+
+.test {
+    color: red;
+}
