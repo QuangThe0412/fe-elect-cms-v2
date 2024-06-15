@@ -30,7 +30,7 @@
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
-    "serve": "pm2 serve build 3001"
+    "serve": "serve -s build"
   },
   "eslintConfig": {
     "extends": [

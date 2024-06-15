@@ -19,22 +19,6 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
-    
-    - name: Check serve
-      id: serve-check
-      run: |
-        if ! command -v serve &> /dev/null
-        then
-          echo "Serve could not be found"
-          echo "::set-output name=serve::false"
-        else
-          echo "Serve is installed"
-          echo "::set-output name=serve::true"
-        fi
-
-    - name: Install Serve
-      if: steps.serve-check.outputs.serve == 'false'
-      run: npm install -g serve
 
     - name: Check Yarn
       id: yarn-check
@@ -71,5 +55,5 @@ jobs:
         if pm2 describe cms-smart-shop > /dev/null; then
           pm2 restart cms-smart-shop
         else
-          pm2 start yarn --name "cms-smart-shop" -- start
+          pm2 start yarn --name "cms-smart-shop" -- build
         fi
