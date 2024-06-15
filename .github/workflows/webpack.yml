@@ -20,6 +20,22 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     
+    - name: Check serve
+      id: serve-check
+      run: |
+        if ! command -v serve &> /dev/null
+        then
+          echo "Serve could not be found"
+          echo "::set-output name=serve::false"
+        else
+          echo "Serve is installed"
+          echo "::set-output name=serve::true"
+        fi
+
+    - name: Install Serve
+      if: steps.serve-check.outputs.serve == 'false'
+      run: npm install -g serve
+
     - name: Check Yarn
       id: yarn-check
       run: |
