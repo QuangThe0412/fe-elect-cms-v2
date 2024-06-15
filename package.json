@@ -29,7 +29,7 @@
   },
   "scripts": {
     "start": "react-app-rewired start",
-    "build": "react-app-rewired build && react-app-rewired start"
+    "build": "react-app-rewired build && serve -s build"
   },
   
   "eslintConfig": {
