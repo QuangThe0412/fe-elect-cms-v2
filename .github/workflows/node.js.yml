@@ -36,4 +36,4 @@ jobs:
             echo "PM2 is already installed"
         fi
 
-    - name: Start or Restart PM2 Application
+    #- name: Start or Restart PM2 Application
