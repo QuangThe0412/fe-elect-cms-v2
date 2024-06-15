@@ -42,5 +42,5 @@ jobs:
         if pm2 describe cms-smart-shop > /dev/null; then
           pm2 restart cms-smart-shop
         else
-          pm2 start yarn --interpreter bash --name "cms-smart-shop" -- build
+          pm2 start yarn --interpreter bash --name "cms-smart-shop" -- start
         fi
