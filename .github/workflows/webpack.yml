@@ -1,0 +1,59 @@
+name: NodeJS with Webpack
+
+on:
+  push:
+    branches: [ "pro" ]
+    
+jobs:
+  build:
+    runs-on: self-hosted
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+    
+    - name: Check Yarn
+      id: yarn-check
+      run: |
+        if ! command -v yarn &> /dev/null
+        then
+          echo "Yarn could not be found"
+          echo "::set-output name=yarn::false"
+        else
+          echo "Yarn is installed"
+          echo "::set-output name=yarn::true"
+        fi
+
+    - name: Install Yarn
+      if: steps.yarn-check.outputs.yarn == 'false'
+      run: npm install -g yarn
+
+    - name: Install Dependencies
+      run: yarn install
+
+    - name: Check if PM2 is installed
+      run: |
+        if ! command -v pm2 &> /dev/null
+        then
+            echo "PM2 could not be found, installing..."
+            npm install pm2 -g
+        else
+            echo "PM2 is already installed"
+        fi
+
+    - name: Start or Restart PM2 Application
+      run: |
+        pm2 list  # Hiển thị danh sách các ứng dụng hiện đang được quản lý bởi PM2 (để kiểm tra/debug)
+        if pm2 describe cms-smart-shop > /dev/null; then
+          pm2 restart cms-smart-shop
+        else
+          pm2 start npm --name "cms-smart-shop" -- start
+        fi
