@@ -19,21 +19,21 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Check Node.js version
-      run: |
-          if ! command -v node &> /dev/null
-          then
-            echo "Node.js is not installed, installing..."
-            echo "NODE_VERSION=${{ matrix.node-version }}" >> $GITHUB_ENV
-          else
-            echo "Node.js is already installed"
-            CURRENT_VERSION=$(node -v)
-            if [ "$CURRENT_VERSION" != "${{ matrix.node-version }}" ]
-            then
-              echo "Node.js version is not correct, installing..."
-              echo "NODE_VERSION=${{ matrix.node-version }}" >> $GITHUB_ENV
-            fi
-          fi
+    # - name: Check Node.js version
+    #   run: |
+    #       if ! command -v node &> /dev/null
+    #       then
+    #         echo "Node.js is not installed, installing..."
+    #         echo "NODE_VERSION=${{ matrix.node-version }}" >> $GITHUB_ENV
+    #       else
+    #         echo "Node.js is already installed"
+    #         CURRENT_VERSION=$(node -v)
+    #         if [ "$CURRENT_VERSION" != "${{ matrix.node-version }}" ]
+    #         then
+    #           echo "Node.js version is not correct, installing..."
+    #           echo "NODE_VERSION=${{ matrix.node-version }}" >> $GITHUB_ENV
+    #         fi
+    #       fi
     - name: Use Node.js ${{ matrix.node-version }}
       if: matrix.node-version != ''
       uses: actions/setup-node@v3
