@@ -59,5 +59,4 @@ jobs:
 
     - name: Run Pm2
       run: |
-        yarn global add serve
-        pm2 serve -s build --name "cms-smart-shop" -p 3001
+        pm2 serve -s build --name "cms-smart-shop" -- --port 3001
