@@ -59,6 +59,4 @@ jobs:
       timeout-minutes: 10
 
     - name: Run Pm2...
-      run: |
-        yarn global add serve
-        pm2 serve -s build --name "cms-smart-shop" --port 3001
+      run: pm2 serve build --name "cms-smart-shop" --port 3001
