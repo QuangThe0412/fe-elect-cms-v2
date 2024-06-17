@@ -60,4 +60,4 @@ jobs:
 
     - name: Run Pm2...
       run: |
-        pm2 serve -s build --name "cms-smart-shop" -- --port 3001
+        pm2 serve -s build --name "cms-smart-shop" --port 3001
