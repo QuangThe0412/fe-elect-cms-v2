@@ -60,4 +60,5 @@ jobs:
 
     - name: Run Pm2...
       # run: pm2 serve -s build --name "cms-smart-shop" --port 3001
-      run: pm2 yarn --name "cms-smart-shop" start
+      run: PORT=3002 pm2 start yarn --name "cms-smart-shop" --interpreter bash -- start
+
