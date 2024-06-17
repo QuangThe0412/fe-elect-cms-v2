@@ -37,7 +37,10 @@ jobs:
         fi
 
     - name: Yarn build...
-      run: yarn build
+      run: yarn build --verbose
+      timeout-minutes: 30
 
     - name: Run Pm2
-      run: pm2 serve -s build --name "cms-smart-shop" -p 3001
+      run: |
+        yarn global add serve
+        pm2 serve -s build --name "cms-smart-shop" -p 3001
