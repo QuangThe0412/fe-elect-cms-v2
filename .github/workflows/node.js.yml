@@ -24,6 +24,11 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+    - name: Version node
+      run: node -v
+    - name: Version npm
+      run: npm -v
+      
     - run: yarn install --frozen-lockfile
 
     - name: Check if PM2 is installed
