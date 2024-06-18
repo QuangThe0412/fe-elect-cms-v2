@@ -19,27 +19,27 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    # - name: Check Node.js version
-    #   run: |
-    #       if ! command -v node &> /dev/null
-    #       then
-    #         echo "Node.js is not installed, installing..."
-    #         echo "NODE_VERSION=${{ matrix.node-version }}" >> $GITHUB_ENV
-    #       else
-    #         echo "Node.js is already installed"
-    #         CURRENT_VERSION=$(node -v)
-    #         if [ "$CURRENT_VERSION" != "${{ matrix.node-version }}" ]
-    #         then
-    #           echo "Node.js version is not correct, installing..."
-    #           echo "NODE_VERSION=${{ matrix.node-version }}" >> $GITHUB_ENV
-    #         fi
-    #       fi
-    # - name: Use Node.js ${{ matrix.node-version }}
-    #   if: matrix.node-version != ''
-    #   uses: actions/setup-node@v3
-    #   with:
-    #       node-version: ${{ matrix.node-version }}
-    #       cache: 'yarn'
+    - name: Check Node.js version
+      run: |
+          if ! command -v node &> /dev/null
+          then
+            echo "Node.js is not installed, installing..."
+            echo "NODE_VERSION=${{ matrix.node-version }}" >> $GITHUB_ENV
+          else
+            echo "Node.js is already installed"
+            CURRENT_VERSION=$(node -v)
+            if [ "$CURRENT_VERSION" != "${{ matrix.node-version }}" ]
+            then
+              echo "Node.js version is not correct, installing..."
+              echo "NODE_VERSION=${{ matrix.node-version }}" >> $GITHUB_ENV
+            fi
+          fi
+    - name: Use Node.js ${{ matrix.node-version }}
+      if: matrix.node-version != ''
+      uses: actions/setup-node@v3
+      with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
 
     - name: Yarn install...test
       run: yarn install
@@ -54,11 +54,12 @@ jobs:
             echo "PM2 is already installed"
         fi
 
-    # - name: Yarn build...
-    #   run: CI=false yarn build --verbose
-    #   timeout-minutes: 10
+    - name: Yarn build...
+      run: CI=false yarn build --verbose
+      timeout-minutes: 10
 
-    - name: Run Pm2...
-      # run: pm2 serve -s build --name "cms-smart-shop" --port 3001
-      run: PORT=3002 pm2 start yarn --name "cms-smart-shop" --interpreter bash -- start
+    - name: Run Pm2...    
+      run: |
+        pm2 delete "cms-smart-shop" || true
+        pm2 serve build 3001 --spa --name "cms-smart-shop"
 
