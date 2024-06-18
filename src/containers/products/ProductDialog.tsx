@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
@@ -10,7 +10,6 @@ import { HandleApi } from '@/services/handleApi';
 import { LabelField } from '@/components';
 import { classNames } from 'primereact/utils';
 import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
-import { CategoryService } from '@/services/category.service';
 import { convertFormData, linkImageGG, trimString } from '@/utils/common';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { FileUpload } from 'primereact/fileupload';
@@ -20,6 +19,7 @@ type PropType = {
     idProduct: number,
     visible: boolean,
     onClose: () => void,
+    categories: Category[],
     onProductChange: () => void,
 };
 
@@ -50,17 +50,12 @@ const initialForm: typeForm = {
 };
 
 
-export default function ProductDialog({ visible, onClose, idProduct, onProductChange }: PropType) {
+export default function ProductDialog({ visible, onClose, idProduct, onProductChange,categories }: PropType) {
     const [form] = Form.useForm();
     const toast = useRef<Toast>(null);
     const [loading, setLoading] = useState<boolean>(false);
-    const [categories, setCategories] = useState<Category[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<Category>();
     const [objectURL, setObjectURL] = useState<string>('');
-
-    const emptyImage: FileUploadState = {
-        files: [new File([], "")],
-    }
 
     const [fileImage, setFileImage] = useState<FileUploadState>({
         files: [],
@@ -68,7 +63,6 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
 
     useEffect(() => {
         if (visible && idProduct > 0) {
-            getCategories();
             getProduct();
         }
     }, [visible]);
@@ -106,16 +100,6 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
             }
         }).finally(() => { setLoading(false); });
     };
-
-    const getCategories = () => {
-        setLoading(true);
-        HandleApi(CategoryService.getCategories(), null).then((result) => {
-            if (result.status === 200) {
-                let data = result.data as Category[];
-                setCategories(data);
-            }
-        }).finally(() => { setLoading(false); });
-    }
 
     const onFinish = async (values: typeForm) => {
         setLoading(true);
@@ -208,7 +192,7 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
                             { required: true, message: 'Loại món không được bỏ trống.' },
                         ]}>
                         {(control, meta) => (
-                            <Dropdown value={selectedCategory}
+                            <Dropdown value={selectedCategory} filter
                                 onChange={(e: DropdownChangeEvent) => {
                                     setSelectedCategory(e.value);
                                 }}

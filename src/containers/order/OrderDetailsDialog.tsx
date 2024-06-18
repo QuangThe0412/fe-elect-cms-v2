@@ -79,6 +79,7 @@ export default
     const HandClose = () => {
         onClose();
         setSelectedRow(undefined);
+        setDetails([]);
     };
 
     const getOrderDetails = async () => {
@@ -228,7 +229,7 @@ export default
     const productEditor = (options: ColumnEditorOptions) => {
         const { rowIndex, rowData } = options;
         return (
-            <Dropdown value={rowData.IDMon}
+            <Dropdown value={rowData.IDMon} filter
                 options={products} optionLabel="TenMon" optionValue="IDMon"
                 onChange={(e: DropdownChangeEvent) => {
                     options.editorCallback!(e.value);
@@ -331,9 +332,11 @@ export default
     const headerElement = (
         <div className="inline-flex align-items-center justify-content-center gap-2">
             <span className="font-bold white-space-nowrap">
-                Cập nhật
+                {
+                    !idOrder ? "Thêm mới hóa đơn" : `Cập nhật hóa đơn số ${idOrder}`
+                }
             </span>
-            {isPending && <Button label="Thêm món" icon="pi pi-fw pi-plus-circle"
+            {(!idOrder || isPending) && <Button label="Thêm món" icon="pi pi-fw pi-plus-circle"
                 className="p-button p-component p-button-success ml-3"
                 onClick={AddNewRow} />}
 
@@ -374,7 +377,7 @@ export default
                     globalFilterFields={["IDMon", "TenMon"]} emptyMessage="Không có dữ liệu"
                     paginator rows={10} rowsPerPageOptions={[5, 10, 25, 50]} tableStyle={{ minWidth: '50rem' }}>
                     <Column field="IDChiTietHD" header="Id" style={{ width: '10%' }}></Column>
-                    <Column field="IDHoaDon" header="IDHoaDon" style={{ width: '5%' }}></Column>
+                    <Column field="IDHoaDon" header="IDHoaDon" style={{ width: '5%' }} hidden></Column>
                     <Column field="TenMon" header="TenMon" hidden style={{ width: '5%' }}></Column>
                     <Column field="IDMon" body={bodyChonMon} header="Món"
                         editor={(options) => productEditor(options)} style={{ width: '20%', whiteSpace: 'wrap' }}></Column>

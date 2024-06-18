@@ -1,10 +1,12 @@
-import { Button } from 'primereact/button';
+import '@/styles/404.css';
 
 const NotFound = () => {
     return (
-        <>
-            <Button label="Link" link onClick={() => window.open('https://react.dev', '_blank')} />
-        </>
+        <div className="section">
+            <h1 className="error">404</h1>
+            <div className="page">Ooops!!! Trang này không tìm thấy</div>
+            <a className="back-home" href="/">Quay lại</a>
+        </div>
     );
 }
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { classNames } from 'primereact/utils';
@@ -14,6 +14,7 @@ import { HandleApi } from '@/services/handleApi';
 import { Toast } from 'primereact/toast';
 import { setCookie } from '@/utils/cookie';
 import { ACCESS_COOKIE_NAME, REFRESH_COOKIE_NAME } from '@/constants';
+import { nameEnv } from '@/config';
 
 type typeForm = {
     username: string;
@@ -21,16 +22,17 @@ type typeForm = {
 }
 
 const initialForm: typeForm = {
-    username: 'quangthe',
-    password: 'Aa123123',
+    username: nameEnv == 'development' ? 'quangthe' : '',
+    password: nameEnv == 'development' ? 'Aa123123' : '',
 };
 
 export default function Login() {
     const toast = useRef<Toast>(null);
     const navigate = useNavigate();
-    const { isAuthenticated, userRole } = useAuth();
+    const { isAuthenticated } = useAuth();
     const textTitle = 'Đăng nhập';
     const [form] = Form.useForm();
+    const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
         //if had login then redirect to dashboard
@@ -40,6 +42,7 @@ export default function Login() {
     }, [isAuthenticated]);
 
     const onFinish = (values: typeForm) => {
+        setLoading(true);
         let { username, password } = values;
         HandleApi(AuthService.login(username, password), toast).then((res) => {
             if (res && res.status === 200) {
@@ -50,7 +53,7 @@ export default function Login() {
                 form.resetFields();
                 window.location.href = paths.user;
             }
-        });
+        }).finally(() => { setLoading(false); });
     };
 
     const onFinishFailed = (errorInfo: any) => {
@@ -80,7 +83,7 @@ export default function Login() {
                                 className={classNames({ 'p-invalid': form.isFieldTouched('password') && form.getFieldError('password') })} />
                         </LabelField>
 
-                        <Button type='submit' label={textTitle} icon="pi pi-user" className="w-8" />
+                        <Button loading={loading} type='submit' label={textTitle} icon="pi pi-user" className="w-8" />
                     </Form>
                 </div>
             </div>

@@ -6,14 +6,12 @@ import { HandleApi } from "@/services/handleApi";
 import { ImportService } from "@/services/import.service";
 import { ImportDetailsService } from "@/services/importDetails.service";
 import { ImportDetails, Product, selectedRowType } from "@/models";
-import { DataTable, DataTableRowEditCompleteEvent, DataTableRowEditEvent, DataTableValue } from "primereact/datatable";
+import { DataTable, DataTableRowEditCompleteEvent, DataTableRowEditEvent } from "primereact/datatable";
 import { Column, ColumnEditorOptions } from "primereact/column";
-import { InputText } from "primereact/inputtext";
-import { InputTextarea } from "primereact/inputtextarea";
 import { Toast } from "primereact/toast";
 import { bodyDate, formatCurrency, formatNumber } from "@/utils/common";
 import { ProductService } from "@/services/products.service";
-import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
+import { Dropdown } from "primereact/dropdown";
 import { InputNumber, InputNumberValueChangeEvent } from "primereact/inputnumber";
 
 type PropType = {

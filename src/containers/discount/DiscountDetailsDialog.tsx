@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
-import { InputText } from 'primereact/inputtext';
 import { Toast } from 'primereact/toast';
 import { DiscountDetailsService } from '@/services/discountDetails.service';
 import { DiscountService } from '@/services/discount.service';
-import { DiscountDetails, OrderDetail, Product, TypeCustomer, selectedRowType } from '@/models';
+import { DiscountDetails, Product, selectedRowType } from '@/models';
 import { HandleApi } from '@/services/handleApi';
 import { DataTable, DataTableRowEditCompleteEvent, DataTableRowEditEvent } from 'primereact/datatable';
 import { Column, ColumnEditorOptions } from 'primereact/column';
@@ -13,7 +12,6 @@ import { ProductService } from '@/services/products.service';
 import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
 import { ImportDetailsService } from '@/services/importDetails.service';
 import { InputNumber, InputNumberValueChangeEvent } from 'primereact/inputnumber';
-import { fileURLToPath } from 'url';
 import { formatCurrency } from '@/utils/common';
 
 type PropType = {

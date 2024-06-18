@@ -151,6 +151,7 @@ export default function Categories() {
 
       </DataTable>
       <CategoryDialog
+        categoryGroups={categoryGroups}
         visible={dialogVisible}
         onClose={() => {
           setDialogVisible(false)

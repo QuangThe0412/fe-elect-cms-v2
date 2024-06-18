@@ -1,7 +1,6 @@
 import { useRef } from 'react';
 import { Dock } from 'primereact/dock';
 import { MenuItem } from 'primereact/menuitem';
-import { BrowserRouter as Link, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { paths } from '@/constants/api';
 import { checkRoleAccess } from '@/utils/common';
@@ -104,27 +103,27 @@ export default function DockMenu() {
                 HandleGoPath(paths.import);
             },
         },
-        {
-            label: 'Phiếu xuất',
-            icon: () => <img alt="Test" src={exportImage} width="100%" />,
-            command: () => {
-                HandleGoPath(paths.export);
-            },
-        },
-        {
-            label: 'Báo giá',
-            icon: () => <img alt="Test" src={costImage} width="100%" />,
-            command: () => {
-                HandleGoPath('/test');
-            },
-        },
-        {
-            label: 'Kiểm kê',
-            icon: () => <img alt="Test" src={inventoryImage} width="100%" />,
-            command: () => {
-                HandleGoPath('/test');
-            },
-        }
+        // {
+        //     label: 'Phiếu xuất',
+        //     icon: () => <img alt="Test" src={exportImage} width="100%" />,
+        //     command: () => {
+        //         HandleGoPath(paths.export);
+        //     },
+        // },
+        // {
+        //     label: 'Báo giá',
+        //     icon: () => <img alt="Test" src={costImage} width="100%" />,
+        //     command: () => {
+        //         HandleGoPath('/test');
+        //     },
+        // },
+        // {
+        //     label: 'Kiểm kê',
+        //     icon: () => <img alt="Test" src={inventoryImage} width="100%" />,
+        //     command: () => {
+        //         HandleGoPath('/test');
+        //     },
+        // }
     ];
 
     return (

@@ -1,11 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import Form from 'rc-field-form';
 import { Toast } from 'primereact/toast';
 import { DiscountService } from '@/services/discount.service';
-import { TypeCustomerService } from '@/services/typecustomer.service';
 import { Discount, TypeCustomer } from '@/models';
 import { HandleApi } from '@/services/handleApi';
 import { LabelField } from '@/components';
@@ -17,6 +16,7 @@ type PropType = {
     idDiscount: number,
     visible: boolean,
     onClose: () => void,
+    typeCustomers: TypeCustomer[],
     onDiscountChange: () => void,
 };
 
@@ -38,17 +38,15 @@ const initialForm: typeForm = {
 
 
 export default
-    function DiscountDialog({ visible, onClose, idDiscount, onDiscountChange }: PropType) {
+    function DiscountDialog({ visible, onClose, idDiscount, onDiscountChange, typeCustomers }: PropType) {
     const [form] = Form.useForm();
     const toast = useRef<Toast>(null);
     const [loading, setLoading] = useState<boolean>(false);
-    const [typeCustomers, setTypeCustomers] = useState<TypeCustomer[]>([]);
     const [selectedTypeCustomers, setSelectedTypeCustomers] = useState<TypeCustomer>();
     const [fromDate, setFromDate] = useState<Date | null>(new Date());
     const [toDate, setToDate] = useState<Date | null>(null);
 
     useEffect(() => {
-        getTypeCustomers();
         if (visible && idDiscount > 0) {
             getDiscount();
         }
@@ -81,16 +79,6 @@ export default
             }
         }).finally(() => { setLoading(false); });
     };
-
-    const getTypeCustomers = () => {
-        setLoading(true);
-        HandleApi(TypeCustomerService.getTypeCustomers(), null).then((result) => {
-            if (result.status === 200) {
-                let data = result.data;
-                setTypeCustomers(data);
-            }
-        }).finally(() => { setLoading(false); });
-    }
 
     const onFinish = (values: typeForm) => {
         setLoading(true);
@@ -147,7 +135,7 @@ export default
 
                     <LabelField label="Áp dụng cho loại khách" name="idTypeCustomer">
                         {(control, meta) => (
-                            <Dropdown value={selectedTypeCustomers}
+                            <Dropdown value={selectedTypeCustomers} filter
                                 onChange={(e: DropdownChangeEvent) => {
                                     setSelectedTypeCustomers(e.value);
                                 }}

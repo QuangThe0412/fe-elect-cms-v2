@@ -1,20 +1,17 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import Form from 'rc-field-form';
 import { Toast } from 'primereact/toast';
-import { AuthService } from '@/services/auth.service';
 import { User } from '@/models';
 import { HandleApi } from '@/services/handleApi';
 import { LabelField } from '@/components';
 import { Calendar } from 'primereact/calendar';
 import { Password } from 'primereact/password';
 import { classNames } from 'primereact/utils';
-import { on } from 'events';
 import { UserService } from '@/services/user.service';
 import { Checkbox } from 'primereact/checkbox';
-import { MultiStateCheckbox } from 'primereact/multistatecheckbox';
 import { RoleEnum } from '@/constants';
 import styles from './user.module.css'
 

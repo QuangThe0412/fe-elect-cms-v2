@@ -1,12 +1,11 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import '@/styles/dashboard.css';
 import { ThongKeService } from '@/services/thongke.service';
 import { Toast } from 'primereact/toast';
 import { HandleApi } from '@/services/handleApi';
 import { Calendar } from 'primereact/calendar';
 import { OrderDetail } from '@/models';
-import { formatCurrency } from '@/utils/common';
 import CardDashboard from './CardDashboard';
 import { Divider } from 'primereact/divider';
 import LoadingComponent from '@/components/loading/LoadingComponent';

@@ -10,11 +10,11 @@ import { Customer, Order } from '@/models';
 import { Toast } from 'primereact/toast';
 import { ContextMenu } from 'primereact/contextmenu';
 import { FilterMatchMode } from 'primereact/api';
-import OrderDialog from './OrderDialog';
+import OrderDetailsDialog from './OrderDetailsDialog';
 import { HandleApi } from '@/services/handleApi';
-import { Button } from 'primereact/button';
 import { STATUS_ENUM } from '@/constants';
 import { IsPendingStatus, bodyDate } from '@/utils/common';
+import { Button } from 'primereact/button';
 
 interface OrderType extends Order {
   TenKhachHang?: string;
@@ -35,7 +35,7 @@ export default function Orders() {
     TrangThai: { value: '', matchMode: FilterMatchMode.CONTAINS },
   });
 
-  const [dialogVisible, setDialogVisible] = useState<boolean>(false);
+  const [dialogDetailsVisible, setDialogDetailsVisible] = useState<boolean>(false);
 
   const toast = useRef<Toast>(null);
   const cm = useRef<ContextMenu>(null);
@@ -43,10 +43,11 @@ export default function Orders() {
     { label: 'Đang xử lý', icon: 'pi pi-spin pi-spinner', command: () => HandleStatus(STATUS_ENUM.PENDING) },
     { label: 'Hoàn thành', icon: 'pi pi-fw pi-check', command: () => HandleStatus(STATUS_ENUM.FINISH) },
     { label: 'Hủy', icon: 'pi pi-fw pi-times', command: () => HandleStatus(STATUS_ENUM.CANCEL) },
+    { separator: true },
     {
-      label: 'Chi tiết',
+      label: 'Chi tiết hóa đơn',
       icon: 'pi pi-eye',
-      command: () => setDialogVisible(true)
+      command: () => setDialogDetailsVisible(true)
     }
   ];
 
@@ -187,10 +188,10 @@ export default function Orders() {
         <Column field="GhiChu" header="Ghi chú"></Column>
 
       </DataTable>
-      <OrderDialog
-        visible={dialogVisible}
+      <OrderDetailsDialog
+        visible={dialogDetailsVisible}
         onClose={() => {
-          setDialogVisible(false)
+          setDialogDetailsVisible(false);
         }}
         isPending={IsPendingStatus(selectedOrder?.TrangThai as number)}
         idOrder={selectedOrder?.IDHoaDon as number}
