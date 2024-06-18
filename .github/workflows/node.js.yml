@@ -18,48 +18,33 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Check Node.js version
-      run: |
-          if ! command -v node &> /dev/null
-          then
-            echo "Node.js is not installed, installing..."
-            echo "NODE_VERSION=${{ matrix.node-version }}" >> $GITHUB_ENV
-          else
-            echo "Node.js is already installed"
-            CURRENT_VERSION=$(node -v)
-            if [ "$CURRENT_VERSION" != "${{ matrix.node-version }}" ]
-            then
-              echo "Node.js version is not correct, installing..."
-              echo "NODE_VERSION=${{ matrix.node-version }}" >> $GITHUB_ENV
-            fi
-          fi
-    - name: Use Node.js ${{ matrix.node-version }}
-      if: matrix.node-version != ''
-      uses: actions/setup-node@v3
-      with:
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
 
-    - name: Yarn install...test
-      run: yarn install
+      - name: Yarn install...
+        run: yarn install
 
-    - name: Check if PM2 is installed...
-      run: |
-        if ! command -v pm2 &> /dev/null
-        then
-            echo "PM2 could not be found, installing..."
-            yarn global add pm2
-        else
-            echo "PM2 is already installed"
-        fi
+      - name: Check if PM2 is installed...
+        run: |
+          if ! command -v pm2 &> /dev/null
+          then
+              echo "PM2 could not be found, installing..."
+              yarn global add pm2
+          else
+              echo "PM2 is already installed"
+          fi
 
-    - name: Yarn build...
-      run: CI=false yarn build --verbose
-      timeout-minutes: 10
+      - name: Yarn build...
+        run: CI=false yarn build --verbose
+        timeout-minutes: 10
 
-    - name: Run Pm2...    
-      run: |
-        pm2 delete "cms-smart-shop" || true
-        pm2 serve build 3001 --spa --name "cms-smart-shop"
+      - name: Run Pm2...    
+        run: |
+          pm2 delete "cms-smart-shop" || true
+          pm2 serve build 3001 --spa --name "cms-smart-shop"
+          pm2 list  # Hiển thị danh sách các ứng dụng hiện đang được quản lý bởi PM2 (để kiểm tra/debug)
 
