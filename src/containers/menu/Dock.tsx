@@ -103,27 +103,27 @@ export default function DockMenu() {
                 HandleGoPath(paths.import);
             },
         },
-        {
-            label: 'Phiếu xuất',
-            icon: () => <img alt="Test" src={exportImage} width="100%" />,
-            command: () => {
-                HandleGoPath(paths.export);
-            },
-        },
-        {
-            label: 'Báo giá',
-            icon: () => <img alt="Test" src={costImage} width="100%" />,
-            command: () => {
-                HandleGoPath('/test');
-            },
-        },
-        {
-            label: 'Kiểm kê',
-            icon: () => <img alt="Test" src={inventoryImage} width="100%" />,
-            command: () => {
-                HandleGoPath('/test');
-            },
-        }
+        // {
+        //     label: 'Phiếu xuất',
+        //     icon: () => <img alt="Test" src={exportImage} width="100%" />,
+        //     command: () => {
+        //         HandleGoPath(paths.export);
+        //     },
+        // },
+        // {
+        //     label: 'Báo giá',
+        //     icon: () => <img alt="Test" src={costImage} width="100%" />,
+        //     command: () => {
+        //         HandleGoPath('/test');
+        //     },
+        // },
+        // {
+        //     label: 'Kiểm kê',
+        //     icon: () => <img alt="Test" src={inventoryImage} width="100%" />,
+        //     command: () => {
+        //         HandleGoPath('/test');
+        //     },
+        // }
     ];
 
     return (
