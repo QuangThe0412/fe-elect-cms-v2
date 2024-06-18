@@ -159,6 +159,13 @@ export default function Products() {
     );
   };
 
+  const bodyEdit = (rowData: Product) => {
+    return (
+      <Button icon="pi pi-pencil" className="p-button-rounded p-button-primary"
+        onClick={() => editProduct(rowData)} />
+    );
+  };
+
   return (
     <div className="card">
       <Toast ref={toast} />
@@ -182,6 +189,7 @@ export default function Products() {
         <Column field="IDMon" filter header="Id" ></Column>
         <Column field="IDLoaiMon" filter header="Loại" body={bodyLoaiMon} ></Column>
         <Column field="TenMon" header="Tên" style={{ width: '15%' }}></Column>
+        <Column header="Edit" body={bodyEdit}></Column>
         <Column field="Image" header="Hình ảnh" body={bodyImage} style={{ width: '5%' }}></Column>
         <Column field="DVTMon" filter header="ĐVT" ></Column>
         <Column field="DonGiaVon" filter header="Giá vốn" body={(rowData: Product) => <>{formatCurrency(rowData.DonGiaVon)}</>} sortable ></Column>
