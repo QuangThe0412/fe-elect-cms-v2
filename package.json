@@ -30,7 +30,8 @@
   },
   "scripts": {
     "start": "react-app-rewired start",
-    "build": "react-app-rewired build"
+    "build": "react-app-rewired build",
+    "dev": "dotenv -e .env.dev react-app-rewired start"
   },
   "eslintConfig": {
     "extends": [
@@ -49,5 +50,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "dotenv-cli": "^7.4.2"
   }
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import '@/styles/header.css';
 import DockMenu from '@/containers/menu/Dock';
 import { Toast } from 'primereact/toast';

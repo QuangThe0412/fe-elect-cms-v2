@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
@@ -78,7 +78,7 @@ export default function CustomerDialog({ visible, onClose, idCustomer, onCustome
 
     const getTypesCustomer = () => {
         setLoading(true);
-        HandleApi(TypeCustomerService.getTypeCustomers() , null).then((res) => {
+        HandleApi(TypeCustomerService.getTypeCustomers(), null).then((res) => {
             if (res && res.status === 200) {
                 setTypesCustomer(res.data);
             }
@@ -164,13 +164,13 @@ export default function CustomerDialog({ visible, onClose, idCustomer, onCustome
                     </LabelField>
                     <LabelField label="Loại khách hàng" name="idTypeCustomer">
                         {(control, meta) => (
-                            <Dropdown value={selectedTypeCustomer}
+                            <Dropdown value={selectedTypeCustomer} filter
                                 onChange={(e: DropdownChangeEvent) => {
                                     setSelectedTypeCustomer(e.value);
                                 }}
                                 options={typesCustomer} optionLabel={'TenLoaiKH'}
                                 placeholder="Chọn loại khách hàng" className="w-full" />
-                            )}
+                        )}
                     </LabelField>
 
                     <Button loading={loading} type='submit' label={idCustomer ? 'Cập nhật' : 'Tạo mới'} className="w-6" style={{ float: 'right' }} />

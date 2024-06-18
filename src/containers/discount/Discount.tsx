@@ -15,7 +15,6 @@ import { bodyDate } from '@/utils/common';
 import { TypeCustomerService } from '@/services/typecustomer.service';
 import DiscountDetailsDialog from './DiscountDetailsDialog';
 
-
 let emptyDiscount: Discount = {
   IDKhuyenMai: 0,
   TenKhuyenMai: '',
@@ -161,7 +160,7 @@ export default function DiscountComponent() {
         onSelectionChange={(e: any) => { setSelectedDiscount(e.value) }} dataKey="IDKhuyenMai"
         resizableColumns showGridlines columnResizeMode="expand"
         filters={filters}
-        globalFilterFields={["IDKhuyenMai", "TenKhuyenMai", "IdLoaiKH", "TuNgay", "DenNgay"]}emptyMessage="Không có dữ liệu"
+        globalFilterFields={["IDKhuyenMai", "TenKhuyenMai", "IdLoaiKH", "TuNgay", "DenNgay"]} emptyMessage="Không có dữ liệu"
       >
         <Column field="IDKhuyenMai" header="ID Khuyến Mãi"></Column>
         <Column field="TenKhuyenMai" header="Tên Khuyến Mãi"></Column>
@@ -175,6 +174,7 @@ export default function DiscountComponent() {
 
       </DataTable>
       <DiscountDialog
+        typeCustomers={typeCustomers}
         visible={dialogVisible}
         onClose={() => {
           setDialogVisible(false)

@@ -1,7 +1,6 @@
 import { useRef } from 'react';
 import { Dock } from 'primereact/dock';
 import { MenuItem } from 'primereact/menuitem';
-import { BrowserRouter as Link, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { paths } from '@/constants/api';
 import { checkRoleAccess } from '@/utils/common';

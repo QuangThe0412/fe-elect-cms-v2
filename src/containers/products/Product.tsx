@@ -17,7 +17,6 @@ import { Button } from 'primereact/button';
 import ProductDialog from './ProductDialog';
 import { HandleApi } from '@/services/handleApi';
 import { Image } from 'primereact/image';
-import { FileUploadState } from '@/models';
 import { linkImageGG } from '@/utils/common';
 
 let emptyProduct: Product = {
@@ -143,7 +142,7 @@ export default function Products() {
           <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Tìm kiếm" />
           <Button label="Thêm" icon="pi pi-plus" className="p-button-success ml-3"
             onClick={() => addProduct(selectedProduct as Product)} />
-        </span>       
+        </span>
       </div>
     );
   };
@@ -193,6 +192,7 @@ export default function Products() {
         <Column field="GhiChu" header="Ghi chú" ></Column>
       </DataTable>
       <ProductDialog
+        categories={categories}
         visible={dialogVisible}
         onClose={() => {
           setDialogVisible(false)

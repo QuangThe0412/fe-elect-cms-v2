@@ -1,17 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
-import { InputText } from 'primereact/inputtext';
 import Form from 'rc-field-form';
 import { Toast } from 'primereact/toast';
 import { AuthService } from '@/services/auth.service';
-import { User } from '@/models';
 import { HandleApi } from '@/services/handleApi';
 import { LabelField } from '@/components';
-import { Calendar } from 'primereact/calendar';
 import { Password } from 'primereact/password';
 import { classNames } from 'primereact/utils';
-import styles from './dialog.module.css';
 
 type PropType = {
     idUser: string,

@@ -3,7 +3,6 @@ import { formatCurrency } from "@/utils/common";
 import { useNavigate } from "react-router-dom";
 import { typeRes } from "./Dashboard";
 import { STATUS_ENUM } from "@/constants";
-import { useState } from "react";
 
 type PropTypes = {
     title: string,

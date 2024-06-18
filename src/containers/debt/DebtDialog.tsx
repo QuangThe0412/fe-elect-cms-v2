@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
@@ -11,11 +11,12 @@ import { LabelField } from '@/components';
 import { classNames } from 'primereact/utils';
 import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
 import { CustomerService } from '@/services/customer.service';
-import { OrderService } from '@/services/order.service';
 
 type PropType = {
     idDebt: number,
     visible: boolean,
+    customers: Customer[],
+    orders: Order[],
     onClose: () => void,
     onDebtChange: () => void,
 };
@@ -35,28 +36,12 @@ const initialForm: typeForm = {
 };
 
 export default
-    function DebtDialog({ visible, onClose, idDebt, onDebtChange }: PropType) {
+    function DebtDialog({ visible, onClose, idDebt, onDebtChange, customers,orders }: PropType) {
     const [form] = Form.useForm();
     const toast = useRef<Toast>(null);
     const [loading, setLoading] = useState<boolean>(false);
-    const [customers, setCustomers] = useState<Customer[]>([]);
-    const [bills, setBills] = useState<Order[]>([]);
     const [selectedCustomer, setSelectedCustomer] = useState<Customer>();
     const [selectedBill, setSelectedBill] = useState<Order>();
-
-    useEffect(() => {
-        const fetchData = async () => {
-            if (visible && idDebt) {
-                let resCustomer = await getCustomers();
-                setCustomers(resCustomer);
-
-                let resOrder = await getOrders();
-                setBills(resOrder);
-            }
-        };
-
-        fetchData();
-    }, [form]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -66,12 +51,11 @@ export default
                     const customer = customers.find((x) => x.IDKhachHang === resDebtDetail.IDKhachHang);
                     setSelectedCustomer(customer);
 
-                    const bill = bills.find((x) => x.IDHoaDon === resDebtDetail.IDHoaDon);
-                    setSelectedBill(bill);
+                    let order = orders.find((x) => x.IDHoaDon === resDebtDetail.IDHoaDon);
 
                     form.setFieldsValue({
                         idCustomer: customer?.IDKhachHang,
-                        idBill: bill?.IDHoaDon,
+                        idBill: order?.IDHoaDon,
                         debtStart: resDebtDetail.CongNoDau,
                     });
                 }
@@ -99,16 +83,6 @@ export default
         return result;
     };
 
-    const getOrders = async () => {
-        setLoading(true);
-        let res = await HandleApi(OrderService.getOrders(), null);
-        let result = res.data as Order[];
-        if (res && res.status === 200) {
-            result = res.data as Order[];
-        }
-        setLoading(false);
-        return result;
-    };
 
     const getDebt = async () => {
         setLoading(true);
@@ -189,7 +163,7 @@ export default
                                 onChange={(e: DropdownChangeEvent) => {
                                     setSelectedBill(e.value);
                                 }}
-                                options={bills}
+                                options={orders}
                                 optionLabel='IDHoaDon'
                                 placeholder='Chọn hóa đơn'
                                 id='idBill'

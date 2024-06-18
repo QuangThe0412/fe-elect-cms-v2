@@ -7,7 +7,7 @@ import { DebtService } from '@/services/debt.service';
 import { DebtDetailService } from '@/services/debtDetails.service';
 import { CustomerService } from '@/services/customer.service';
 import { InputText } from 'primereact/inputtext';
-import { Customer, Debt, DebtDetail } from '@/models';
+import { Customer, Debt, DebtDetail, Order } from '@/models';
 import { Toast } from 'primereact/toast';
 import { ContextMenu } from 'primereact/contextmenu';
 import { FilterMatchMode } from 'primereact/api';
@@ -16,6 +16,7 @@ import { HandleApi } from '@/services/handleApi';
 import { Button } from 'primereact/button';
 import { bodyDate, formatCurrency } from '@/utils/common';
 import DebtDetailsDialog from './DebtDetailsDialog';
+import { OrderService } from '@/services/order.service';
 
 interface NewDebt extends Debt {
   TenKhachHang: string | null | undefined;
@@ -40,6 +41,7 @@ export default function DebtComponent() {
   const [debtChange, setdebtChange] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [customers, setCustomers] = useState<Customer[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [dialogDtailsVisible, setDialogDtailsVisible] = useState<boolean>(false);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
   const [filters, setFilters] = useState<DataTableFilterMeta>({
@@ -81,6 +83,8 @@ export default function DebtComponent() {
         const resDebtDetail: DebtDetail[] = await getDebtDetails();
         setDebtDetails(resDebtDetail.filter((x) => !x.Deleted));
       }
+
+      getOrders();
     };
 
     fetchData();
@@ -124,6 +128,18 @@ export default function DebtComponent() {
     setLoading(false);
     return result;
   }
+  
+  const getOrders = async () => {
+    setLoading(true);
+    let res = await HandleApi(OrderService.getOrders(), null);
+    let result = res.data as Order[];
+    if (res && res.status === 200) {
+        result = res.data as Order[];
+        setOrders(result);
+    }
+    setLoading(false);
+    return result;
+};
 
   const addDebt = (debt: Debt) => {
     setselectedDebt(emptydebt);
@@ -211,6 +227,8 @@ export default function DebtComponent() {
         <Column field="modifyBy" header="Sửa bởi" ></Column>
       </DataTable>
       <DebtDialog
+        orders={orders}
+        customers={customers}
         visible={dialogVisible}
         onClose={() => {
           setDialogVisible(false)

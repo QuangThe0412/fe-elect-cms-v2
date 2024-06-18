@@ -1,11 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import Form from 'rc-field-form';
 import { Toast } from 'primereact/toast';
 import { CategoryService } from '@/services/category.service';
-import { CategoryGroupService } from '@/services/categoryGroup.service';
 import { Category, CategoryGroup } from '@/models';
 import { HandleApi } from '@/services/handleApi';
 import { LabelField } from '@/components';
@@ -17,6 +16,7 @@ type PropType = {
     visible: boolean,
     onClose: () => void,
     onCategoryChange: () => void,
+    categoryGroups: CategoryGroup[]
 };
 
 type typeForm = {
@@ -33,16 +33,14 @@ const initialForm: typeForm = {
 
 
 export default
-    function CategoryDialog({ visible, onClose, idCategory, onCategoryChange }: PropType) {
+    function CategoryDialog({ visible, onClose, idCategory, onCategoryChange,categoryGroups }: PropType) {
     const [form] = Form.useForm();
     const toast = useRef<Toast>(null);
     const [loading, setLoading] = useState<boolean>(false);
-    const [categoryGroups, setCategoryGroups] = useState<CategoryGroup[]>([]);
     const [selectedCategoryGroup, setSelectedCategoryGroup] = useState<CategoryGroup>();
 
     useEffect(() => {
         if (visible && idCategory > 0) {
-            getCategoryGroup();
             getCategory();
         }
     }, [visible]);
@@ -68,16 +66,6 @@ export default
             }
         }).finally(() => { setLoading(false); });
     };
-
-    const getCategoryGroup = () => {
-        setLoading(true);
-        HandleApi(CategoryGroupService.getCategoryGroups(), toast).then((result) => {
-            if (result.status === 200) {
-                let data = result.data;
-                setCategoryGroups(data);
-            }
-        }).finally(() => { setLoading(false); });
-    }
 
     const onFinish = (values: typeForm) => {
         setLoading(true);
@@ -131,7 +119,7 @@ export default
                             { required: true, message: 'Nhóm món không được bỏ trống.' },
                         ]}>
                         {(control, meta) => (
-                            <Dropdown value={selectedCategoryGroup}
+                            <Dropdown value={selectedCategoryGroup} filter
                                 onChange={(e: DropdownChangeEvent) => {
                                     setSelectedCategoryGroup(e.value);
                                 }}

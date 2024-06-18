@@ -228,7 +228,7 @@ export default
     const productEditor = (options: ColumnEditorOptions) => {
         const { rowIndex, rowData } = options;
         return (
-            <Dropdown value={rowData.IDMon}
+            <Dropdown value={rowData.IDMon} filter
                 options={products} optionLabel="TenMon" optionValue="IDMon"
                 onChange={(e: DropdownChangeEvent) => {
                     options.editorCallback!(e.value);

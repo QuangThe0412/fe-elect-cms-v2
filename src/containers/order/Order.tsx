@@ -12,7 +12,6 @@ import { ContextMenu } from 'primereact/contextmenu';
 import { FilterMatchMode } from 'primereact/api';
 import OrderDialog from './OrderDialog';
 import { HandleApi } from '@/services/handleApi';
-import { Button } from 'primereact/button';
 import { STATUS_ENUM } from '@/constants';
 import { IsPendingStatus, bodyDate } from '@/utils/common';
 
@@ -44,7 +43,7 @@ export default function Orders() {
     { label: 'Hoàn thành', icon: 'pi pi-fw pi-check', command: () => HandleStatus(STATUS_ENUM.FINISH) },
     { label: 'Hủy', icon: 'pi pi-fw pi-times', command: () => HandleStatus(STATUS_ENUM.CANCEL) },
     {
-      label: 'Chi tiết',
+      label: 'Chi tiết hóa đơn',
       icon: 'pi pi-eye',
       command: () => setDialogVisible(true)
     }
