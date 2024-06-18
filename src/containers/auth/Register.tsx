@@ -13,7 +13,6 @@ import { HandleApi } from '@/services/handleApi';
 import { Toast } from 'primereact/toast';
 import { setCookie } from '@/utils/cookie';
 import { ACCESS_COOKIE_NAME, REFRESH_COOKIE_NAME } from '@/constants';
-import { useNavigate } from 'react-router-dom';
 import { paths } from '@/constants/api';
 
 type typeForm = {
@@ -34,7 +33,6 @@ export const Register = () => {
     const textTitle = 'Đăng ký';
     const [form] = Form.useForm();
     const toast = useRef<Toast>(null);
-    const navigate = useNavigate();
 
     const onFinish = (values: typeForm) => {
         let newUser: User = {

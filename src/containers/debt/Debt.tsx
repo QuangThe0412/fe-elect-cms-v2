@@ -56,6 +56,7 @@ export default function DebtComponent() {
   const menuModel = [
     { label: 'Thêm', icon: 'pi pi-fw pi-plus-circle', command: () => addDebt(selectedDebt) },
     { label: 'Sửa', icon: 'pi pi-fw pi-pencil', command: () => editDebt(selectedDebt) },
+    { separator: true },
     {
       label: 'Chi tiết Công nợ',
       icon: 'pi pi-fw pi-sitemap',

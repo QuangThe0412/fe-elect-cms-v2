@@ -42,6 +42,7 @@ export default function ImportComponent() {
     { label: 'Thêm', icon: 'pi pi-fw pi-plus-circle', command: () => addImport(selectedImport as Import) },
     { label: 'Sửa', icon: 'pi pi-fw pi-pencil', command: () => editImport(selectedImport as Import) },
     { label: 'Xóa', icon: 'pi pi-fw pi-trash', command: () => deletedImport(selectedImport as Import) },
+    { separator: true },
     {
       label: 'Chi tiết phiếu nhập',
       icon: 'pi pi-fw pi-external-link',

@@ -54,6 +54,7 @@ export default function DiscountComponent() {
       icon: 'pi pi-fw pi-power-off',
       command: () => toggleActiveDiscount(selectedDiscount as Discount)
     },
+    { separator: true },
     { label: 'Chi tiết Khuyến mãi', icon: 'pi pi-fw pi-sitemap', command: () => detailsDiscount(selectedDiscount as Discount) },
   ];
 

@@ -30,7 +30,7 @@ export default function OrderPrintComponent({ id, dataOrderDetails, dataProducts
         <>
             <div className="card" id={id} style={{ display: 'none' }}>
                 <DataTable value={_orderDetails} tableStyle={{ minWidth: '50rem' }} stripedRows>
-                    <Column field="Index" header="STT" body={(rowData, { rowIndex }) => rowIndex + 1} ></Column>
+                    <Column field="Index" header="STT" body={({ rowIndex }) => rowIndex + 1} ></Column>
                     <Column field="IDMon" header="Món" body={bodyTenMon}
                         style={{ width: '20%', whiteSpace: 'normal' }} ></Column>
                     <Column field="SoLuong" header="SL" body={bodySoLuong}></Column>
