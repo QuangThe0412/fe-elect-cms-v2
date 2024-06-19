@@ -1,32 +1,38 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { DataTable, DataTableFilterMeta } from 'primereact/datatable';
+import { DataTable, DataTableFilterMeta, DataTableSelectEvent } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { InputText } from 'primereact/inputtext';
 import { Category, Product } from '@/models';
 import { Toast } from 'primereact/toast';
 import erroImage from '@/images/error.jpg';
-import { ContextMenu } from 'primereact/contextmenu';
 import { FilterMatchMode } from 'primereact/api';
-import CategoryDialog from './CategoryDialog';
 import { HandleApi } from '@/services/handleApi';
-import { Button } from 'primereact/button';
 import { ProductService } from '@/services/products.service';
 import { Image } from 'primereact/image';
 import { formatCurrency, handleImageError, linkImageGG } from '@/utils/common';
 import { classNames } from 'primereact/utils';
 import { CategoryService } from '@/services/category.service';
+import { ChossenProduct } from './Sale';
 
-export default function ProductTable() {
+type Props = {
+  chosenProducts: ChossenProduct[];
+  setChosenProducts: (products: ChossenProduct[]) => void;
+};
+
+export default function ProductTable({ chosenProducts, setChosenProducts }: Props) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
   const [selectedProduct, setSelectedProduct] = useState<Product>();
-  const [dialogVisible, setDialogVisible] = useState<boolean>(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [filters, setFilters] = useState<DataTableFilterMeta>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    TenLoai: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    IDMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    TenMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    IDLoaiMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    DVTMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    GhiChu: { value: null, matchMode: FilterMatchMode.CONTAINS },
   });
 
   const toast = useRef<Toast>(null);
@@ -48,9 +54,35 @@ export default function ProductTable() {
     setLoading(true);
     HandleApi(ProductService.getProducts(), null).then((result) => {
       if (result.status === 200) {
-        setProducts(result.data)
+        let _products = result.data;
+        setProducts(_products)
       }
     }).finally(() => { setLoading(false); });
+  }
+
+  const handleProductSelect = (event: any) => {
+    let product = event.data as Product;
+    if (product) {
+      let _product = chosenProducts.findIndex((item) => item.IDMon === product.IDMon);
+      if (_product !== -1) {
+        let _chosenProducts = [...chosenProducts];
+        _chosenProducts[_product].Number += 1;
+        const number = _chosenProducts[_product].Number;
+        const discount = _chosenProducts[_product].Discount;
+        _chosenProducts[_product].MoneyBeforeDiscount = number * _chosenProducts[_product].DonGiaBanLe;
+        _chosenProducts[_product].MoneyDiscount = _chosenProducts[_product].MoneyBeforeDiscount * discount / 100;
+        _chosenProducts[_product].MoneyAfterDiscount = _chosenProducts[_product].MoneyBeforeDiscount - _chosenProducts[_product].MoneyDiscount;
+        setChosenProducts(_chosenProducts);
+      } else {
+        let newProduct = { ...product } as ChossenProduct;
+        newProduct.Number = 1;
+        newProduct.Discount = 0;
+        newProduct.MoneyBeforeDiscount = newProduct.Number * newProduct.DonGiaBanLe;
+        newProduct.MoneyDiscount = newProduct.MoneyBeforeDiscount * newProduct.Discount / 100;
+        newProduct.MoneyAfterDiscount = newProduct.MoneyBeforeDiscount - newProduct.MoneyDiscount;
+        setChosenProducts([...chosenProducts, newProduct]);
+      }
+    }
   }
 
   const bodyImage = (rowData: Product) => {
@@ -60,7 +92,7 @@ export default function ProductTable() {
     )
   };
 
-  const rowClassName = (data: Product) => (!data.Deleted ? '' : 'bg-danger');
+  const rowClassName = (data: Product) => (!data.Deleted ? '' : 'p-disabled');
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -76,8 +108,6 @@ export default function ProductTable() {
         <span className="p-input-icon-left">
           <i className="pi pi-search" />
           <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Tìm kiếm" />
-          {/* <Button label="Thêm" icon="pi pi-plus" className="p-button-success ml-3"
-            onClick={() => addProduct(selectedProduct as Product)} /> */}
         </span>
       </div>
     );
@@ -113,17 +143,16 @@ export default function ProductTable() {
       <DataTable value={products}
         header={renderHeader()}
         rowClassName={rowClassName}
-        contextMenuSelection={selectedProduct ? selectedProduct : undefined}
-        onContextMenuSelectionChange={(e: any) => { setSelectedProduct(e.value) }}
         paginator rows={15} rowsPerPageOptions={[5, 10, 25, 50]}
         stripedRows sortMode="multiple" removableSort
         tableStyle={{ width: '100%' }}
-        loading={loading} scrollable scrollHeight="75.5vh"
+        loading={loading} scrollable scrollHeight="40vh"
         selectionMode="single" selection={selectedProduct}
         onSelectionChange={(e: any) => { setSelectedProduct(e.value) }} dataKey="IDMon"
         resizableColumns showGridlines columnResizeMode="expand"
         filters={filters}
         globalFilterFields={["TenMon", "DVTMon", "GhiChu"]} emptyMessage="Không có dữ liệu"
+        onRowDoubleClick={(e: any) => handleProductSelect(e)}
       >
         <Column field="IDMon" filter header="Id" ></Column>
         <Column field="IDLoaiMon" filter header="Loại" body={bodyLoaiMon} ></Column>
