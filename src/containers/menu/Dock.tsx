@@ -20,6 +20,7 @@ import debtImage from '@/images/debt.png';
 import importImage from '@/images/import.png';
 import exportImage from '@/images/export.png';
 import inventoryImage from '@/images/inventory.png';
+import houseImage from '@/images/house.png';
 import { RoleEnum } from '@/constants';
 
 export default function DockMenu() {
@@ -40,6 +41,13 @@ export default function DockMenu() {
     };
 
     const items: MenuItem[] = [
+        {
+            label: 'Bán hàng',
+            icon: () => <img alt="Sale" src={houseImage} width="100%" />,
+            command: () => {
+                HandleGoPath(paths.sale);
+            },
+        },
         {
             label: 'Người dùng',
             icon: () => <img alt="User" src={permissionImage} width="100%" />,
