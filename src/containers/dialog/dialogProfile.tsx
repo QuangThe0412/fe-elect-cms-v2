@@ -94,7 +94,7 @@ export default function DialogProfile({ visible, onClose, idUser }: PropType) {
     return (
         <>
             <Toast ref={toast}></Toast>
-            <Dialog header="Cập nhật thông tin" visible={visible} style={{ width: '35vw' }}
+            <Dialog header="Cập nhật thông tin" visible={visible} style={{ minWidth: '35vw' }}
                 onHide={() => { if (!visible) return; onClose(); }}>
                 <Form form={form} onFinish={onFinish}
                     onFinishFailed={onFinishFailed}

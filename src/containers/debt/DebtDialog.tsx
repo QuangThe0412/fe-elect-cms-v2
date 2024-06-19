@@ -134,7 +134,7 @@ export default
     return (
         <>
             <Toast ref={toast}></Toast>
-            <Dialog header={idDebt ? 'Cập nhật' : 'Thêm mới'} visible={visible} style={{ width: '35vw' }}
+            <Dialog header={idDebt ? 'Cập nhật' : 'Thêm mới'} visible={visible} style={{ minWidth: '35vw' }}
                 onHide={() => { if (!visible) return; HandClose(); }}>
                 <Form form={form} onFinish={onFinish}
                     onFinishFailed={onFinishFailed} initialValues={initialForm} className="p-fluid">

@@ -159,7 +159,7 @@ export default function UserDialog({ visible, onClose, idUser, onUserChange }: P
     return (
         <>
             <Toast ref={toast}></Toast>
-            <Dialog header={idUser ? 'Cập nhật' : 'Thêm mới'} visible={visible} style={{ width: '35vw' }}
+            <Dialog header={idUser ? 'Cập nhật' : 'Thêm mới'} visible={visible} style={{ minWidth: '35vw' }}
                 onHide={() => { if (!visible) return; HandClose(); }}>
                 <Form form={form} onFinish={onFinish}
                     onFinishFailed={onFinishFailed}

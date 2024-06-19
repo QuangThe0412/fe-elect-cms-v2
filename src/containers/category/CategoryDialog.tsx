@@ -33,7 +33,7 @@ const initialForm: typeForm = {
 
 
 export default
-    function CategoryDialog({ visible, onClose, idCategory, onCategoryChange,categoryGroups }: PropType) {
+    function CategoryDialog({ visible, onClose, idCategory, onCategoryChange, categoryGroups }: PropType) {
     const [form] = Form.useForm();
     const toast = useRef<Toast>(null);
     const [loading, setLoading] = useState<boolean>(false);
@@ -100,7 +100,7 @@ export default
     return (
         <>
             <Toast ref={toast}></Toast>
-            <Dialog header={idCategory ? 'Cập nhật' : 'Thêm mới'} visible={visible} style={{ width: '35vw' }}
+            <Dialog header={idCategory ? 'Cập nhật' : 'Thêm mới'} visible={visible} style={{ minWidth: '35vw' }}
                 onHide={() => { if (!visible) return; HandClose(); }}>
                 <Form form={form} onFinish={onFinish}
                     onFinishFailed={onFinishFailed}

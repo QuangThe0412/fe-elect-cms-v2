@@ -366,7 +366,7 @@ export default
                 style={{ display: 'none', height: '0px', width: '0px', position: 'absolute' }}>
             </iframe>
 
-            <Dialog visible={visible} style={{ width: '95vw' }} header={headerElement}
+            <Dialog visible={visible} style={{ minWidth: '95vw' }} header={headerElement}
                 onHide={() => { if (!visible) return; HandClose(); }} >
                 <DataTable value={details} editMode="row" loading={loading}
                     rowClassName={rowClassName}

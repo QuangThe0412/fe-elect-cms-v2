@@ -119,7 +119,7 @@ export default
     return (
         <>
             <Toast ref={toast}></Toast>
-            <Dialog header={idDiscount ? 'Cập nhật' : 'Thêm mới'} visible={visible} style={{ width: '40vw' }}
+            <Dialog header={idDiscount ? 'Cập nhật' : 'Thêm mới'} visible={visible} style={{ minWidth: '40vw' }}
                 onHide={() => { if (!visible) return; HandClose(); }}>
                 <Form form={form} onFinish={onFinish}
                     onFinishFailed={onFinishFailed}
