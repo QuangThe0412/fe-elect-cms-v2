@@ -13,7 +13,6 @@ import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
 import { convertFormData, linkImageGG, trimString } from '@/utils/common';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { FileUpload } from 'primereact/fileupload';
-import { InputNumber } from 'primereact/inputnumber';
 
 type PropType = {
     idProduct: number,
@@ -217,13 +216,10 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
                             }
                         ]}>
                         {(control, meta) => (
-                            <InputNumber
+                            <InputText
                                 {...control}
-                                id="priceRetail"
+                                id="priceRetail" type='number'
                                 className={classNames({ 'invalid': meta.errors.length })}
-                                onChange={(value) => {
-                                    control.onChange(value?.value);
-                                }}
                             />
                         )}
                     </LabelField>
@@ -236,11 +232,8 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
                                     : Promise.resolve()
                             }
                         ]}>
-                        {(control, meta) => (<InputNumber {...control} id="priceWholeSale"
+                        {(control, meta) => (<InputText {...control} id="priceWholeSale" type='number'
                             className={classNames({ 'invalid': meta.errors.length })}
-                            onChange={(value) => {
-                                control.onChange(value?.value);
-                            }}
                         />
                         )}
 
@@ -254,11 +247,8 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
                                     : Promise.resolve()
                             }
                         ]}>
-                        {(control, meta) => (<InputNumber {...control} id="priceCost"
+                        {(control, meta) => (<InputText {...control} id="priceCost" type='number'
                             className={classNames({ 'invalid': meta.errors.length })}
-                            onChange={(value) => {
-                                control.onChange(value?.value);
-                            }}
                         />
                         )}
                     </LabelField>
@@ -271,20 +261,14 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
                                     : Promise.resolve()
                             }
                         ]}>
-                        {(control, meta) => (<InputNumber {...control} id="quantity"
+                        {(control, meta) => (<InputText {...control} id="quantity" type='number'
                             className={classNames({ 'invalid': meta.errors.length })}
-                            onChange={(value) => {
-                                control.onChange(value?.value);
-                            }}
                         />
                         )}
                     </LabelField>
                     <LabelField label="Thời gian bảo hành" name="timeWarranty">
-                        {(control, meta) => (<InputNumber {...control} id="timeWarranty"
+                        {(control, meta) => (<InputText {...control} id="timeWarranty" type='number'
                             className={classNames({ 'invalid': meta.errors.length })}
-                            onChange={(value) => {
-                                control.onChange(value?.value);
-                            }}
                         />
                         )}
                     </LabelField>
