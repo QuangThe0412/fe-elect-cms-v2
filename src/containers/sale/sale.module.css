@@ -43,3 +43,8 @@
     font-size: 1.5rem;
     text-align: right;
 }
+
+.inputDebt {
+    flex-grow: 1;
+    text-align: right;
+}

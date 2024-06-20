@@ -1,6 +1,19 @@
 import axios from 'axios';
 import { paths } from '@/constants/api';
-import { Order } from '@/models/order';
+
+export type _orderDetails = {
+  IDMon: number;
+  SoLuong?: number;
+  DonGia?: number;
+  ChietKhau?: number;
+}
+
+export interface _order {
+  IDKhachHang?: number;
+  CongNo?: number;
+  TrangThai?: number;
+  data: _orderDetails[];
+}
 
 export const OrderService = {
   getOrders() {
@@ -15,7 +28,7 @@ export const OrderService = {
     return axios.get(paths.order + `/${idOrder}` + paths.orderDetails);
   },
 
-  createOrder(order: any ) { ////////=============== work on this
-    return axios.post(paths.order, order);
+  createOrderWithOrderDetails(data: _order) {
+    return axios.post(paths.order, data);
   }
 };

@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Toast } from 'primereact/toast';
 import ProductTable from './ProductTable';
 import styles from './sale.module.css';
-import { Customer, Product } from '@/models';
+import { Customer, OrderDetail, Product } from '@/models';
 import ProductChossen from './ProductChossen';
 import { HandleApi } from '@/services/handleApi';
 import { CustomerService } from '@/services/customer.service';
@@ -12,6 +12,9 @@ import { Button } from 'primereact/button';
 import { formatCurrency } from '@/utils/common';
 import SaleDialog from './SaleDialog';
 import useSaleStore, { SaleStore } from '@/store/sale.store';
+import { OrderService, _order, _orderDetails } from '@/services/order.service';
+import { InputNumber, InputNumberValueChangeEvent } from 'primereact/inputnumber';
+import { STATUS_ENUM } from '@/constants';
 
 export interface ChossenProduct extends Product {
   Number: number | 0;
@@ -40,6 +43,7 @@ export default function SaleComponent() {
   const [selectedCustomers, setSelectedCustomers] = useState<Customer>();
   const [visible, setVisible] = useState<boolean>(false);
   const [results, setResults] = useState<ResultsType>({} as ResultsType);
+  const [debt, setDebt] = useState<number>(0);
 
   useEffect(() => {
     const fethData = async () => {
@@ -77,13 +81,36 @@ export default function SaleComponent() {
     return result;
   }
 
-  const OnClickPayment = () => {
+  const OnClickPayment = (TrangThai: STATUS_ENUM) => {
     if (!selectedCustomers) {
       toast.current?.show({ severity: 'error', summary: 'Thông báo', detail: 'Chưa chọn khách hàng' });
       return;
     }
 
-    setVisible(true);
+    const _data: _orderDetails[] = chosenProducts.map((product: ChossenProduct) => {
+      return {
+        IDMon: product.IDMon,
+        SoLuong: product.Number,
+        ChietKhau: product.Discount,
+        DonGia: product.DonGiaBanLe,
+      }
+    });
+
+    const _order: _order = {
+      IDKhachHang: selectedCustomers.IDKhachHang,
+      CongNo: debt || 0,
+      TrangThai: TrangThai,
+      data: _data
+    }
+
+    console.log(_order);
+    HandleApi(OrderService.createOrderWithOrderDetails(_order), null).then((res) => {
+      console.log(res);
+
+    }).finally(() => {
+      // setVisible(true);
+      // setChosenProducts([]);
+    });
   };
 
   return (
@@ -118,15 +145,28 @@ export default function SaleComponent() {
             <span>Tổng tiền</span>
             <span className={styles.money}>{formatCurrency(results.MoneyAfterDiscount)}</span>
           </div>
+          <div className={styles.textMoney}>
+            <span>Công nợ</span>
+            <div className={styles.inputDebt}>
+              <InputNumber value={debt}
+                min={0} mode="currency" currency="VND" locale="vi-VN"
+                max={results.MoneyAfterDiscount}
+                onValueChange={(e: any) => setDebt(e.value)} />
+            </div>
+          </div>
           <div>
-            {
-              <Button
-                disabled={chosenProducts.length === 0}
-                onClick={OnClickPayment}
-                label="Thanh toán"
-                icon="pi pi-check"
-                className="p-button-success" />
-            }
+            <Button
+              disabled={chosenProducts.length === 0}
+              onClick={() => OnClickPayment(STATUS_ENUM.PENDING)}
+              label="Lưu"
+              icon="pi pi-check"
+              className="p-button-success" />
+            <Button
+              disabled={chosenProducts.length === 0}
+              onClick={() => OnClickPayment(STATUS_ENUM.FINISH)}
+              label="Thanh toán"
+              icon="pi pi-check"
+              className="p-button-success" />
           </div>
         </div>
       </div>
