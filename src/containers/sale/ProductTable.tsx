@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { DataTable, DataTableFilterMeta, DataTableSelectEvent } from 'primereact/datatable';
+import { DataTable, DataTableFilterMeta } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { InputText } from 'primereact/inputtext';
 import { Category, Product } from '@/models';
@@ -159,9 +159,9 @@ export default function ProductTable({ chosenProducts, setChosenProducts }: Prop
         <Column field="TenMon" header="Tên" style={{ width: '15%' }}></Column>
         <Column field="Image" header="Hình ảnh" body={bodyImage} style={{ width: '5%' }}></Column>
         <Column field="DVTMon" filter header="ĐVT" ></Column>
-        <Column field="DonGiaVon" filter header="Giá vốn" body={(rowData: Product) => <>{formatCurrency(rowData.DonGiaVon)}</>} sortable ></Column>
-        <Column field="DonGiaBanLe" filter header="Giá lẻ" body={(rowData: Product) => <>{formatCurrency(rowData.DonGiaBanLe)}</>} sortable ></Column>
-        <Column field="DonGiaBanSi" filter header="Giá sỉ" body={(rowData: Product) => <>{formatCurrency(rowData.DonGiaBanSi)}</>} sortable ></Column>
+        <Column field="DonGiaVon" filter header="Giá vốn" body={(rowData: ChossenProduct) => <>{formatCurrency(rowData.DonGiaVon)}</>} sortable ></Column>
+        <Column field="DonGiaBanLe" filter header="Giá lẻ" body={(rowData: ChossenProduct) => <>{formatCurrency(rowData.DonGiaBanLe)}</>} sortable ></Column>
+        <Column field="DonGiaBanSi" filter header="Giá sỉ" body={(rowData: ChossenProduct) => <>{formatCurrency(rowData.DonGiaBanSi)}</>} sortable ></Column>
         <Column field="SoLuongTonKho" header="Tồn kho" body={bodyTonKho} sortable ></Column>
         <Column field="ThoiGianBH" header="Bảo hành" sortable ></Column>
         <Column field="GhiChu" header="Ghi chú" ></Column>

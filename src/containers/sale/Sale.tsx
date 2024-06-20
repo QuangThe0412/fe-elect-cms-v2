@@ -10,6 +10,8 @@ import { CustomerService } from '@/services/customer.service';
 import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
 import { formatCurrency } from '@/utils/common';
+import SaleDialog from './SaleDialog';
+import useSaleStore, { SaleStore } from '@/store/sale.store';
 
 export interface ChossenProduct extends Product {
   Number: number | 0;
@@ -19,11 +21,25 @@ export interface ChossenProduct extends Product {
   MoneyDiscount: number | 0;
 }
 
+export type ResultsType = {
+  MoneyBeforeDiscount: number | 0;
+  MoneyDiscount: number | 0;
+  MoneyAfterDiscount: number | 0;
+}
+
 export default function SaleComponent() {
   const toast = useRef<Toast>(null);
-  const [chosenProducts, setChosenProducts] = useState<ChossenProduct[]>([]);
+  const { chosenProducts, setChosenProducts, deleteChosenProduct } = useSaleStore((state: SaleStore) =>
+  ({
+    chosenProducts: state.chosenProducts,
+    setChosenProducts: state.setChosenProducts,
+    deleteChosenProduct: state.deleteChosenProduct
+  }));
+
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [selectedCustomers, setSelectedCustomers] = useState<Customer>();
+  const [visible, setVisible] = useState<boolean>(false);
+  const [results, setResults] = useState<ResultsType>({} as ResultsType);
 
   useEffect(() => {
     const fethData = async () => {
@@ -33,6 +49,23 @@ export default function SaleComponent() {
 
     fethData();
   }, []);
+
+  useEffect(() => {
+    if (chosenProducts.length > 0) {
+      let _results: ResultsType = {
+        MoneyBeforeDiscount: 0,
+        MoneyDiscount: 0,
+        MoneyAfterDiscount: 0
+      }
+
+      chosenProducts.forEach((product: any) => {
+        _results.MoneyBeforeDiscount += product.MoneyBeforeDiscount;
+        _results.MoneyDiscount += product.MoneyDiscount;
+        _results.MoneyAfterDiscount += product.MoneyAfterDiscount;
+      });
+      setResults(_results);
+    }
+  }, [chosenProducts]);
 
   const getCustomers = async () => {
     const res = await HandleApi(CustomerService.getCustomers(), null)
@@ -44,37 +77,13 @@ export default function SaleComponent() {
     return result;
   }
 
-  const CaculateMoneyBeforeDiscount = () => {
-    let total = 0;
-    chosenProducts.forEach((product) => {
-      total += product.MoneyBeforeDiscount;
-    });
-    return formatCurrency(total);
-  };
-
-  const CaculateDiscount = () => {
-    let total = 0;
-    chosenProducts.forEach((product) => {
-      total += product.MoneyDiscount;
-    });
-    return formatCurrency(total);
-  };
-
-  const CaculateMoneyAfterDiscount = () => {
-    let total = 0;
-    chosenProducts.forEach((product) => {
-      total += product.MoneyAfterDiscount;
-    });
-    return formatCurrency(total);
-  };
-  
   const OnClickPayment = () => {
     if (!selectedCustomers) {
       toast.current?.show({ severity: 'error', summary: 'Thông báo', detail: 'Chưa chọn khách hàng' });
       return;
     }
 
-    console.log('Thanh toán', chosenProducts, selectedCustomers);
+    setVisible(true);
   };
 
   return (
@@ -85,6 +94,7 @@ export default function SaleComponent() {
           <ProductChossen
             chosenProducts={chosenProducts}
             setChosenProducts={setChosenProducts}
+            deleteChosenProduct={deleteChosenProduct}
           />
         </div>
         <div className={styles.groupMoney}>
@@ -98,18 +108,25 @@ export default function SaleComponent() {
           </div>
           <div className={styles.textMoney}>
             <span>Trước chiết khấu</span>
-            <span className={styles.money}>{CaculateMoneyBeforeDiscount()}</span>
+            <span className={styles.money}>{formatCurrency(results.MoneyBeforeDiscount)}</span>
           </div>
           <div className={styles.textMoney}>
             <span>Tiền Chiết khấu</span>
-            <span className={styles.money}>{CaculateDiscount()}</span>
+            <span className={styles.money}>{formatCurrency(results.MoneyDiscount)}</span>
           </div>
           <div className={styles.textMoney}>
             <span>Tổng tiền</span>
-            <span className={styles.money}>{CaculateMoneyAfterDiscount()}</span>
+            <span className={styles.money}>{formatCurrency(results.MoneyAfterDiscount)}</span>
           </div>
           <div>
-            <Button label="Thanh toán" className="p-button-success" onClick={OnClickPayment} />
+            {
+              <Button
+                disabled={chosenProducts.length === 0}
+                onClick={OnClickPayment}
+                label="Thanh toán"
+                icon="pi pi-check"
+                className="p-button-success" />
+            }
           </div>
         </div>
       </div>
@@ -119,17 +136,11 @@ export default function SaleComponent() {
           setChosenProducts={setChosenProducts}
         />
       </div>
-      {/* <CategoryDialog
-        categoryGroups={categoryGroups}
-        visible={dialogVisible}
-        onClose={() => {
-          setDialogVisible(false)
-        }}
-        idCategory={selectedCategory?.IDLoaiMon}
-        onCategoryChange={() => {
-          setCategoryChange(!categoryChange)
-        }} // refresh data
-      /> */}
+      <SaleDialog
+        results={results}
+        visible={visible}
+        onClose={() => { setVisible(false) }}
+        chosenProducts={chosenProducts} />
     </div>
   );
 }

@@ -14,9 +14,10 @@ import { InputNumber } from 'primereact/inputnumber';
 type Props = {
   chosenProducts: ChossenProduct[];
   setChosenProducts: (products: ChossenProduct[]) => void;
+  deleteChosenProduct: (products: ChossenProduct) => void;
 }
 
-export default function ProductChossen({ chosenProducts, setChosenProducts }: Props) {
+export default function ProductChossen({ chosenProducts, setChosenProducts,deleteChosenProduct }: Props) {
   const [selectedItem, setSelectedItem] = useState<ChossenProduct>();
 
   const toast = useRef<Toast>(null);
@@ -35,7 +36,7 @@ export default function ProductChossen({ chosenProducts, setChosenProducts }: Pr
   const bodyRowDiscount = (rowData: ChossenProduct) => {
     return (
       <InputNumber value={rowData?.Discount} onChange={(e: any) => {
-        const value = e.value ?? 0;
+        const value = e.value < 0 ? 0 : e.value > 100 ? 100 : e.value;
         let _chosenProducts = [...chosenProducts];
         let index = _chosenProducts.findIndex((product) => product.IDMon === rowData.IDMon);
         if (index !== -1) {
@@ -59,7 +60,7 @@ export default function ProductChossen({ chosenProducts, setChosenProducts }: Pr
     let index = chosenProducts.findIndex((product) => product.IDMon === rowData.IDMon);
     if (index !== -1) {
       chosenProducts.splice(index, 1);
-      setChosenProducts([...chosenProducts]);
+      deleteChosenProduct(rowData);
     }
   };
 
@@ -111,10 +112,11 @@ export default function ProductChossen({ chosenProducts, setChosenProducts }: Pr
         globalFilterFields={["TenMon", "DVTMon", "GhiChu"]} emptyMessage="Không có dữ liệu"
       >
         <Column field="IDMon" header="Id" hidden ></Column>
+        <Column field="Index" header="STT" body={(rowData, { rowIndex }) => rowIndex + 1} ></Column>
         <Column field="TenMon" header="Tên" style={{ width: '15%' }}></Column>
         <Column field="Image" header="Hình ảnh" body={bodyImage} style={{ width: '5%' }}></Column>
         <Column field="DVTMon" header="ĐVT"></Column>
-        <Column field="DonGiaBanLe" header="Giá" body={(rowData: Product) => <>{formatCurrency(rowData?.DonGiaBanLe)}</>} ></Column>
+        <Column field="DonGiaBanLe" header="Giá" body={(rowData: ChossenProduct) => <>{formatCurrency(rowData?.DonGiaBanLe)}</>} ></Column>
         <Column field='SoLuong' header="Số lượng" body={bodySoLuong} ></Column>
         <Column field='Discount' header="Chiết khấu" body={bodyRowDiscount} ></Column>
         <Column field='MoneyAfterDiscount' header="Tổng" body={bodyRowTotal} ></Column>
