@@ -174,7 +174,7 @@ export default function SaleComponent() {
               }}
               label="Xóa hết"
               icon="pi pi-refresh"
-              className="p-button-infor" />
+              className="p-button-infor hidden" />
             <Button
               disabled={chosenProducts.length === 0}
               onClick={() => OnClickPayment(STATUS_ENUM.PENDING)}
