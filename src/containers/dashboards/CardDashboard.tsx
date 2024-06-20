@@ -10,7 +10,7 @@ type PropTypes = {
 }
 
 export default function CardDashboard({ data, title }: PropTypes) {
-    const _data = data.filter(item => item.TrangThai === STATUS_ENUM.PENDING);
+    const _data = data.filter(item => item.TrangThai === STATUS_ENUM.FINISH);
     const navigate = useNavigate();
     const totalMoney = _data.reduce((total, item) => total + (item.TienSauCK ?? 0), 0);
 
