@@ -29,4 +29,5 @@ export const paths = {
     importDetails: '/chiTietPhieuNhap',
     export: '/phieuXuat',
     exportDetails: '/chiTietPhieuXuat',
+    sale: '/banHang',
 };

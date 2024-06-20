@@ -156,7 +156,7 @@ export default
     return (
         <>
             <Toast ref={toast}></Toast>
-            <Dialog visible={visible} style={{ width: '60vw' }} header={headerElement}
+            <Dialog visible={visible} style={{ minWidth: '60vw' }} header={headerElement}
                 onHide={() => { if (!visible) return; HandClose(); }} >
                 <DataTable value={debtDetails} editMode="row" loading={loading}
                     rowClassName={rowClassName}

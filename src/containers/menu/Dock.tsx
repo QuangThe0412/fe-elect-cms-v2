@@ -20,6 +20,7 @@ import debtImage from '@/images/debt.png';
 import importImage from '@/images/import.png';
 import exportImage from '@/images/export.png';
 import inventoryImage from '@/images/inventory.png';
+import houseImage from '@/images/house.png';
 import { RoleEnum } from '@/constants';
 
 export default function DockMenu() {
@@ -41,8 +42,17 @@ export default function DockMenu() {
 
     const items: MenuItem[] = [
         {
+            label: 'Bán hàng',
+            icon: () => <img alt="Sale" src={houseImage} width="100%" />,
+            data: paths.sale,
+            command: () => {
+                HandleGoPath(paths.sale);
+            },
+        },
+        {
             label: 'Người dùng',
             icon: () => <img alt="User" src={permissionImage} width="100%" />,
+            data: paths.user,
             command: () => {
                 HandleGoPath(paths.user);
             },
@@ -50,6 +60,7 @@ export default function DockMenu() {
         {
             label: 'Thống kê',
             icon: () => <img alt="DashBoard" src={dashboardImage} width="100%" />,
+            data: paths.dashboard,
             command: () => {
                 HandleGoPath(paths.dashboard);
             },
@@ -57,6 +68,7 @@ export default function DockMenu() {
         {
             label: 'Loại sản phẩm',
             icon: () => <img alt="Category" src={categoryImage} width="100%" />,
+            data: paths.category,
             command: () => {
                 HandleGoPath(paths.category);
             },
@@ -64,6 +76,7 @@ export default function DockMenu() {
         {
             label: 'Sản phẩm',
             icon: () => <img alt="Product" src={productImage} width="100%" />,
+            data: paths.product,
             command: () => {
                 HandleGoPath(paths.product);
             },
@@ -71,6 +84,7 @@ export default function DockMenu() {
         {
             label: 'Khách hàng',
             icon: () => <img alt="Customer" src={customerImage} width="100%" />,
+            data: paths.customer,
             command: () => {
                 HandleGoPath(paths.customer);
             },
@@ -78,6 +92,7 @@ export default function DockMenu() {
         {
             label: 'Khuyến mãi',
             icon: () => <img alt="Discount" src={discountImage} width="100%" />,
+            data: paths.discount,
             command: () => {
                 HandleGoPath(paths.discount);
             },
@@ -85,6 +100,7 @@ export default function DockMenu() {
         {
             label: 'Hóa đơn',
             icon: () => <img alt="Order" src={billImage} width="100%" />,
+            data: paths.order,
             command: () => {
                 HandleGoPath(paths.order);
             },
@@ -92,6 +108,7 @@ export default function DockMenu() {
         {
             label: 'Công nợ',
             icon: () => <img alt="Test" src={debtImage} width="100%" />,
+            data: paths.debt,
             command: () => {
                 HandleGoPath(paths.debt);
             },
@@ -99,6 +116,7 @@ export default function DockMenu() {
         {
             label: 'Phiếu nhập',
             icon: () => <img alt="Test" src={importImage} width="100%" />,
+            data: paths.import,
             command: () => {
                 HandleGoPath(paths.import);
             },
@@ -106,6 +124,7 @@ export default function DockMenu() {
         // {
         //     label: 'Phiếu xuất',
         //     icon: () => <img alt="Test" src={exportImage} width="100%" />,
+        // data :paths.export,
         //     command: () => {
         //         HandleGoPath(paths.export);
         //     },
@@ -113,6 +132,7 @@ export default function DockMenu() {
         // {
         //     label: 'Báo giá',
         //     icon: () => <img alt="Test" src={costImage} width="100%" />,
+        // data :paths.test,
         //     command: () => {
         //         HandleGoPath('/test');
         //     },
@@ -120,18 +140,21 @@ export default function DockMenu() {
         // {
         //     label: 'Kiểm kê',
         //     icon: () => <img alt="Test" src={inventoryImage} width="100%" />,
+        // data :paths.test,
         //     command: () => {
         //         HandleGoPath('/test');
         //     },
         // }
     ];
 
+    const _items = items.filter((item) => checkRoleAccess(userRole, item.data as string));
+
     return (
         <div className="card dock-demo">
             <Toast ref={toast} />
             <Tooltip className="dark-tooltip" target=".dock-advanced .p-dock-action" my="center+15 bottom-15" at="center top" showDelay={150} />
             <div className="dock-window dock-advanced">
-                <Dock model={items} position={"top"} />
+                <Dock model={_items} position={"top"} />
             </div>
         </div>
     )

@@ -11,6 +11,7 @@ import DiscountComponent from '@/containers/discount/Discount';
 import Orders from '@/containers/order/Order';
 import DebtComponent from '@/containers/debt/Debt';
 import ImportComponent from '@/containers/import/Import';
+import SaleComponent from '@/containers/sale/Sale';
 
 export type RouteType = {
     path: string,
@@ -77,9 +78,9 @@ export const RouteArray: RouteType[] = [
         component: ImportComponent,
         roles: [RoleEnum.ADMIN]
     },
-    // {
-    //     path: paths.export,
-    //     component: {},
-    //     roles: [RoleEnum.ADMIN]
-    // },
+    {
+        path: paths.sale,
+        component: SaleComponent,
+        roles: [RoleEnum.ADMIN]
+    },
 ]

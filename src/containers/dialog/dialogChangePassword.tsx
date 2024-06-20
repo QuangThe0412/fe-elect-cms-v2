@@ -66,7 +66,7 @@ export default function DialogChangePassword({ visible, onClose, idUser }: PropT
     return (
         <>
             <Toast ref={toast}></Toast>
-            <Dialog header="Đổi mật khẩu" visible={visible} style={{ width: '35vw' }}
+            <Dialog header="Đổi mật khẩu" visible={visible} style={{ minWidth: '35vw' }}
                 onHide={() => { if (!visible) return; HandleHide(); }}>
                 <Form form={form} onFinish={onFinish}
                     onFinishFailed={onFinishFailed}
