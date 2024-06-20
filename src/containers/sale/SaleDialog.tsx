@@ -10,9 +10,10 @@ type PropType = {
     onClose: () => void,
     chosenProducts: ChossenProduct[];
     results: ResultsType;
+    idOrderCreated: number;
 };
 
-export default function SaleDialog({ visible, onClose, chosenProducts, results }: PropType) {
+export default function SaleDialog({ visible, onClose, chosenProducts, results, idOrderCreated }: PropType) {
     const HandClose = () => {
         onClose();
     };
@@ -42,14 +43,12 @@ export default function SaleDialog({ visible, onClose, chosenProducts, results }
     const renderHeader = () => {
         return (
             <>
-                <span>Chi tiết hóa đơn</span>
                 <Button label="In" icon="pi pi-fw pi-print"
                     className="p-button p-component p-button-primary ml-3"
                     onClick={handlePrint} />
             </>
         );
     };
-
 
     return (
         <>
@@ -60,6 +59,7 @@ export default function SaleDialog({ visible, onClose, chosenProducts, results }
             <Dialog header={renderHeader()} visible={visible} style={{ minWidth: '35vw' }}
                 onHide={() => { if (!visible) return; HandClose(); }}>
                 <div id='divcontents_SaleDialog'>
+                    <h2 className="text-right">Hóa đơn bán hàng : {idOrderCreated}</h2>
                     <DataTable value={chosenProducts}
                         stripedRows sortMode="multiple" removableSort
                         tableStyle={{ width: '100%' }}

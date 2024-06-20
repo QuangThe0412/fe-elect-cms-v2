@@ -48,3 +48,10 @@
     flex-grow: 1;
     text-align: right;
 }
+
+.wraperBtn {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}

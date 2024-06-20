@@ -13,7 +13,7 @@ import { formatCurrency } from '@/utils/common';
 import SaleDialog from './SaleDialog';
 import useSaleStore, { SaleStore } from '@/store/sale.store';
 import { OrderService, _order, _orderDetails } from '@/services/order.service';
-import { InputNumber, InputNumberValueChangeEvent } from 'primereact/inputnumber';
+import { InputNumber } from 'primereact/inputnumber';
 import { STATUS_ENUM } from '@/constants';
 
 export interface ChossenProduct extends Product {
@@ -28,8 +28,17 @@ export type ResultsType = {
   MoneyBeforeDiscount: number | 0;
   MoneyDiscount: number | 0;
   MoneyAfterDiscount: number | 0;
+  MoneyCustomerPay: number | 0;
 }
 
+const emptyResults: ResultsType = {
+  MoneyBeforeDiscount: 0,
+  MoneyDiscount: 0,
+  MoneyAfterDiscount: 0,
+  MoneyCustomerPay: 0
+}
+
+let idOrderCreated = 0;
 export default function SaleComponent() {
   const toast = useRef<Toast>(null);
   const { chosenProducts, setChosenProducts, deleteChosenProduct } = useSaleStore((state: SaleStore) =>
@@ -42,8 +51,7 @@ export default function SaleComponent() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [selectedCustomers, setSelectedCustomers] = useState<Customer>();
   const [visible, setVisible] = useState<boolean>(false);
-  const [results, setResults] = useState<ResultsType>({} as ResultsType);
-  const [debt, setDebt] = useState<number>(0);
+  const [results, setResults] = useState<ResultsType>(emptyResults);
 
   useEffect(() => {
     const fethData = async () => {
@@ -59,13 +67,15 @@ export default function SaleComponent() {
       let _results: ResultsType = {
         MoneyBeforeDiscount: 0,
         MoneyDiscount: 0,
-        MoneyAfterDiscount: 0
+        MoneyAfterDiscount: 0,
+        MoneyCustomerPay: 0
       }
 
       chosenProducts.forEach((product: any) => {
         _results.MoneyBeforeDiscount += product.MoneyBeforeDiscount;
         _results.MoneyDiscount += product.MoneyDiscount;
         _results.MoneyAfterDiscount += product.MoneyAfterDiscount;
+        _results.MoneyCustomerPay += product.MoneyAfterDiscount;
       });
       setResults(_results);
     }
@@ -81,7 +91,7 @@ export default function SaleComponent() {
     return result;
   }
 
-  const OnClickPayment = (TrangThai: STATUS_ENUM) => {
+  const OnClickPayment = async (TrangThai: STATUS_ENUM) => {
     if (!selectedCustomers) {
       toast.current?.show({ severity: 'error', summary: 'Thông báo', detail: 'Chưa chọn khách hàng' });
       return;
@@ -95,22 +105,21 @@ export default function SaleComponent() {
         DonGia: product.DonGiaBanLe,
       }
     });
+    const congNo = results.MoneyAfterDiscount - results.MoneyCustomerPay;
 
     const _order: _order = {
       IDKhachHang: selectedCustomers.IDKhachHang,
-      CongNo: debt || 0,
+      CongNo: congNo || 0,
       TrangThai: TrangThai,
       data: _data
     }
 
-    console.log(_order);
-    HandleApi(OrderService.createOrderWithOrderDetails(_order), null).then((res) => {
-      console.log(res);
-
-    }).finally(() => {
-      // setVisible(true);
-      // setChosenProducts([]);
-    });
+    const res = await HandleApi(OrderService.createOrderWithOrderDetails(_order), null);
+    if (res && res.status === 201) {
+      const { data } = res;
+      idOrderCreated = data.IDHoaDon;
+      setVisible(true);
+    }
   };
 
   return (
@@ -146,26 +155,37 @@ export default function SaleComponent() {
             <span className={styles.money}>{formatCurrency(results.MoneyAfterDiscount)}</span>
           </div>
           <div className={styles.textMoney}>
-            <span>Công nợ</span>
+            <span>Khách trả</span>
             <div className={styles.inputDebt}>
-              <InputNumber value={debt}
+              <InputNumber value={results.MoneyCustomerPay}
                 min={0} mode="currency" currency="VND" locale="vi-VN"
                 max={results.MoneyAfterDiscount}
-                onValueChange={(e: any) => setDebt(e.value)} />
+                onValueChange={(e: any) =>
+                  setResults({ ...results, MoneyCustomerPay: e.value as number })
+                } />
             </div>
           </div>
-          <div>
+          <div className={styles.wraperBtn}>
+            <Button
+              disabled={chosenProducts.length === 0}
+              onClick={() => {
+                setChosenProducts([])
+                setResults(emptyResults)
+              }}
+              label="Xóa hết"
+              icon="pi pi-refresh"
+              className="p-button-infor" />
             <Button
               disabled={chosenProducts.length === 0}
               onClick={() => OnClickPayment(STATUS_ENUM.PENDING)}
               label="Lưu"
-              icon="pi pi-check"
-              className="p-button-success" />
+              icon="pi pi-save"
+              className="p-button-danger" />
             <Button
               disabled={chosenProducts.length === 0}
               onClick={() => OnClickPayment(STATUS_ENUM.FINISH)}
               label="Thanh toán"
-              icon="pi pi-check"
+              icon="pi pi-dollar"
               className="p-button-success" />
           </div>
         </div>
@@ -177,9 +197,14 @@ export default function SaleComponent() {
         />
       </div>
       <SaleDialog
+        idOrderCreated={idOrderCreated}
         results={results}
         visible={visible}
-        onClose={() => { setVisible(false) }}
+        onClose={() => {
+          setVisible(false)
+          setChosenProducts([]);
+          setResults(emptyResults);
+        }}
         chosenProducts={chosenProducts} />
     </div>
   );
