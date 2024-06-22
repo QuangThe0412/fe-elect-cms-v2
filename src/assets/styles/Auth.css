@@ -1,6 +1,6 @@
 .form-demo {
-    background-color: black;
     padding: 1rem;
+    border: 1px solid #eaeaea;
 }
 
 .form-demo .card {
