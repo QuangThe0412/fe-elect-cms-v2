@@ -170,7 +170,7 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
                     <LabelField label="Hình ảnh" name="image">
                         {(control, meta) => (
                             <FileUpload {...control} id="image" mode="basic" accept="image/*"
-                                maxFileSize={1000000} className={classNames({ 'invalid': meta.errors.length })}
+                                maxFileSize={10485760} className={classNames({ 'invalid': meta.errors.length })}
                                 onSelect={handleSelectFile}
                             />
                         )}
