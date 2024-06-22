@@ -12,7 +12,12 @@ code {
     monospace;
 }
 
-input {
+input,
+textarea {
   background-color: white !important;
   color: black !important;
+}
+
+.p-datatable {
+  height: 100%;
 }
