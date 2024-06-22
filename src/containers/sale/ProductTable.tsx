@@ -105,11 +105,31 @@ export default function ProductTable({ chosenProducts, setChosenProducts }: Prop
     return <div className={stockClassName}>{rowData.SoLuongTonKho}</div>;
   };
 
-  const loaiMonItemTemplate = (option: Category) => {
+  useEffect(() => {
+    const handleKeyDown = () => {
+      const tagName = (document.activeElement as HTMLElement).tagName.toLowerCase();
+      if (!['input', 'textarea', 'select'].includes(tagName)) {
+        // Tự động focus vào ô filter của "MaTat"
+        const filterInput = document.getElementById('filter-matat');
+        if (filterInput) {
+          filterInput.focus();
+        }
+      }
+    };
+
+    // Đăng ký sự kiện
+    document.addEventListener('keydown', handleKeyDown);
+
+    // Hủy đăng ký sự kiện khi component unmount
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
+  const bodyRowFilterTemplate = (options: ColumnFilterElementTemplateOptions) => {
     return (
-      <div className="flex align-items-center gap-2">
-        <span>{option.TenLoai}</span>
-      </div>
+      <InputText id="filter-matat" type="text" className="p-inputtext-sm"
+        onInput={(e) => options.filterApplyCallback(e.currentTarget.value)} placeholder="Tìm mã" />
     );
   };
 
@@ -130,6 +150,7 @@ export default function ProductTable({ chosenProducts, setChosenProducts }: Prop
       >
         <Column field="IDMon" header="Id" hidden></Column>
         <Column field="MaTat" header="Mã"
+          filterElement={bodyRowFilterTemplate}
           filter filterPlaceholder="Nhập mã"
           filterMatchMode={FilterMatchMode.STARTS_WITH}
           showFilterMatchModes={false}
