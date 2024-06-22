@@ -31,7 +31,7 @@ const getCookie = (name: string) => {
 };
 
 const eraseCookie = (name: string) => {
-    document.cookie = `${name}=; Max-Age=-99999999;`;
+    document.cookie = `${name}=; Max-Age=-99999999; path=/; Secure; SameSite=None`;
 };
 
 const getProfile = () => {
