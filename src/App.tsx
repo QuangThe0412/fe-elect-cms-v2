@@ -1,17 +1,19 @@
 import RootRoutes from './routes';
-import { useEffect } from 'react';
-import { THEMES_PRIME_REACT } from '@/constants/theme';
-import useThemeStore from '@/store/theme.store'; import axios from 'axios';
+ import axios from 'axios';
 import { tryGetAccessToken } from '@/services/handleApi';
 import { apiUrl } from '@/constants/api';
 import { paths } from '@/constants/api';
+import { useEffect } from 'react';
+import useThemeStore from '@/store/theme.store';
+import { THEMES_PRIME_REACT } from '@/constants/theme';
+require('primereact/resources/themes/lara-light-indigo/theme.css')
 
 function App() {
-  const isLight = useThemeStore((state: any) => state.isLight);
+  // const isLight = useThemeStore((state: any) => state.isLight);
 
-  useEffect(() => {
-    isLight ? THEMES_PRIME_REACT.laraLightIndigo() : THEMES_PRIME_REACT.laraDarkIndigo();
-  }, [isLight]);
+  // useEffect(() => {
+  //   isLight ? THEMES_PRIME_REACT.laraLightIndigo() : THEMES_PRIME_REACT.laraDarkIndigo();
+  // }, [isLight]);
 
   //config middleware axios
   const exceptUrls = [paths.login, paths.register, paths.refreshToken];
