@@ -29,6 +29,7 @@ type typeForm = {
     priceRetail: number;
     priceWholeSale: number;
     priceCost: number;
+    maTat: string;
     note: string;
     quantity: number;
     nameProduct: string;
@@ -39,6 +40,7 @@ const initialForm: typeForm = {
     id: 0,
     idCategory: 0,
     unit: '',
+    maTat: '',
     priceRetail: 0,
     priceWholeSale: 0,
     priceCost: 0,
@@ -49,7 +51,7 @@ const initialForm: typeForm = {
 };
 
 
-export default function ProductDialog({ visible, onClose, idProduct, onProductChange,categories }: PropType) {
+export default function ProductDialog({ visible, onClose, idProduct, onProductChange, categories }: PropType) {
     const [form] = Form.useForm();
     const toast = useRef<Toast>(null);
     const [loading, setLoading] = useState<boolean>(false);
@@ -106,6 +108,7 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
             IDMon: idProduct,
             IDLoaiMon: selectedCategory?.IDLoaiMon || 0,
             DVTMon: values.unit,
+            MaTat: values.maTat,
             DonGiaBanLe: values.priceRetail,
             DonGiaBanSi: values.priceWholeSale,
             DonGiaVon: values.priceCost,
@@ -169,7 +172,7 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
                     className="p-fluid">
                     <LabelField label="Hình ảnh" name="image">
                         {(control, meta) => (
-                            <FileUpload {...control} id="image" mode="basic" accept="image/*"
+                            <FileUpload {...control} id="image" mode="basic" accept="image/*" chooseLabel='Chọn ảnh'
                                 maxFileSize={10485760} className={classNames({ 'invalid': meta.errors.length })}
                                 onSelect={handleSelectFile}
                             />
@@ -198,6 +201,13 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
                                 options={categories} optionLabel={'TenLoai'}
                                 placeholder="Chọn loại món" className="w-full" />
                         )}
+                    </LabelField>
+                    <LabelField label="Mã" name="MaTat"
+                        rules={[
+                            { required: true, message: 'Mã tắt không được bỏ trống.' },
+                        ]}>
+                        {(control, meta) => (<InputText {...control} id="MaTat"
+                            className={classNames({ 'invalid': meta.errors.length })} />)}
                     </LabelField>
                     <LabelField label="Đơn vị tính" name="unit"
                         rules={[
@@ -276,7 +286,9 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
                         {(control, meta) => (<InputTextarea {...control} id="note"
                             className={classNames({ 'invalid': meta.errors.length })} />)}
                     </LabelField>
-                    <Button loading={loading} type='submit' label={idProduct ? 'Cập nhật' : 'Tạo mới'} className="w-6" style={{ float: 'right' }} />
+                    <Button loading={loading} type='submit'
+                        label={idProduct ? 'Cập nhật' : 'Tạo mới'}
+                        className="w-6" style={{ float: 'right' }} />
                 </Form>
             </Dialog>
         </>

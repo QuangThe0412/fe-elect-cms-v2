@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { DataTable, DataTableFilterMeta } from 'primereact/datatable';
-import { Column } from 'primereact/column';
+import { Column, ColumnFilterElementTemplateOptions } from 'primereact/column';
 import { InputText } from 'primereact/inputtext';
 import { Category, Product } from '@/models';
 import { Toast } from 'primereact/toast';
@@ -14,6 +14,7 @@ import { formatCurrency, handleImageError, linkImageGG } from '@/utils/common';
 import { classNames } from 'primereact/utils';
 import { CategoryService } from '@/services/category.service';
 import { ChossenProduct } from './Sale';
+import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect';
 
 type Props = {
   chosenProducts: ChossenProduct[];
@@ -23,17 +24,8 @@ type Props = {
 export default function ProductTable({ chosenProducts, setChosenProducts }: Props) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
   const [selectedProduct, setSelectedProduct] = useState<Product>();
   const [categories, setCategories] = useState<Category[]>([]);
-  const [filters, setFilters] = useState<DataTableFilterMeta>({
-    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    IDMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    TenMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    IDLoaiMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    DVTMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    GhiChu: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  });
 
   const toast = useRef<Toast>(null);
 
@@ -94,34 +86,10 @@ export default function ProductTable({ chosenProducts, setChosenProducts }: Prop
 
   const rowClassName = (data: Product) => (!data.Deleted ? '' : 'p-disabled');
 
-  const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    let _filters = { ...filters };
-    _filters['global'] = { value: value, matchMode: FilterMatchMode.CONTAINS };
-    setFilters(_filters);
-    setGlobalFilterValue(value);
-  };
-
-  const renderHeader = () => {
-    return (
-      <div className="flex flex-wrap gap-2 justify-content-between align-items-center">
-        <span className="p-input-icon-left">
-          <i className="pi pi-search" />
-          <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Tìm kiếm" />
-        </span>
-      </div>
-    );
-  };
-
   const bodyLoaiMon = (rowData: Product) => {
+    const loaiMon = categories.find((category: Category) => category.IDLoaiMon === rowData.IDLoaiMon);
     return (
-      <>
-        {categories.map((category: Category) => {
-          if (category.IDLoaiMon === rowData.IDLoaiMon) {
-            return category.TenLoai;
-          }
-        })}
-      </>
+      <span>{loaiMon?.TenLoai}</span>
     );
   };
 
@@ -137,31 +105,63 @@ export default function ProductTable({ chosenProducts, setChosenProducts }: Prop
     return <div className={stockClassName}>{rowData.SoLuongTonKho}</div>;
   };
 
+  useEffect(() => {
+    const handleKeyDown = () => {
+      const tagName = (document.activeElement as HTMLElement).tagName.toLowerCase();
+      if (!['input', 'textarea', 'select'].includes(tagName)) {
+        // Tự động focus vào ô filter của "MaTat"
+        const filterInput = document.getElementById('filter-matat');
+        if (filterInput) {
+          filterInput.focus();
+        }
+      }
+    };
+
+    // Đăng ký sự kiện
+    document.addEventListener('keydown', handleKeyDown);
+
+    // Hủy đăng ký sự kiện khi component unmount
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
+  const bodyRowFilterTemplate = (options: ColumnFilterElementTemplateOptions) => {
+    return (
+      <InputText id="filter-matat" type="text" className="p-inputtext-sm"
+        onInput={(e) => options.filterApplyCallback(e.currentTarget.value)} placeholder="Tìm mã" />
+    );
+  };
+
   return (
-    <div className="card">
+    <div className="card" style={{ height: '100%' }}>
       <Toast ref={toast} />
       <DataTable value={products}
-        header={renderHeader()}
         rowClassName={rowClassName}
         paginator rows={15} rowsPerPageOptions={[5, 10, 25, 50]}
         stripedRows sortMode="multiple" removableSort
         tableStyle={{ width: '100%' }}
-        loading={loading} scrollable scrollHeight="40vh"
+        loading={loading} scrollable scrollHeight="90%"
         selectionMode="single" selection={selectedProduct}
         onSelectionChange={(e: any) => { setSelectedProduct(e.value) }} dataKey="IDMon"
         resizableColumns showGridlines columnResizeMode="expand"
-        filters={filters}
-        globalFilterFields={["TenMon", "DVTMon", "GhiChu"]} emptyMessage="Không có dữ liệu"
         onRowDoubleClick={(e: any) => handleProductSelect(e)}
+        filterDisplay="row"
       >
-        <Column field="IDMon" filter header="Id" ></Column>
-        <Column field="IDLoaiMon" filter header="Loại" body={bodyLoaiMon} ></Column>
-        <Column field="TenMon" header="Tên" style={{ width: '15%' }}></Column>
+        <Column field="IDMon" header="Id" hidden></Column>
+        <Column field="MaTat" header="Mã"
+          filterElement={bodyRowFilterTemplate}
+          filter filterPlaceholder="Nhập mã"
+          filterMatchMode={FilterMatchMode.STARTS_WITH}
+          showFilterMatchModes={false}
+        ></Column>
+        <Column field="IDLoaiMon" header="Loại" body={bodyLoaiMon}></Column>
+        <Column field="TenMon" filter filterPlaceholder="Nhập tên" header="Tên" style={{ width: '15%' }}></Column>
         <Column field="Image" header="Hình ảnh" body={bodyImage} style={{ width: '5%' }}></Column>
-        <Column field="DVTMon" filter header="ĐVT" ></Column>
-        <Column field="DonGiaVon" filter header="Giá vốn" body={(rowData: ChossenProduct) => <>{formatCurrency(rowData.DonGiaVon)}</>} sortable ></Column>
-        <Column field="DonGiaBanLe" filter header="Giá lẻ" body={(rowData: ChossenProduct) => <>{formatCurrency(rowData.DonGiaBanLe)}</>} sortable ></Column>
-        <Column field="DonGiaBanSi" filter header="Giá sỉ" body={(rowData: ChossenProduct) => <>{formatCurrency(rowData.DonGiaBanSi)}</>} sortable ></Column>
+        <Column field="DVTMon" header="ĐVT" ></Column>
+        <Column field="DonGiaVon" header="Giá vốn" body={(rowData: ChossenProduct) => <>{formatCurrency(rowData.DonGiaVon)}</>} sortable ></Column>
+        <Column field="DonGiaBanLe" header="Giá lẻ" body={(rowData: ChossenProduct) => <>{formatCurrency(rowData.DonGiaBanLe)}</>} sortable ></Column>
+        <Column field="DonGiaBanSi" header="Giá sỉ" body={(rowData: ChossenProduct) => <>{formatCurrency(rowData.DonGiaBanSi)}</>} sortable ></Column>
         <Column field="SoLuongTonKho" header="Tồn kho" body={bodyTonKho} sortable ></Column>
         <Column field="ThoiGianBH" header="Bảo hành" sortable ></Column>
         <Column field="GhiChu" header="Ghi chú" ></Column>

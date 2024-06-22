@@ -42,11 +42,9 @@ export default function SaleDialog({ visible, onClose, chosenProducts, results, 
 
     const renderHeader = () => {
         return (
-            <>
-                <Button label="In" icon="pi pi-fw pi-print"
-                    className="p-button p-component p-button-primary ml-3"
-                    onClick={handlePrint} />
-            </>
+            <Button label="In" icon="pi pi-fw pi-print"
+                className="p-button p-component p-button-primary ml-3"
+                onClick={handlePrint} />
         );
     };
 
@@ -65,9 +63,7 @@ export default function SaleDialog({ visible, onClose, chosenProducts, results, 
                         tableStyle={{ width: '100%' }}
                         resizableColumns showGridlines columnResizeMode="expand" >
                         <Column field="IDMon" header="Id" hidden ></Column>
-                        <Column field="Index" header="STT" body={(rowData, { rowIndex }) => rowIndex + 1} ></Column>
                         <Column field="TenMon" header="Tên" style={{ width: '15%' }}></Column>
-                        <Column field="DVTMon" header="ĐVT"></Column>
                         <Column field="DonGiaBanLe" header="Giá" body={(rowData: ChossenProduct) => <>{formatCurrency(rowData?.DonGiaBanLe)}</>} ></Column>
                         <Column field='Number' header="Số lượng" body={(rowData: ChossenProduct) => <>{formatNumber(rowData?.Number)}</>} ></Column>
                         <Column field='MoneyAfterDiscount' header="Tổng" body={(rowData: ChossenProduct) => <>{formatCurrency(rowData?.MoneyAfterDiscount)}</>} ></Column>

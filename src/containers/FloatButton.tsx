@@ -3,35 +3,19 @@ import { useRef } from 'react';
 import { SpeedDial } from 'primereact/speeddial';
 import { Toast } from 'primereact/toast';
 import { MenuItem } from 'primereact/menuitem';
-import { useNavigate } from 'react-router-dom';
 import useThemeStore from '@/store/theme.store';
 
 export default function FloatButton() {
-    const { changeTheme, isDark } = useThemeStore((state: any) => (
-        { changeTheme: state.changeTheme, isDark: state.isDark }
+    const { changeTheme, isLight } = useThemeStore((state: any) => (
+        { changeTheme: state.changeTheme, isLight: state.isLight }
     ));
-    const navigate = useNavigate();
     const toast = useRef<Toast>(null);
     const items: MenuItem[] = [
-        {
-            label: 'Upload',
-            icon: 'pi pi-upload',
-            command: () => {
-                navigate('/fileupload');
-            }
-        },
-        {
-            label: 'React Website',
-            icon: 'pi pi-external-link',
-            command: () => {
-                window.location.href = 'https://react.dev/';
-            }
-        },
         {
             label: 'Change Theme',
             icon: 'pi pi-sync',
             command: () => {
-                changeTheme(isDark);
+                changeTheme(isLight);
             }
         }
     ];

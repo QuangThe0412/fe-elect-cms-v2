@@ -30,6 +30,7 @@ let emptyProduct: Product = {
   SoLuongTonKho: 0,
   ThoiGianBH: 0,
   Deleted: false,
+  MaTat: '',
   GhiChu: '',
   Image: '',
   modifyDate: null,
@@ -45,11 +46,9 @@ export default function Products() {
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
   const [filters, setFilters] = useState<DataTableFilterMeta>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    MaTat: { value: null, matchMode: FilterMatchMode.CONTAINS },
     IDMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
     TenMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    IDLoaiMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    DVTMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    GhiChu: { value: null, matchMode: FilterMatchMode.CONTAINS },
   });
 
   const toast = useRef<Toast>(null);
@@ -184,17 +183,18 @@ export default function Products() {
         onSelectionChange={(e: any) => { setSelectedProduct(e.value) }} dataKey="IDMon"
         resizableColumns showGridlines columnResizeMode="expand"
         filters={filters}
-        globalFilterFields={["TenMon", "DVTMon", "GhiChu"]} emptyMessage="Không có dữ liệu"
+        globalFilterFields={["IDMon", "MaTat", "TenMon"]} emptyMessage="Không có dữ liệu"
       >
-        <Column field="IDMon" filter header="Id" ></Column>
-        <Column field="IDLoaiMon" filter header="Loại" body={bodyLoaiMon} ></Column>
+        <Column field="IDMon" header="Id" hidden></Column>
+        <Column field="MaTat" header="Mã"></Column>
+        <Column field="IDLoaiMon" header="Loại" body={bodyLoaiMon} ></Column>
         <Column field="TenMon" header="Tên" style={{ width: '15%' }}></Column>
         <Column header="Edit" body={bodyEdit}></Column>
         <Column field="Image" header="Hình ảnh" body={bodyImage} style={{ width: '5%' }}></Column>
-        <Column field="DVTMon" filter header="ĐVT" ></Column>
-        <Column field="DonGiaVon" filter header="Giá vốn" body={(rowData: Product) => <>{formatCurrency(rowData.DonGiaVon)}</>} sortable ></Column>
-        <Column field="DonGiaBanLe" filter header="Giá lẻ" body={(rowData: Product) => <>{formatCurrency(rowData.DonGiaBanLe)}</>} sortable ></Column>
-        <Column field="DonGiaBanSi" filter header="Giá sỉ" body={(rowData: Product) => <>{formatCurrency(rowData.DonGiaBanSi)}</>} sortable ></Column>
+        <Column field="DVTMon" header="ĐVT" ></Column>
+        <Column field="DonGiaVon" header="Giá vốn" body={(rowData: Product) => <>{formatCurrency(rowData.DonGiaVon)}</>} sortable ></Column>
+        <Column field="DonGiaBanLe" header="Giá lẻ" body={(rowData: Product) => <>{formatCurrency(rowData.DonGiaBanLe)}</>} sortable ></Column>
+        <Column field="DonGiaBanSi" header="Giá sỉ" body={(rowData: Product) => <>{formatCurrency(rowData.DonGiaBanSi)}</>} sortable ></Column>
         <Column field="SoLuongTonKho" header="Tồn kho" body={bodyTonKho} sortable ></Column>
         <Column field="ThoiGianBH" header="Bảo hành" sortable ></Column>
         <Column field="GhiChu" header="Ghi chú" ></Column>

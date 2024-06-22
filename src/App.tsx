@@ -7,11 +7,11 @@ import { apiUrl } from '@/constants/api';
 import { paths } from '@/constants/api';
 
 function App() {
-  const isDark = useThemeStore((state: any) => state.isDark);
+  const isLight = useThemeStore((state: any) => state.isLight);
 
   useEffect(() => {
-    isDark ? THEMES_PRIME_REACT.laraDarkIndigo() : THEMES_PRIME_REACT.laraLightIndigo();
-  }, [isDark]);
+    isLight ? THEMES_PRIME_REACT.laraLightIndigo() : THEMES_PRIME_REACT.laraDarkIndigo();
+  }, [isLight]);
 
   //config middleware axios
   const exceptUrls = [paths.login, paths.register, paths.refreshToken];
