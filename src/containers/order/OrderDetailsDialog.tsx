@@ -11,7 +11,7 @@ import { DataTable, DataTableFilterMeta, DataTableRowEditCompleteEvent, DataTabl
 import { Column, ColumnEditorOptions } from 'primereact/column';
 import { ProductService } from '@/services/products.service';
 import { Button } from 'primereact/button';
-import { formatCurrency, formatNumber } from '@/utils/common';
+import { formatCurrency, formatNumber, priceOptions } from '@/utils/common';
 import { FilterMatchMode } from 'primereact/api';
 import OrderPrintComponent from './OrderPrint';
 import { InputNumber, InputNumberValueChangeEvent } from 'primereact/inputnumber';
@@ -53,7 +53,6 @@ export default
         IDMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
         TenMon: { value: null, matchMode: FilterMatchMode.CONTAINS },
     });
-
     useEffect(() => {
         const fetchData = async () => {
             if (visible && idOrder) {
@@ -355,6 +354,40 @@ export default
         setSelectedRow({ index: index, dataSelected: data })
     };
 
+    const bodyChosePrice = (rowData: OrderDetail) => {
+        const idProduct = rowData.IDMon;
+        const productRow = products.find((x) => x.IDMon === idProduct) as Product;
+        const valuePrice = productRow?.DonGiaBanLe === rowData.DonGia ? 'DonGiaBanLe' : 'DonGiaBanSi';
+        return (
+            <Dropdown
+                disabled={!isPending || selectedRow?.dataSelected?.IDMon != rowData.IDMon}
+                value={valuePrice}
+                options={priceOptions}
+                optionLabel="label"
+                onChange={(e: DropdownChangeEvent) => {
+                    const value = e.value;
+                    const price = value === 'DonGiaBanLe'
+                        ? productRow.DonGiaBanLe
+                        : productRow.DonGiaBanSi;
+                    const _details = [...details];
+                    const index = _details.findIndex((x) => x.IDChiTietHD === rowData.IDChiTietHD);
+                    if (index !== -1) {
+                        let _data = _details[index] as TypeOrderDetail;
+                        _data.DonGia = price;
+
+                        const TienChuaCK = (_data.SoLuong ?? 0) * price;
+                        const TienCK = TienChuaCK * (_data.ChietKhau ?? 0) / 100;
+                        const TienSauCK = TienChuaCK - TienCK;
+
+                        _data.TienChuaCK = TienChuaCK;
+                        _data.TienCK = TienCK;
+                        _data.TienSauCK = TienSauCK;
+                        setSelectedRow({ index: index, dataSelected: _data });
+                    }
+                }} />
+        );
+    }
+
     return (
         <>
             <Toast ref={toast}></Toast>
@@ -371,7 +404,10 @@ export default
                 <DataTable value={details} editMode="row" loading={loading}
                     rowClassName={rowClassName}
                     onRowEditComplete={onRowEditComplete}
-                    onRowEditCancel={() => { setSelectedRow(undefined) }}
+                    onRowEditCancel={() => { 
+                        setSelectedRow(undefined);
+                        setOnChangeDetails(!onChangetDetails);
+                     }}
                     onRowEditInit={onRowEditInit}
                     filters={filters} header={renderHeader()}
                     globalFilterFields={["IDMon", "TenMon"]} emptyMessage="Không có dữ liệu"
@@ -384,6 +420,7 @@ export default
                     <Column field="SoLuong" header="Số lượng" sortable
                         body={(rowData: OrderDetail) => <>{formatNumber(rowData.SoLuong)}</>}
                         editor={(options) => numberEditor(options)} style={{ width: '5%' }}></Column>
+                    <Column field="DonGia" header="Chọn giá" body={bodyChosePrice}></Column>
                     <Column field="DonGia" header="Giá" style={{ width: '5%' }} sortable
                         body={(rowData: OrderDetail) => <>{formatCurrency(rowData.DonGia)}</>}
                         editor={(options) => numberEditor(options)}></Column>

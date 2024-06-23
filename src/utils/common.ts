@@ -99,6 +99,11 @@ export const bodyDate = (rowData: any, options: { field: keyof any }) => {
     return '';
 }
 
+export const priceOptions = [
+    { label: 'Giá Lẻ', value: 'DonGiaBanLe' },
+    { label: 'Giá Sỉ', value: 'DonGiaBanSi' }
+  ];
+
 export const IsPendingStatus = (status: number) => {
     return status === STATUS_ENUM.PENDING;
 };

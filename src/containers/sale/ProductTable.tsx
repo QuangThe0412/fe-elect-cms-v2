@@ -1,6 +1,6 @@
 
-import React, { useState, useEffect, useRef } from 'react';
-import { DataTable, DataTableFilterMeta } from 'primereact/datatable';
+import { useState, useEffect, useRef } from 'react';
+import { DataTable } from 'primereact/datatable';
 import { Column, ColumnFilterElementTemplateOptions } from 'primereact/column';
 import { InputText } from 'primereact/inputtext';
 import { Category, Product } from '@/models';
@@ -14,7 +14,6 @@ import { formatCurrency, handleImageError, linkImageGG } from '@/utils/common';
 import { classNames } from 'primereact/utils';
 import { CategoryService } from '@/services/category.service';
 import { ChossenProduct } from './Sale';
-import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect';
 
 type Props = {
   chosenProducts: ChossenProduct[];

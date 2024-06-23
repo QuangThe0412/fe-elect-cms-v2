@@ -6,7 +6,7 @@ import { Toast } from 'primereact/toast';
 import erroImage from '@/images/error.jpg';
 import { Button } from 'primereact/button';
 import { Image } from 'primereact/image';
-import { formatCurrency, handleImageError, linkImageGG } from '@/utils/common';
+import { formatCurrency, handleImageError, linkImageGG, priceOptions } from '@/utils/common';
 import { ChossenProduct, ResultsType, emptyResults } from './Sale';
 import { InputNumber } from 'primereact/inputnumber';
 import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
@@ -19,11 +19,6 @@ type Props = {
   deleteChosenProduct: (products: ChossenProduct) => void;
 
 }
-
-const priceOptions = [
-  { label: 'Giá Lẻ', value: 'DonGiaBanLe' },
-  { label: 'Giá Sỉ', value: 'DonGiaBanSi' }
-];
 
 export default function ProductChossen({ chosenProducts, setChosenProducts, deleteChosenProduct, setResults }: Props) {
   const [selectedItem, setSelectedItem] = useState<ChossenProduct>();
@@ -131,8 +126,7 @@ export default function ProductChossen({ chosenProducts, setChosenProducts, dele
             newDataChossen.Price = price;
             setChosenProducts(_chosenProducts);
           }
-        }}
-      />
+        }} />
     );
   }
 
