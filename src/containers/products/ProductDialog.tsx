@@ -72,6 +72,7 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
         onClose();
         form.resetFields();
         setSelectedCategory(undefined);
+        setFileImage({ files: [] });
         setObjectURL('');
     };
 
