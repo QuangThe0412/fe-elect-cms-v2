@@ -1,4 +1,3 @@
-import { FileUploadState } from '@/models';
 export interface Product {
     IDMon: number | 0 ,
     IDLoaiMon: number | 0,
@@ -14,6 +13,7 @@ export interface Product {
     createDate: Date | null,
     SoLuongTonKho: number | 0,
     TenMon: string | '',
+    TenKhongDau: string | '',
     ThoiGianBH: number | 0,
 };
 

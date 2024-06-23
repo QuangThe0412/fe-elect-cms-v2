@@ -17,6 +17,7 @@ import { InputNumber } from 'primereact/inputnumber';
 import { STATUS_ENUM } from '@/constants';
 
 export interface ChossenProduct extends Product {
+  Price?: number | 0;
   Number: number | 0;
   MoneyBeforeDiscount: number | 0;
   Discount: number | 0;
@@ -31,7 +32,7 @@ export type ResultsType = {
   MoneyCustomerPay: number | 0;
 }
 
-const emptyResults: ResultsType = {
+export const emptyResults: ResultsType = {
   MoneyBeforeDiscount: 0,
   MoneyDiscount: 0,
   MoneyAfterDiscount: 0,
@@ -102,7 +103,7 @@ export default function SaleComponent() {
         IDMon: product.IDMon,
         SoLuong: product.Number,
         ChietKhau: product.Discount,
-        DonGia: product.DonGiaBanLe,
+        DonGia: product.Price,
       }
     });
     const congNo = results.MoneyAfterDiscount - results.MoneyCustomerPay;
@@ -128,6 +129,8 @@ export default function SaleComponent() {
       <div className={styles.groupHandle}>
         <div className={styles.groupChossen}>
           <ProductChossen
+            results={results}
+            setResults={setResults}
             chosenProducts={chosenProducts}
             setChosenProducts={setChosenProducts}
             deleteChosenProduct={deleteChosenProduct}

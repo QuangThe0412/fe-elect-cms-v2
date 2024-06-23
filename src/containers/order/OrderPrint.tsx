@@ -22,11 +22,12 @@ export default function OrderPrintComponent({ id, dataOrderDetails, dataProducts
 
     return (
         <div className="card" id={id} style={{ display: 'none' }}>
+            <div className="text-center">
+                <h3>Điện Nước Tâm Nhi - 0938729853</h3>
+                <p>Địa chỉ: 66/6A, Xã Xuân Thới Đông, Huyện Hóc Môn</p>
+            </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <h3>Hóa đơn số {numberOrder}</h3>
-                <div>
-                    <p>Ngày in: {datePrint}</p>
-                </div>
             </div>
             <DataTable value={_orderDetails} tableStyle={{ minWidth: '50rem' }} stripedRows>
                 <Column field="TenMon" header="Tên" style={{ width: '15%' }}></Column>
@@ -38,6 +39,7 @@ export default function OrderPrintComponent({ id, dataOrderDetails, dataProducts
                     body={(rowData: OrderDetail) => <>{formatCurrency(rowData.TienSauCK)}</>}></Column>
             </DataTable>
             <Divider type="solid" className='bg-danger' />
+            <p>Ngày in: {datePrint}</p>
             <h3>Tổng cộng: {formatCurrency(total)}</h3>
         </div >
     );

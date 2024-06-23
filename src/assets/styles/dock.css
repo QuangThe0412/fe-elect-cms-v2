@@ -6,3 +6,9 @@
     position: unset !important;
     height: auto !important;
 }
+
+@media (max-width: 768px) {
+    .p-dock .p-dock-list, .dock-demo .dock-window {
+        display: none !important;
+    }
+}

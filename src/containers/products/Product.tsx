@@ -20,6 +20,7 @@ import { Image } from 'primereact/image';
 import { linkImageGG } from '@/utils/common';
 
 let emptyProduct: Product = {
+  TenKhongDau: '',
   TenMon: '',
   IDMon: 0,
   IDLoaiMon: 0,

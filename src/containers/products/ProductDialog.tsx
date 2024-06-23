@@ -10,7 +10,7 @@ import { HandleApi } from '@/services/handleApi';
 import { LabelField } from '@/components';
 import { classNames } from 'primereact/utils';
 import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
-import { convertFormData, linkImageGG, trimString } from '@/utils/common';
+import { convertFormData, linkImageGG, removeVietnameseTones, trimString } from '@/utils/common';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { FileUpload } from 'primereact/fileupload';
 
@@ -106,6 +106,7 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
     const onFinish = async (values: typeForm) => {
         setLoading(true);
         let product: Product = {
+            TenKhongDau: removeVietnameseTones(values.nameProduct),
             IDMon: idProduct,
             IDLoaiMon: selectedCategory?.IDLoaiMon || 0,
             DVTMon: values.unit,

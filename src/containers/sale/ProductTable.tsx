@@ -1,6 +1,6 @@
 
-import React, { useState, useEffect, useRef } from 'react';
-import { DataTable, DataTableFilterMeta } from 'primereact/datatable';
+import { useState, useEffect, useRef } from 'react';
+import { DataTable } from 'primereact/datatable';
 import { Column, ColumnFilterElementTemplateOptions } from 'primereact/column';
 import { InputText } from 'primereact/inputtext';
 import { Category, Product } from '@/models';
@@ -10,11 +10,11 @@ import { FilterMatchMode } from 'primereact/api';
 import { HandleApi } from '@/services/handleApi';
 import { ProductService } from '@/services/products.service';
 import { Image } from 'primereact/image';
-import { formatCurrency, handleImageError, linkImageGG } from '@/utils/common';
+import { formatCurrency, handleImageError, linkImageGG, removeVietnameseTones } from '@/utils/common';
 import { classNames } from 'primereact/utils';
 import { CategoryService } from '@/services/category.service';
 import { ChossenProduct } from './Sale';
-import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect';
+import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
 
 type Props = {
   chosenProducts: ChossenProduct[];
@@ -61,7 +61,8 @@ export default function ProductTable({ chosenProducts, setChosenProducts }: Prop
         _chosenProducts[_product].Number += 1;
         const number = _chosenProducts[_product].Number;
         const discount = _chosenProducts[_product].Discount;
-        _chosenProducts[_product].MoneyBeforeDiscount = number * _chosenProducts[_product].DonGiaBanLe;
+        _chosenProducts[_product].Price = _chosenProducts[_product].DonGiaBanLe;
+        _chosenProducts[_product].MoneyBeforeDiscount = number * (_chosenProducts[_product].Price ?? 0);
         _chosenProducts[_product].MoneyDiscount = _chosenProducts[_product].MoneyBeforeDiscount * discount / 100;
         _chosenProducts[_product].MoneyAfterDiscount = _chosenProducts[_product].MoneyBeforeDiscount - _chosenProducts[_product].MoneyDiscount;
         setChosenProducts(_chosenProducts);
@@ -69,7 +70,8 @@ export default function ProductTable({ chosenProducts, setChosenProducts }: Prop
         let newProduct = { ...product } as ChossenProduct;
         newProduct.Number = 1;
         newProduct.Discount = 0;
-        newProduct.MoneyBeforeDiscount = newProduct.Number * newProduct.DonGiaBanLe;
+        newProduct.Price = newProduct.DonGiaBanLe;
+        newProduct.MoneyBeforeDiscount = newProduct.Number * newProduct.Price;
         newProduct.MoneyDiscount = newProduct.MoneyBeforeDiscount * newProduct.Discount / 100;
         newProduct.MoneyAfterDiscount = newProduct.MoneyBeforeDiscount - newProduct.MoneyDiscount;
         setChosenProducts([...chosenProducts, newProduct]);
@@ -133,6 +135,43 @@ export default function ProductTable({ chosenProducts, setChosenProducts }: Prop
     );
   };
 
+  const loaiMonRowFilterTemplate = (options: ColumnFilterElementTemplateOptions) => {
+    const { value } = options;
+    return (
+      <Dropdown value={value} options={categories}
+        filter filterMatchMode='contains'
+        onChange={(e: DropdownChangeEvent) => {
+          options.filterApplyCallback(e.value)
+        }}
+        placeholder="Chọn loại" optionLabel="TenLoai" optionValue="IDLoaiMon"
+        itemTemplate={loaiMonItemTemplate}
+        className="p-column-filter" style={{ minWidth: '12rem' }} />
+    );
+  };
+
+  const loaiMonItemTemplate = (option: Category) => {
+    return <>{option.TenLoai}</>;
+  };
+
+  const tenMonRowFilterTemplate = (options: ColumnFilterElementTemplateOptions) => {
+    // const { value } = options;
+    // const _products = products as ChossenProduct[];
+
+    // const data = _products.filter((product) =>
+    //   removeVietnameseTones(product?.TenMon?.toLocaleLowerCase())
+    //     .includes(removeVietnameseTones(value?.toLocaleLowerCase())));
+
+    // console.log({ data });
+
+    // const _data = _products.filter((product) => product.TenKhongDau?.includes(value));
+    // console.log({ _data });
+
+    return (
+      <InputText type="text" className="p-inputtext-sm"
+        onInput={(e) => options.filterApplyCallback(e.currentTarget?.value)} placeholder="Tìm tên" />
+    );
+  };
+
   return (
     <div className="card" style={{ height: '100%' }}>
       <Toast ref={toast} />
@@ -147,6 +186,7 @@ export default function ProductTable({ chosenProducts, setChosenProducts }: Prop
         resizableColumns showGridlines columnResizeMode="expand"
         onRowDoubleClick={(e: any) => handleProductSelect(e)}
         filterDisplay="row"
+        emptyMessage="Không có sản phẩm"
       >
         <Column field="IDMon" header="Id" hidden></Column>
         <Column field="MaTat" header="Mã"
@@ -155,8 +195,17 @@ export default function ProductTable({ chosenProducts, setChosenProducts }: Prop
           filterMatchMode={FilterMatchMode.STARTS_WITH}
           showFilterMatchModes={false}
         ></Column>
-        <Column field="IDLoaiMon" header="Loại" body={bodyLoaiMon}></Column>
-        <Column field="TenMon" filter filterPlaceholder="Nhập tên" header="Tên" style={{ width: '15%' }}></Column>
+        <Column field="IDLoaiMon" header="Loại"
+          filterPlaceholder="Nhập loại"
+          filter filterElement={loaiMonRowFilterTemplate}
+          filterMatchMode={FilterMatchMode.CONTAINS}
+          showFilterMatchModes={false}
+          body={bodyLoaiMon}></Column>
+        <Column field="TenMon"
+          filterMatchMode={FilterMatchMode.CONTAINS}
+          filter filterElement={tenMonRowFilterTemplate}
+          filterPlaceholder="Nhập tên"
+          header="Tên" style={{ width: '15%' }}></Column>
         <Column field="Image" header="Hình ảnh" body={bodyImage} style={{ width: '5%' }}></Column>
         <Column field="DVTMon" header="ĐVT" ></Column>
         <Column field="DonGiaVon" header="Giá vốn" body={(rowData: ChossenProduct) => <>{formatCurrency(rowData.DonGiaVon)}</>} sortable ></Column>

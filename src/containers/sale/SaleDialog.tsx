@@ -57,6 +57,10 @@ export default function SaleDialog({ visible, onClose, chosenProducts, results, 
             <Dialog header={renderHeader()} visible={visible} style={{ minWidth: '35vw' }}
                 onHide={() => { if (!visible) return; HandClose(); }}>
                 <div id='divcontents_SaleDialog'>
+                    <div className="text-center">
+                        <h3>Điện Nước Tâm Nhi - 0938729853</h3>
+                        <p>Địa chỉ: 66/6A, Xã Xuân Thới Đông, Huyện Hóc Môn</p>
+                    </div>
                     <h2 className="text-right">Hóa đơn bán hàng : {idOrderCreated}</h2>
                     <DataTable value={chosenProducts}
                         stripedRows sortMode="multiple" removableSort
