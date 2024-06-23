@@ -81,7 +81,6 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
         HandleApi(ProductService.getProduct(idProduct), null).then((res) => {
             if (res && res.status === 200) {
                 let product = res.data as Product;
-                console.log(product);
                 setSelectedCategory(categories.find((x) => x.IDLoaiMon === product.IDLoaiMon));
                 form.setFieldsValue({
                     id: product.IDMon,
