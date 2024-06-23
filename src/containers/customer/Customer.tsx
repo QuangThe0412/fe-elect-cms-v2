@@ -182,7 +182,7 @@ export default function CustomerComponent() {
         onClose={() => {
           setDialogVisible(false)
         }}
-        idCustomer={selectedCustomer.IDKhachHang}
+        idCustomer={selectedCustomer?.IDKhachHang}
         onCustomerChange={() => {
           setCustomerChange(!customerChange)
         }} // refresh data
