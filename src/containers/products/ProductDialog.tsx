@@ -72,6 +72,7 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
         onClose();
         form.resetFields();
         setSelectedCategory(undefined);
+        setFileImage({ files: [] });
         setObjectURL('');
     };
 
@@ -80,12 +81,12 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
         HandleApi(ProductService.getProduct(idProduct), null).then((res) => {
             if (res && res.status === 200) {
                 let product = res.data as Product;
-
                 setSelectedCategory(categories.find((x) => x.IDLoaiMon === product.IDLoaiMon));
                 form.setFieldsValue({
                     id: product.IDMon,
                     idCategory: product.IDLoaiMon,
                     unit: product.DVTMon,
+                    maTat: product.MaTat,
                     priceRetail: product.DonGiaBanLe,
                     priceWholeSale: product.DonGiaBanSi,
                     priceCost: product.DonGiaVon,
@@ -202,11 +203,11 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
                                 placeholder="Chọn loại món" className="w-full" />
                         )}
                     </LabelField>
-                    <LabelField label="Mã" name="MaTat"
+                    <LabelField label="Mã" name="maTat"
                         rules={[
                             { required: true, message: 'Mã tắt không được bỏ trống.' },
                         ]}>
-                        {(control, meta) => (<InputText {...control} id="MaTat"
+                        {(control, meta) => (<InputText {...control} id="maTat"
                             className={classNames({ 'invalid': meta.errors.length })} />)}
                     </LabelField>
                     <LabelField label="Đơn vị tính" name="unit"
