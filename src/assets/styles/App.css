@@ -6,11 +6,16 @@
 
 .float-button {
   position: absolute !important;
-  bottom: 18vh;
+  bottom: 64vh;
   right: 88px;
+  z-index: 1000;
 }
-
-
+@media (max-width: 768px) {
+  .float-button {
+    bottom: 74%;
+    right: 18%;
+  }
+}
 .body {
   display: flex;
   height: 100%;
@@ -104,11 +109,10 @@
   max-width: 100px !important;
 }
 
-.p-input-icon-left > i {
+.p-input-icon-left>i {
   margin-left: 1.5rem;
 }
 
-.p-input-icon-left > input {
+.p-input-icon-left>input {
   padding-left: 3.5rem;
 }
-

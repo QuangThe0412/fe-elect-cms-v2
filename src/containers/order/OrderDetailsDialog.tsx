@@ -384,7 +384,7 @@ export default
                     <Column field="SoLuong" header="Số lượng" sortable
                         body={(rowData: OrderDetail) => <>{formatNumber(rowData.SoLuong)}</>}
                         editor={(options) => numberEditor(options)} style={{ width: '5%' }}></Column>
-                    <Column field="DonGia" header="Giá lẻ" style={{ width: '5%' }} sortable
+                    <Column field="DonGia" header="Giá" style={{ width: '5%' }} sortable
                         body={(rowData: OrderDetail) => <>{formatCurrency(rowData.DonGia)}</>}
                         editor={(options) => numberEditor(options)}></Column>
                     <Column field="TienChuaCK" header="Tiền chưa CK" style={{ width: '10%' }} sortable
@@ -398,8 +398,12 @@ export default
                     <Column field="TienSauCK" header="Tiền đã CK" style={{ width: '10%' }} sortable
                         body={(rowData: OrderDetail) => <>{formatCurrency(rowData.TienSauCK)}</>}
                         editor={(options) => numberEditor(options)}></Column>
-                    <Column hidden={!isPending} rowEditor headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
-                    <Column hidden={!isPending} body={bodyTemplateButtonDeleted} headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
+                    <Column hidden={!isPending} rowEditor={(dataRow, rowProps) =>
+                        selectedRow ? selectedRow?.index === rowProps.rowIndex : true}
+                        headerStyle={{ width: '10%', minWidth: '8rem' }}
+                        bodyStyle={{ textAlign: 'center' }}></Column>
+                    <Column hidden={!isPending} body={bodyTemplateButtonDeleted}
+                        headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
                 </DataTable>
             </Dialog>
         </>

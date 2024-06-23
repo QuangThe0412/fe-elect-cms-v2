@@ -21,3 +21,9 @@ textarea {
 .p-datatable {
   height: 100%;
 }
+
+@media print {
+  .no-print {
+    display: none;
+  }
+}

@@ -61,7 +61,8 @@ export default function ProductTable({ chosenProducts, setChosenProducts }: Prop
         _chosenProducts[_product].Number += 1;
         const number = _chosenProducts[_product].Number;
         const discount = _chosenProducts[_product].Discount;
-        _chosenProducts[_product].MoneyBeforeDiscount = number * _chosenProducts[_product].DonGiaBanLe;
+        _chosenProducts[_product].Price = _chosenProducts[_product].DonGiaBanLe;
+        _chosenProducts[_product].MoneyBeforeDiscount = number * (_chosenProducts[_product].Price ?? 0);
         _chosenProducts[_product].MoneyDiscount = _chosenProducts[_product].MoneyBeforeDiscount * discount / 100;
         _chosenProducts[_product].MoneyAfterDiscount = _chosenProducts[_product].MoneyBeforeDiscount - _chosenProducts[_product].MoneyDiscount;
         setChosenProducts(_chosenProducts);
@@ -69,7 +70,8 @@ export default function ProductTable({ chosenProducts, setChosenProducts }: Prop
         let newProduct = { ...product } as ChossenProduct;
         newProduct.Number = 1;
         newProduct.Discount = 0;
-        newProduct.MoneyBeforeDiscount = newProduct.Number * newProduct.DonGiaBanLe;
+        newProduct.Price = newProduct.DonGiaBanLe;
+        newProduct.MoneyBeforeDiscount = newProduct.Number * newProduct.Price;
         newProduct.MoneyDiscount = newProduct.MoneyBeforeDiscount * newProduct.Discount / 100;
         newProduct.MoneyAfterDiscount = newProduct.MoneyBeforeDiscount - newProduct.MoneyDiscount;
         setChosenProducts([...chosenProducts, newProduct]);

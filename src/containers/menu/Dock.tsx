@@ -7,21 +7,21 @@ import { checkRoleAccess } from '@/utils/common';
 import useAuth from '@/hooks/useAuth';
 import { Toast } from 'primereact/toast';
 import '@/styles/dock.css';
-import productImage from '@/images/product.png';
 import { Tooltip } from 'primereact/tooltip';
+import productImage from '@/images/product.png';
 import dashboardImage from '@/images/dashboard.png';
 import permissionImage from '@/images/permission.png';
 import customerImage from '@/images/customer.png';
 import billImage from '@/images/bill.png';
 import categoryImage from '@/images/category.png';
-import costImage from '@/images/cost.png';
 import discountImage from '@/images/discount.png';
 import debtImage from '@/images/debt.png';
 import importImage from '@/images/import.png';
-import exportImage from '@/images/export.png';
-import inventoryImage from '@/images/inventory.png';
 import houseImage from '@/images/house.png';
 import { RoleEnum } from '@/constants';
+import costImage from '@/images/cost.png';
+import exportImage from '@/images/export.png';
+import inventoryImage from '@/images/inventory.png';
 
 export default function DockMenu() {
     const navigate = useNavigate();

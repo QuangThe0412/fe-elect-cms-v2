@@ -1,26 +1,51 @@
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { Product } from '@/models';
 import { Toast } from 'primereact/toast';
 import erroImage from '@/images/error.jpg';
 import { Button } from 'primereact/button';
 import { Image } from 'primereact/image';
 import { formatCurrency, handleImageError, linkImageGG } from '@/utils/common';
-import { ChossenProduct } from './Sale';
+import { ChossenProduct, ResultsType, emptyResults } from './Sale';
 import { InputNumber } from 'primereact/inputnumber';
+import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
 
 type Props = {
   chosenProducts: ChossenProduct[];
+  results: ResultsType;
+  setResults: (results: ResultsType) => void;
   setChosenProducts: (products: ChossenProduct[]) => void;
   deleteChosenProduct: (products: ChossenProduct) => void;
+
 }
 
-export default function ProductChossen({ chosenProducts, setChosenProducts,deleteChosenProduct }: Props) {
+const priceOptions = [
+  { label: 'Giá Lẻ', value: 'DonGiaBanLe' },
+  { label: 'Giá Sỉ', value: 'DonGiaBanSi' }
+];
+
+export default function ProductChossen({ chosenProducts, setChosenProducts, deleteChosenProduct, setResults }: Props) {
   const [selectedItem, setSelectedItem] = useState<ChossenProduct>();
 
   const toast = useRef<Toast>(null);
+
+  useEffect(() => {
+    renderChosseProducts();
+  }, [chosenProducts]);
+
+  const renderChosseProducts = () => {
+    for (let i = 0; i < chosenProducts.length; i++) {
+      const _chosenProduct = chosenProducts[i];
+      const moneyBeforeDiscount = _chosenProduct.Number * (_chosenProduct.Price ?? 0);
+      const moneyDiscount = moneyBeforeDiscount * (_chosenProduct.Discount / 100);
+      const moneyAfterDiscount = moneyBeforeDiscount - moneyDiscount;
+
+      _chosenProduct.MoneyBeforeDiscount = moneyBeforeDiscount;
+      _chosenProduct.MoneyDiscount = moneyDiscount;
+      _chosenProduct.MoneyAfterDiscount = moneyAfterDiscount;
+    }
+  };
 
   const bodyImage = (rowData: ChossenProduct) => {
     return (
@@ -41,15 +66,7 @@ export default function ProductChossen({ chosenProducts, setChosenProducts,delet
         let index = _chosenProducts.findIndex((product) => product.IDMon === rowData.IDMon);
         if (index !== -1) {
           let newDataChossen = _chosenProducts[index];
-          const moneyBeforeDiscount = newDataChossen.Number * newDataChossen.DonGiaBanLe;
-          const moneyDiscount = moneyBeforeDiscount * (value / 100);
-          const moneyAfterDiscount = moneyBeforeDiscount - moneyDiscount;
-          
           newDataChossen.Discount = value;
-          newDataChossen.MoneyBeforeDiscount = moneyBeforeDiscount;
-          newDataChossen.MoneyDiscount = moneyDiscount;
-          newDataChossen.MoneyAfterDiscount = moneyAfterDiscount;
-
           setChosenProducts(_chosenProducts);
         }
       }} />
@@ -61,6 +78,9 @@ export default function ProductChossen({ chosenProducts, setChosenProducts,delet
     if (index !== -1) {
       chosenProducts.splice(index, 1);
       deleteChosenProduct(rowData);
+      if (chosenProducts.length === 0) {
+        setResults(emptyResults);
+      }
     }
   };
 
@@ -84,20 +104,37 @@ export default function ProductChossen({ chosenProducts, setChosenProducts,delet
         let index = _chosenProducts.findIndex((product) => product.IDMon === rowData.IDMon);
         if (index !== -1) {
           let newDataChossen = _chosenProducts[index];
-          const moneyBeforeDiscount = value * newDataChossen.DonGiaBanLe;
-          const moneyDiscount = moneyBeforeDiscount * (newDataChossen.Discount / 100);
-          const moneyAfterDiscount = moneyBeforeDiscount - moneyDiscount;
-
           newDataChossen.Number = value;
-          newDataChossen.MoneyBeforeDiscount = moneyBeforeDiscount;
-          newDataChossen.MoneyDiscount = moneyDiscount;
-          newDataChossen.MoneyAfterDiscount = moneyAfterDiscount;
-
           setChosenProducts(_chosenProducts);
         }
       }} />
     )
   };
+
+  const bodyChosePrice = (rowData: ChossenProduct) => {
+    const valuePrice = rowData.Price === rowData.DonGiaBanLe ? 'DonGiaBanLe' : 'DonGiaBanSi';
+    return (
+      <Dropdown
+        value={valuePrice}
+        options={priceOptions}
+        optionLabel="label"
+        onChange={(e: DropdownChangeEvent) => {
+          let _chosenProducts = [...chosenProducts];
+          let index = _chosenProducts.findIndex((product) => product.IDMon === rowData.IDMon);
+          if (index !== -1) {
+            let newDataChossen = _chosenProducts[index];
+            const value = e.value;
+            const price = value === 'DonGiaBanLe'
+              ? newDataChossen.DonGiaBanLe
+              : newDataChossen.DonGiaBanSi;
+
+            newDataChossen.Price = price;
+            setChosenProducts(_chosenProducts);
+          }
+        }}
+      />
+    );
+  }
 
   return (
     <div className="card">
@@ -116,7 +153,8 @@ export default function ProductChossen({ chosenProducts, setChosenProducts,delet
         <Column field="TenMon" header="Tên" style={{ width: '15%' }}></Column>
         <Column field="Image" header="Hình ảnh" body={bodyImage} style={{ width: '5%' }}></Column>
         <Column field="DVTMon" header="ĐVT"></Column>
-        <Column field="DonGiaBanLe" header="Giá" body={(rowData: ChossenProduct) => <>{formatCurrency(rowData?.DonGiaBanLe)}</>} ></Column>
+        <Column header="Chọn giá" body={bodyChosePrice} className='no-print' ></Column>
+        <Column field="Price" header="Giá" body={(rowData: ChossenProduct) => <>{formatCurrency(rowData?.Price)}</>} ></Column>
         <Column field='SoLuong' header="Số lượng" body={bodySoLuong} ></Column>
         <Column field='Discount' header="Chiết khấu" body={bodyRowDiscount} ></Column>
         <Column field='MoneyAfterDiscount' header="Tổng" body={bodyRowTotal} ></Column>
