@@ -6,7 +6,7 @@ import { Toast } from 'primereact/toast';
 import erroImage from '@/images/error.jpg';
 import { Button } from 'primereact/button';
 import { Image } from 'primereact/image';
-import { formatCurrency, handleImageError, linkImageGG, priceOptions } from '@/utils/common';
+import { formatCurrency, generateLinkGoogleImage, handleImageError, priceOptions } from '@/utils/common';
 import { ChossenProduct, ResultsType, emptyResults } from './Sale';
 import { InputNumber } from 'primereact/inputnumber';
 import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
@@ -43,8 +43,9 @@ export default function ProductChossen({ chosenProducts, setChosenProducts, dele
   };
 
   const bodyImage = (rowData: ChossenProduct) => {
+    const src = generateLinkGoogleImage(rowData.Image) ?? erroImage;
     return (
-      <Image src={linkImageGG + rowData?.Image ?? erroImage} onError={handleImageError}
+      <Image src={src} onError={handleImageError}
         alt={rowData?.TenMon} width="100" preview />
     )
   };
