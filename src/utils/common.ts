@@ -142,5 +142,9 @@ export const removeVietnameseTones = (str: string): string => {
     return str.split('').map(char => accentsMap[char] || char).join('');
 };
 
-// export const linkImageGG = 'https://drive.google.com/uc?export=view&id=';
 export const linkImageGG = linkImageGGEndpoint;
+
+export const generateLinkGoogleImage = (id: string) => {
+    if (!id) return '';
+    return `${(linkImageGGEndpoint ?? '') + id}` + '&sz=w1000';
+  }

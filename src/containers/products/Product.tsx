@@ -7,7 +7,7 @@ import { ProductService } from '@/services/products.service';
 import { CategoryService } from '@/services/category.service';
 import { InputText } from 'primereact/inputtext';
 import { Product, Category } from '@/models';
-import { formatCurrency, handleImageError } from '@/utils/common';
+import { formatCurrency, generateLinkGoogleImage, handleImageError } from '@/utils/common';
 import erroImage from '@/images/error.jpg';
 import { classNames } from 'primereact/utils';
 import { Toast } from 'primereact/toast';
@@ -17,7 +17,6 @@ import { Button } from 'primereact/button';
 import ProductDialog from './ProductDialog';
 import { HandleApi } from '@/services/handleApi';
 import { Image } from 'primereact/image';
-import { linkImageGG } from '@/utils/common';
 
 let emptyProduct: Product = {
   TenKhongDau: '',
@@ -118,8 +117,9 @@ export default function Products() {
   };
 
   const bodyImage = (rowData: Product) => {
+    const src = generateLinkGoogleImage(rowData.Image) ?? erroImage;
     return (
-      <Image src={linkImageGG + rowData.Image ?? erroImage} onError={handleImageError}
+      <Image src={src ?? erroImage} onError={handleImageError}
         alt={rowData.TenMon} width="100" preview />
     )
   };

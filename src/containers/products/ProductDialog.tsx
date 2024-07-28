@@ -10,7 +10,7 @@ import { HandleApi } from '@/services/handleApi';
 import { LabelField } from '@/components';
 import { classNames } from 'primereact/utils';
 import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
-import { convertFormData, linkImageGG, removeVietnameseTones, trimString } from '@/utils/common';
+import { convertFormData, generateLinkGoogleImage, removeVietnameseTones, trimString } from '@/utils/common';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { FileUpload } from 'primereact/fileupload';
 
@@ -98,7 +98,7 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
                     nameProduct: product.TenMon,
                     timeWarranty: product.ThoiGianBH,
                 });
-                setObjectURL(linkImageGG + product.Image);
+                setObjectURL(generateLinkGoogleImage(product.Image));
             }
         }).finally(() => { setLoading(false); });
     };
