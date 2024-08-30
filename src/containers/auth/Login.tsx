@@ -22,7 +22,7 @@ type typeForm = {
 }
 
 const initialForm: typeForm = {
-    username: nameEnv == 'development' ? 'quangthe11' : '',
+    username: nameEnv == 'development' ? 'admin' : '',
     password: nameEnv == 'development' ? 'Aa123123' : '',
 };
 
