@@ -83,20 +83,20 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
                 let product = res.data as Product;
                 setSelectedCategory(categories.find((x) => x.IDLoaiMon === product.IDLoaiMon));
                 form.setFieldsValue({
-                    id: product.IDMon,
-                    idCategory: product.IDLoaiMon,
-                    unit: product.DVTMon,
-                    maTat: product.MaTat,
-                    priceRetail: product.DonGiaBanLe,
-                    priceWholeSale: product.DonGiaBanSi,
-                    priceCost: product.DonGiaVon,
-                    note: product.GhiChu,
-                    image: product.Image,
-                    modifyDate: product.modifyDate,
-                    createDate: product.createDate,
-                    quantity: product.SoLuongTonKho,
-                    nameProduct: product.TenMon,
-                    timeWarranty: product.ThoiGianBH,
+                    id: product.IDMon || 0,
+                    idCategory: product.IDLoaiMon || 0,
+                    unit: product.DVTMon || '',
+                    maTat: product.MaTat || '',
+                    priceRetail: product.DonGiaBanLe || 0,
+                    priceWholeSale: product.DonGiaBanSi || 0,
+                    priceCost: product.DonGiaVon || 0,
+                    note: product.GhiChu || '',
+                    image: product.Image || '',
+                    modifyDate: product.modifyDate || '',
+                    createDate: product.createDate || '',
+                    quantity: product.SoLuongTonKho || 0,
+                    nameProduct: product.TenMon || '',
+                    timeWarranty: product.ThoiGianBH || 0,
                 });
                 setObjectURL(generateLinkGoogleImage(product.Image));
             }
@@ -182,7 +182,7 @@ export default function ProductDialog({ visible, onClose, idProduct, onProductCh
                     </LabelField>
 
                     {objectURL && <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>
-                        <img style={{ maxWidth: 200, maxHeight: 200 }} src={objectURL} />
+                        <img alt={idProduct?.toString()} style={{ maxWidth: 200, maxHeight: 200 }} src={objectURL} />
                     </div>}
                     <LabelField label="Tên sản phẩm" name="nameProduct"
                         rules={[
